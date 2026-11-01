@@ -1318,3 +1318,182 @@ body {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ============================================================================
+ * EMBEDDED CAMERA SCANNER & KETANGGUNGAN PENJENISAN (MOBILE)
+ * ============================================================================ */
+.embedded-camera-scanner {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  background: #090D16;
+  border: 2px solid var(--neo-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--neo-shadow-xs);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.embedded-camera-scanner video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-reticle-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.camera-reticle-corners {
+  width: 74%;
+  height: 60%;
+  border: 2px dashed rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius-sm);
+  position: relative;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
+}
+
+.camera-laser-sweep {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  background: linear-gradient(90deg, transparent, #22C55E, #4ADE80, #22C55E, transparent);
+  box-shadow: 0 0 10px #22C55E, 0 0 4px #4ADE80;
+  animation: mobileLaserSweep 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes mobileLaserSweep {
+  0% { top: 4%; opacity: 0.8; }
+  100% { top: 96%; opacity: 1; }
+}
+
+.camera-scanner-status {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(9, 13, 22, 0.85);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Category Filter Pills (Horizontal Scroll below Floor Tabs) */
+.category-pills-bar {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 2px 2px 8px;
+  margin-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.category-pills-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.cat-pill {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: 9999px;
+  border: 1.5px solid var(--neo-border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+}
+
+.cat-pill:hover {
+  background: #F4F4F5;
+  color: var(--text-primary);
+}
+
+.cat-pill.active {
+  background: var(--neo-black);
+  color: #FFFFFF;
+  border-color: var(--neo-black);
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.25);
+}
+
+/* Category Selection Chips in Item Modal */
+.category-chips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px;
+  background: #F8FAFC;
+  border: 1.5px solid var(--neo-border);
+  border-radius: var(--radius-sm);
+  max-height: 140px;
+  overflow-y: auto;
+}
+
+.category-chip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: 6px;
+  border: 1.5px solid var(--border-subtle);
+  background: #FFFFFF;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+  text-transform: uppercase;
+}
+
+.category-chip-btn:hover {
+  border-color: var(--neo-border);
+  background: #F8FAFC;
+}
+
+.category-chip-btn.active {
+  background: var(--neo-black);
+  color: #FFFFFF;
+  border-color: var(--neo-black);
+  box-shadow: 1.5px 1.5px 0px rgba(0, 0, 0, 0.3);
+}
+
+.quick-create-cat-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: #FFFBEB;
+  border: 1.5px solid #D97706;
+  border-radius: var(--radius-sm);
+  color: #78350F;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+}
+
+.quick-create-cat-btn:hover {
+  background: #FEF3C7;
+}
