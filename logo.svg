@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <!-- Curved text paths -->
+    <path id="textArcTop" d="M 28 100 A 72 72 0 0 1 172 100" fill="none" />
+    <path id="textArcBottom" d="M 28 100 A 72 72 0 0 0 172 100" fill="none" />
+    
+    <!-- Center Minimalist Gradient -->
+    <radialGradient id="centerGlow" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#334155" />
+      <stop offset="60%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </radialGradient>
+
+    <!-- Outer Ring Drop Shadow -->
+    <filter id="logoShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F172A" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+
+  <!-- Group with Shadow -->
+  <g filter="url(#logoShadow)">
+    <!-- Layer 1: Outer Dark Ring Border -->
+    <circle cx="100" cy="100" r="96" fill="#FFFFFF" stroke="#0F172A" stroke-width="2.5" />
+
+    <!-- Layer 2: White Ring for Circular Text -->
+    <circle cx="100" cy="100" r="94.5" fill="#FFFFFF" />
+
+    <!-- Layer 3: Top Curved Text (ISTIQOMAH GROSIR) -->
+    <text fill="#0F172A" font-family="'Inter', -apple-system, sans-serif" font-weight="800" font-size="13.5" letter-spacing="2.2">
+      <textPath href="#textArcTop" startOffset="50%" text-anchor="middle">
+        ISTIQOMAH GROSIR
+      </textPath>
+    </text>
+
+    <!-- Layer 4: Bottom Curved Text (BULUSARI) -->
+    <text fill="#0F172A" font-family="'Inter', -apple-system, sans-serif" font-weight="800" font-size="13.5" letter-spacing="4.5">
+      <textPath href="#textArcBottom" startOffset="50%" text-anchor="middle" dominant-baseline="hanging" dy="-13">
+        BULUSARI
+      </textPath>
+    </text>
+
+    <!-- Layer 5: Two 5-Pointed Stars (9 o'clock & 3 o'clock) -->
+    <g transform="translate(24, 100)">
+      <polygon points="0,-6 1.8,-1.8 6,-1.8 2.7,0.9 4,5 0,2.7 -4,5 -2.7,0.9 -6,-1.8 -1.8,-1.8" fill="#0F172A"/>
+    </g>
+    <g transform="translate(176, 100)">
+      <polygon points="0,-6 1.8,-1.8 6,-1.8 2.7,0.9 4,5 0,2.7 -4,5 -2.7,0.9 -6,-1.8 -1.8,-1.8" fill="#0F172A"/>
+    </g>
+
+    <!-- Layer 6: Thin Ring separating outer text from inner circle -->
+    <circle cx="100" cy="100" r="66" fill="none" stroke="#CBD5E1" stroke-width="1.5" />
+
+    <!-- Layer 7: Dark Solid Inner Circle -->
+    <circle cx="100" cy="100" r="62" fill="url(#centerGlow)" />
+
+    <!-- Layer 8: Isometric 3D Cube (Gudang/Stock Icon) -->
+    <g transform="translate(100, 96)">
+      <!-- Top Diamond Face -->
+      <polygon points="0,-25 25,-10.5 0,4 -25,-10.5" fill="#475569" stroke="#F8FAFC" stroke-width="1.4" stroke-linejoin="round" />
+      
+      <!-- Left Polygon Face -->
+      <polygon points="-25,-10.5 0,4 0,31 -25,16.5" fill="#1E293B" stroke="#F8FAFC" stroke-width="1.4" stroke-linejoin="round" />
+      
+      <!-- Right Polygon Face -->
+      <polygon points="0,4 25,-10.5 25,16.5 0,31" fill="#334155" stroke="#F8FAFC" stroke-width="1.4" stroke-linejoin="round" />
+
+      <!-- Isometric Seam Accents -->
+      <line x1="0" y1="4" x2="0" y2="31" stroke="#F8FAFC" stroke-width="1.4" />
+      <line x1="-12.5" y1="-3" x2="-12.5" y2="23.5" stroke="rgba(255,255,255,0.32)" stroke-width="0.9" stroke-dasharray="2.5 2.5" />
+      <line x1="12.5" y1="-3" x2="12.5" y2="23.5" stroke="rgba(255,255,255,0.32)" stroke-width="0.9" stroke-dasharray="2.5 2.5" />
+    </g>
+
+    <!-- Layer 9: Subtle Inner Border Highlight -->
+    <circle cx="100" cy="100" r="59.5" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="1" />
+  </g>
+</svg>
+
