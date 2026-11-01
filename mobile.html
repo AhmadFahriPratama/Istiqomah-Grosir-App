@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#060A12">
+  <title>Istiqomah Bulusari Stock — Mobile Enterprise</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
+  <link rel="stylesheet" href="mobile.css">
+</head>
+
+<body>
+
+  <!-- ======================================================================
+       TYPEWRITER INTRO SPLASH SCREEN (KETANGGUNGAN HERITAGE v5.0)
+       ====================================================================== -->
+  <div class="splash-screen" id="mobileSplashScreen">
+    <img src="logo.svg" alt="Istiqomah Logo" class="splash-emblem">
+    <div class="splash-title">ISTIQOMAH BULUSARI</div>
+    <div class="splash-sub">Sistem Manajemen Gudang & Stok 3 Lantai</div>
+
+    <div class="typewriter-box">
+      <span id="splashTypewriterText"></span><span class="typewriter-cursor"></span>
+    </div>
+
+    <button type="button" class="splash-enter-btn" id="btnSplashEnter" onclick="app.dismissSplash()">
+      <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      <span>MASUK KE SISTEM GUDANG</span>
+    </button>
+  </div>
+
+  <div class="app-container">
+
+    <!-- ======================================================================
+         MOBILE DASHBOARD LOGIN SCREEN
+         ====================================================================== -->
+    <div class="mobile-login-screen" id="mobileLoginScreen">
+      <div>
+        <div class="mlogin-top">
+          <img src="logo.svg" alt="Logo" class="mlogin-logo">
+          <div class="mlogin-title">ISTIQOMAH BULUSARI</div>
+          <div class="mlogin-sub">Aplikasi Gudang Mobile Offline — 3 Lantai Fisik</div>
+        </div>
+
+        <div class="mlogin-card">
+          <div class="mlogin-card-title">Dashboard Login</div>
+          <div class="mlogin-card-desc">
+            Pilih akun <strong>Fahri</strong> (Admin Utama) atau staf per lantai:
+          </div>
+
+          <div class="mlogin-quick-grid" id="mobileLoginQuickGrid"></div>
+
+          <form onsubmit="event.preventDefault(); app.submitLoginAccount();" style="display:flex; flex-direction:column; gap:11px;">
+            <div class="form-field">
+              <label>Pilih Akun Pengguna</label>
+              <select id="loginUserSelect" class="select" onchange="app.onMobileLoginUserChange(this.value)"></select>
+            </div>
+            <div class="form-field">
+              <label>Password / PIN Akun</label>
+              <input type="password" id="loginPassInput" class="input" placeholder="Masukkan PIN (default: 123)"
+                value="123" required>
+            </div>
+            <button type="submit" class="btn primary" style="margin-top:6px; padding:12px;">
+              Masuk ke Aplikasi Mobile
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div style="text-align:center; font-size:11px; color:#64748B; margin-top:20px;">
+        100% Offline-First &bull; Sinkron Wi-Fi LAN &bull; v5.0 Enterprise
+      </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="app-header">
+      <div class="header-left">
+        <button class="icon-btn" onclick="app.openDrawer()" title="Menu">
+          <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+        </button>
+
+        <div class="brand-box" onclick="app.switchView('dashboard')">
+          <img src="logo.svg" alt="Logo" class="brand-logo">
+          <div>
+            <div class="brand-title" id="headerTitle">Istiqomah Bulusari</div>
+            <div class="brand-sub" id="headerSub">3 Lantai &bull; Fahri (Admin)</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button class="user-pill" onclick="app.openLoginDashboard()" title="Klik untuk Ganti Akun / Sesi">
+          <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span id="activeUserLabel">Fahri</span>
+        </button>
+
+        <button class="icon-btn primary" onclick="app.openScannerModal()" title="Scan Barcode Kamera">
+          <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="4" y1="12" x2="20" y2="12"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- NAVIGATION DRAWER -->
+    <div class="drawer-backdrop" id="drawerBackdrop" onclick="app.closeDrawer()"></div>
+    <aside class="app-drawer" id="appDrawer">
+      <div class="drawer-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <img src="logo.svg" alt="Logo" style="width:32px; height:32px; background:#fff; border-radius:8px; padding:2px;">
+          <div>
+            <div style="font-weight:800; font-size:13.5px; color:#fff;">Istiqomah Bulusari</div>
+            <div style="font-size:11px; color:#93C5FD;" id="drawerUserSub">Admin: Fahri</div>
+          </div>
+        </div>
+        <button class="icon-btn" onclick="app.closeDrawer()" style="width:28px; height:28px; background:transparent; color:#fff; border:none;">
+          <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="drawer-body" id="drawerMenuContainer"></div>
+
+      <div class="drawer-footer">
+        <span>Offline-First v5.0</span>
+        <button class="btn btn-sm danger" onclick="app.openLoginDashboard()">Keluar</button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="app-content" id="appContent"></main>
+
+    <!-- BOTTOM NAVIGATION (LIQUID DOCK v5.0) -->
+    <nav class="bottom-nav">
+      <button class="bnav-item active" data-view="dashboard" onclick="app.switchView('dashboard')">
+        <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>
+        <span>Ringkasan</span>
+      </button>
+
+      <button class="bnav-item" data-view="floors" onclick="app.switchView('floors')">
+        <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        <span>3 Lantai</span>
+      </button>
+
+      <button class="bnav-item" data-view="opname" onclick="app.switchView('opname')">
+        <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="4" y1="12" x2="20" y2="12"/></svg>
+        <span>Opname</span>
+      </button>
+
+      <button class="bnav-item" data-view="sync" onclick="app.switchView('sync')">
+        <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        <span>Data & Sync</span>
+      </button>
+
+      <button class="bnav-item" data-view="accounts" onclick="app.switchView('accounts')">
+        <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Akun</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- MODAL 1: SCAN BARCODE KAMERA HOLOGRAPHIC RETICLE -->
+  <div class="modal-overlay" id="scannerModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <span class="modal-title">Scan Barcode Barang</span>
+        <button class="icon-btn" style="width:28px; height:28px;" onclick="app.closeScannerModal()">
+          <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="scanner-viewport">
+        <video id="scannerVideo" autoplay playsinline muted></video>
+        <div class="scanner-reticle-box">
+          <div class="scanner-laser-line"></div>
+        </div>
+      </div>
+
+      <div style="font-size:11.5px; color:#94A3B8; text-align:center;">
+        Arahkan kamera ke barcode produk atau ketik manual di bawah:
+      </div>
+
+      <div id="scanLookupResult" style="display:none;"></div>
+
+      <form onsubmit="event.preventDefault(); app.submitManualScan();" style="display:flex; gap:8px;">
+        <input type="text" id="manualScanInput" class="input" placeholder="Ketik / Scan Barcode atau SKU..." style="font-family:var(--font-mono);">
+        <button type="submit" class="btn primary">Cari</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: MUTASI & DETAIL STOK BARANG -->
+  <div class="modal-overlay" id="mutationModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <span class="modal-title" id="mutItemTitle">Kelola Stok Barang</span>
+        <button class="icon-btn" style="width:28px; height:28px;" onclick="app.closeModal('mutationModal')">
+          <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--bg-surface-elevated); border-radius:var(--radius-md); border:1px solid var(--border-medium);">
+        <div>
+          <div style="font-size:12px; color:var(--text-muted);" id="mutItemMeta">Lantai 1 &bull; Rak 1A</div>
+          <div style="font-size:11px; color:#38BDF8; font-family:var(--font-mono);" id="mutItemCode">SKU: -</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:20px; font-weight:800; color:#FFFFFF; font-family:var(--font-mono);" id="mutCurrentStock">0 Pcs</div>
+          <div style="font-size:10.5px; color:var(--text-muted);">Stok Sistem</div>
+        </div>
+      </div>
+
+      <form onsubmit="event.preventDefault(); app.submitMutation();"
+        style="display:flex; flex-direction:column; gap:12px;">
+        <div class="floor-tabs">
+          <button type="button" class="floor-tab active" id="mutTabIn" onclick="app.setMutationType('IN')">Barang
+            Masuk</button>
+          <button type="button" class="floor-tab" id="mutTabOut" onclick="app.setMutationType('OUT')">Barang
+            Keluar</button>
+          <button type="button" class="floor-tab" id="mutTabOpname" onclick="app.setMutationType('OPNAME')">Set
+            Aktual</button>
+        </div>
+
+        <div class="form-field">
+          <label id="mutQtyLabel">Jumlah Unit</label>
+          <input type="number" id="mutQtyInput" class="input" min="0" value="1" required style="text-align:center; font-weight:700; font-family:var(--font-mono); font-size:18px;">
+          <div class="step-btn-grid" style="margin-top:4px;">
+            <button type="button" class="step-btn" onclick="app.stepMutQty(-5)">-5</button>
+            <button type="button" class="step-btn" onclick="app.stepMutQty(-1)">-1</button>
+            <button type="button" class="step-btn" onclick="app.stepMutQty(1)">+1</button>
+            <button type="button" class="step-btn" onclick="app.stepMutQty(5)">+5</button>
+            <button type="button" class="step-btn" onclick="app.stepMutQty(10)">+10</button>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>Keterangan Mutasi</label>
+          <input type="text" id="mutNoteInput" class="input" placeholder="Alasan mutasi (opsional)...">
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <button type="submit" class="btn primary" style="flex:2;">Simpan Mutasi</button>
+          <button type="button" class="btn" style="flex:1;" onclick="app.openEditItemModal()">Edit Barang</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: TAMBAH / EDIT BARANG (PROGRESSIVE 3-STEP WIZARD) -->
+  <div class="modal-overlay" id="itemFormModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div>
+          <span class="modal-title" id="itemFormTitle">Tambah Produk Baru</span>
+          <div style="font-size:11px; color:#38BDF8; font-weight:700; margin-top:2px;" id="itemFormStepLabel">Langkah 1/3 — Scan Barcode</div>
+        </div>
+        <button class="icon-btn" style="width:28px; height:28px;" onclick="app.closeModal('itemFormModal')">
+          <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- Step Progress Bar -->
+      <div class="step-wizard-bar">
+        <div class="step-indicator-pill active" id="mWizardPill1">
+          <span class="step-num-badge">1</span>
+          <span>Barcode</span>
+        </div>
+        <div class="step-indicator-pill" id="mWizardPill2">
+          <span class="step-num-badge">2</span>
+          <span>Info</span>
+        </div>
+        <div class="step-indicator-pill" id="mWizardPill3">
+          <span class="step-num-badge">3</span>
+          <span>Stok</span>
+        </div>
+      </div>
+
+      <form onsubmit="event.preventDefault(); app.handleMobileWizardSubmit();" style="display:flex; flex-direction:column; gap:12px;">
+        <input type="hidden" id="formItemId">
+        <input type="hidden" id="formWizardStep" value="1">
+
+        <!-- STEP 1: SCAN BARCODE (AWAL) -->
+        <div id="mWizardStep1">
+          <div style="text-align:center; padding:6px 0 12px;">
+            <div style="font-weight:700; font-size:13px; color:#FFFFFF;">Scan Barcode Produk di Awal</div>
+            <div style="font-size:11.5px; color:var(--text-muted); margin-top:3px;">
+              Gunakan scanner kamera, scanner laser tembak, atau ketik manual.
+            </div>
+          </div>
+
+          <button type="button" class="btn primary" style="width:100%; margin-bottom:10px;" onclick="app.openScannerForWizard()">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>
+            <span>Buka Kamera Pemindai</span>
+          </button>
+
+          <div class="form-field">
+            <label>Nomor Barcode / EAN-13 / SKU</label>
+            <div style="display:flex; gap:6px;">
+              <input type="text" id="formItemBarcode" class="input" placeholder="Scan barcode..." style="font-family:var(--font-mono); font-weight:700;" oninput="app.onMobileBarcodeChange(this.value)">
+              <button type="button" class="btn btn-sm" onclick="app.generateMobileAutoSku()" style="white-space:nowrap;">Auto SKU</button>
+            </div>
+          </div>
+
+          <div id="mBarcodeFeedback" style="margin-top:8px;"></div>
+
+          <div style="display:flex; justify-content:space-between; margin-top:16px; padding-top:10px; border-top:1px solid var(--border-subtle);">
+            <button type="button" class="btn btn-sm" onclick="app.skipMobileBarcode()">Lewati &rarr;</button>
+            <button type="button" class="btn btn-sm primary" id="btnMNextToStep2" onclick="app.goToMobileStep(2)">Lanjut: Info &rarr;</button>
+          </div>
+        </div>
+
+        <!-- STEP 2: INFO PRODUK -->
+        <div id="mWizardStep2" style="display:none;">
+          <div class="form-field">
+            <label>Nama Barang / Produk <span style="color:var(--danger);">*</span></label>
+            <input type="text" id="formItemName" class="input" placeholder="Contoh: Beras Ramos 5kg..." style="text-transform:uppercase; font-weight:700;">
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <div class="form-field">
+              <label>Lokasi Lantai</label>
+              <select id="formItemFloor" class="select">
+                <option value="L1">Lantai 1</option>
+                <option value="L2">Lantai 2</option>
+                <option value="L3">Lantai 3</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Posisi Rak</label>
+              <input type="text" id="formItemLocation" class="input" value="Rak 1A">
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>Kode SKU Internal</label>
+            <input type="text" id="formItemSku" class="input" style="font-family:var(--font-mono);">
+          </div>
+
+          <div style="display:flex; justify-content:space-between; margin-top:16px; padding-top:10px; border-top:1px solid var(--border-subtle);">
+            <button type="button" class="btn btn-sm" onclick="app.goToMobileStep(1)">&larr; Barcode</button>
+            <button type="button" class="btn btn-sm primary" onclick="app.goToMobileStep(3)">Lanjut: Stok &rarr;</button>
+          </div>
+        </div>
+
+        <!-- STEP 3: STOK & SATUAN -->
+        <div id="mWizardStep3" style="display:none;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <div class="form-field">
+              <label>Stok Awal</label>
+              <input type="number" id="formItemStock" class="input" min="0" value="20" style="font-family:var(--font-mono); font-weight:800; text-align:center; font-size:16px;">
+            </div>
+            <div class="form-field">
+              <label>Batas Min</label>
+              <input type="number" id="formItemMin" class="input" min="0" value="5" style="font-family:var(--font-mono); font-weight:800; text-align:center; font-size:16px;">
+            </div>
+          </div>
+
+          <div class="step-btn-grid" style="margin-top:2px;">
+            <button type="button" class="step-btn" onclick="app.stepMobileItemStock(-5)">-5</button>
+            <button type="button" class="step-btn" onclick="app.stepMobileItemStock(-1)">-1</button>
+            <button type="button" class="step-btn" onclick="app.stepMobileItemStock(1)">+1</button>
+            <button type="button" class="step-btn" onclick="app.stepMobileItemStock(5)">+5</button>
+            <button type="button" class="step-btn" onclick="app.stepMobileItemStock(10)">+10</button>
+          </div>
+
+          <div class="form-field" style="margin-top:8px;">
+            <label>Satuan (Pilihan Cepat)</label>
+            <input type="text" id="formItemUnit" class="input" value="Pcs" style="font-weight:700;">
+            <div class="quick-units-deck">
+              <button type="button" class="quick-unit-pill" onclick="app.pickMobileUnit('PCS')">PCS</button>
+              <button type="button" class="quick-unit-pill" onclick="app.pickMobileUnit('PACK')">PACK</button>
+              <button type="button" class="quick-unit-pill" onclick="app.pickMobileUnit('DUS')">DUS</button>
+              <button type="button" class="quick-unit-pill" onclick="app.pickMobileUnit('KARUNG')">KARUNG</button>
+              <button type="button" class="quick-unit-pill" onclick="app.pickMobileUnit('KARTON')">KARTON</button>
+              <button type="button" class="quick-unit-pill" onclick="app.pickMobileUnit('UNIT')">UNIT</button>
+              <button type="button" class="quick-unit-pill" onclick="app.pickMobileUnit('LUSIN')">LUSIN</button>
+              <button type="button" class="quick-unit-pill" onclick="app.pickMobileUnit('SET')">SET</button>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; margin-top:16px; padding-top:10px; border-top:1px solid var(--border-subtle);">
+            <button type="button" class="btn btn-sm" onclick="app.goToMobileStep(2)">&larr; Info</button>
+            <div style="display:flex; gap:6px;">
+              <button type="button" class="btn btn-sm danger" id="btnDeleteItem" style="display:none;" onclick="app.deleteCurrentItem()">Hapus</button>
+              <button type="submit" class="btn btn-sm primary">Simpan Produk &check;</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 4: MODE LENGKAPI BARCODE (WAKTU SENGGANG - MOBILE) -->
+  <div class="modal-overlay" id="barcodeCompletionModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span class="modal-title">Lengkapi Barcode</span>
+            <span style="font-size:9.5px; font-weight:800; background:rgba(37,99,235,0.2); color:#93C5FD; padding:1px 6px; border-radius:4px;">PROGRESS</span>
+          </div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Antrian barang tanpa barcode</div>
+        </div>
+        <button class="icon-btn" style="width:28px; height:28px;" onclick="app.closeModal('barcodeCompletionModal')">
+          <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- Live Progress Bar -->
+      <div class="completion-hero-card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:12px; font-weight:800; color:#FFFFFF;">Progress Barcode</span>
+          <span style="font-size:13px; font-weight:800; color:#38BDF8; font-family:var(--font-mono);" id="mCompletionPct">0% Selesai</span>
+        </div>
+        <div class="completion-meter-bar">
+          <div class="completion-meter-fill" id="mCompletionFill" style="width:0%;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:10.5px; color:var(--text-muted);" id="mCompletionStats">
+          <span>Total: 0</span>
+          <span>Selesai: 0</span>
+          <span>Belum: 0</span>
+        </div>
+      </div>
+
+      <!-- Floor Filter Tabs -->
+      <div class="floor-tabs" style="margin-bottom:10px;">
+        <button type="button" class="floor-tab active" id="mCompTabALL" onclick="app.setCompletionFloor('ALL')">Semua</button>
+        <button type="button" class="floor-tab" id="mCompTabL1" onclick="app.setCompletionFloor('L1')">Lantai 1</button>
+        <button type="button" class="floor-tab" id="mCompTabL2" onclick="app.setCompletionFloor('L2')">Lantai 2</button>
+        <button type="button" class="floor-tab" id="mCompTabL3" onclick="app.setCompletionFloor('L3')">Lantai 3</button>
+      </div>
+
+      <!-- Active Item Card -->
+      <div id="mCompletionActiveCard"></div>
+
+      <!-- Fast Scan Form -->
+      <form onsubmit="event.preventDefault(); app.submitMobileCompletionBarcode();" style="display:flex; gap:6px; margin-bottom:10px;">
+        <input type="text" id="mCompletionBarcodeInput" class="input" placeholder="Scan barcode..." style="font-family:var(--font-mono); font-weight:700;">
+        <button type="submit" class="btn btn-sm primary" style="white-space:nowrap;">Simpan &rarr;</button>
+        <button type="button" class="btn btn-sm" onclick="app.skipMobileCompletionItem()">Skip</button>
+      </form>
+
+      <div id="mCompletionNotice"></div>
+
+      <!-- Queue List -->
+      <div style="font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">
+        Antrian Barang Belum Ber-barcode:
+      </div>
+      <div class="completion-queue-list" id="mCompletionQueueList"></div>
+    </div>
+  </div>
+
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <script src="shared-db.js"></script>
+  <script src="mobile.js"></script>
+</body>
+
+</html>
