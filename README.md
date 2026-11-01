@@ -1,50 +1,75 @@
-# 🔷 Istiqomah Grosir Bulusari
+# Istiqomah Grosir Bulusari — Sistem Manajemen Stok Fisik 3 Lantai (v5.0 Enterprise)
 
-[![Platform - Windows](https://img.shields.io/badge/Platform-Windows_10%2F11-0078D4?logo=windows&logoColor=white)](https://github.com/AhmadFahriPratama/Istiqomah-Grosir-App/releases)
-[![Platform - Android](https://img.shields.io/badge/Platform-Android_8.0+-3DDC84?logo=android&logoColor=white)](https://github.com/AhmadFahriPratama/Istiqomah-Grosir-App/releases)
-[![Architecture](https://img.shields.io/badge/Architecture-Offline--First-blue)](https://github.com/AhmadFahriPratama/Istiqomah-Grosir-App)
-[![UI Design](https://img.shields.io/badge/Design-Neo--Brutalist-0f172a)](https://github.com/AhmadFahriPratama/Istiqomah-Grosir-App)
-[![Theme](https://img.shields.io/badge/Theme-Dark%20%26%20Light%20Mode-blueviolet)](https://github.com/AhmadFahriPratama/Istiqomah-Grosir-App)
-
-> **Aplikasi Resmi Manajemen Stok & Kasir Grosir Istiqomah Bulusari**  
-> Dirancang dengan arsitektur **Offline-First**, performa ultra-responsif, pemindaian kode batang kamera/hardware, dan cetak faktur/laporan format A4 standar industri.
+Sistem manajemen inventaris dan stok gudang modern untuk **Istiqomah Grosir Cabang Bulusari** dengan arsitektur **Offline-First**, dukungan ekspor/impor mandiri, opsi sinkronisasi satu jaringan Wi-Fi, antarmuka mobile warehouse, serta konsol desktop enterprise lengkap dengan wizard pendaftaran barang berprogress dan mode pelengkap barcode.
 
 ---
 
-## 📥 Unduh Aplikasi (Download Releases)
+## Akses Aplikasi Live Preview
 
-| Platform | Tipe Berkas | Status | Tautan Unduh |
-| :--- | :--- | :--- | :--- |
-| **Windows 10 / 11** | Installer Setup (`.exe`) | **Rilis v3.5.1** | [Unduh Installer Windows (.exe)](https://github.com/AhmadFahriPratama/Istiqomah-Grosir-App/releases) |
-| **Windows 10 / 11** | Portable Standalone (`.exe`) | **Rilis v3.5.1** | [Unduh Versi Portable (.exe)](https://github.com/AhmadFahriPratama/Istiqomah-Grosir-App/releases) |
-| **Android (HP/Tablet)** | Android Package (`.apk`) | **Rilis v3.5.1** | [Unduh APK Android (.apk)](https://github.com/AhmadFahriPratama/Istiqomah-Grosir-App/releases) |
-
----
-
-## ✨ Fitur Unggulan
-
-- **Offline-First Storage:** Seluruh transaksi, data stok, dan riwayat operasional tersimpan aman secara lokal di perangkat tanpa wajib koneksi internet aktif.
-- **Scanner Barcode Terintegrasi:** Mendukung pemindai kamera (HTML5 QR/Barcode Engine) maupun alat scanner barcode USB/Bluetooth fisik (mode keyboard wedge).
-- **Manajemen Multi-Lantai:** Pemetaan stok terpisah untuk Lantai 1, Lantai 2, Lantai 3, dan Lantai 4 dengan spektrum gradasi biru-slate yang elegan.
-- **Mode Gelap & Terang (Dark/Light Mode):** Tampilan Neo-Brutalisme modern dengan tombol toggle tema instan di bilah navigasi atas.
-- **Laporan & Faktur Format A4:** Generator laporan PDF dan cetak kertas A4 siap pakai untuk rekap stok harian, opname, dan mutasi barang.
-- **Pencadangan Otomatis & Sinkronisasi:** Fitur export/import basis data JSON terenkripsi serta notifikasi bot Telegram.
+| Antarmuka | Port & URL | Deskripsi & Fokus Perangkat |
+| :--- | :--- | :--- |
+| **Mobile Warehouse View** | **`http://localhost:3000`** | Dioptimalkan untuk layar ponsel staf gudang: scan barcode cepat, wizard input barang 3 tahap, mutasi in/out, audit stock opname per aisle, dan mode lengkapi barcode. |
+| **Desktop Enterprise Console** | **`http://localhost:3001`** | Dioptimalkan untuk monitor PC/Laptop admin: master tabel multi-filter, stasiun rekonsiliasi SO, manajemen akun pengguna, dan pusat cetak laporan resmi standar A4. |
 
 ---
 
-## 💻 Panduan Instalasi Windows (.exe)
+## Karakteristik Khusus Cabang Bulusari
 
-1. Unduh berkas installer `Istiqomah-Grosir-Bulusari-Setup-3.5.1.exe` dari menu **Releases**.
-2. Klik ganda pada berkas installer yang telah diunduh.
-3. Ikuti instruksi pada layar (pilih lokasi instalasi jika menggunakan mode kustom).
-4. Pintasan (shortcut) aplikasi akan otomatis dibuat di Desktop dan Start Menu.
-5. Buka aplikasi dan mulai manajemen stok!
+1. **Struktur 3 Lantai Sederhana & Bersih**:
+   - Berbeda dari cabang Ketanggungan, cabang Bulusari memiliki struktur fisik **3 Lantai**:
+     - **Lantai 1**
+     - **Lantai 2**
+     - **Lantai 3**
+   - Tanpa label klasifikasi komoditas yang membingungkan atau berantakan; penamaan lantai lugas dan terstandarisasi.
+
+2. **Hierarki Akun & Super Admin Fahri**:
+   - Akun Super Admin default: **`Fahri`** (PIN Cepat: `819` atau `123`).
+   - Super Admin memiliki hak penuh membuat akun operator lantai, mengatur hak akses per lantai, mereset PIN, dan mengelola database.
+
+3. **Operasional Offline Total & Opsi Sinkron Wi-Fi**:
+   - **Offline Total (Air-Gapped)**: Aplikasi dapat berjalan sepenuhnya tanpa koneksi internet dengan metode ekspor dan impor data terenkripsi JSON serta arsip cadangan ZIP.
+   - **Sinkronisasi Satu Jaringan (Wi-Fi)**: Tersedia toggle mode Wi-Fi untuk menghubungkan perangkat HP staf dan PC kasir/admin di satu router yang sama secara nirkabel tanpa server cloud pihak ketiga.
+
+4. **Progressive 3-Step Wizard (Scan Barcode di Awal)**:
+   - Terinspirasi dari alur kerja efisien gudang grosir:
+     - **Tahap 1 — Scan Barcode**: Memindai barcode fisik di awal via kamera atau scanner USB dengan deteksi tabrakan (duplicate collision detection) seketika dan tombol Auto-SKU.
+     - **Tahap 2 — Info Produk**: Nama produk otomatis kapital, pemilihan Lantai (1, 2, atau 3), posisi rak, dan kode SKU.
+     - **Tahap 3 — Stok & Satuan**: Penyesuaian stok awal menggunakan stepper cepat (-5, -1, +1, +5, +10) dan pill satuan instan (PCS, PACK, DUS, KARUNG, KARTON, UNIT, LUSIN, SET).
+
+5. **Mode Lengkapi Barcode Berprogress (Waktu Senggang)**:
+   - Fitur khusus saat staf memiliki waktu luang untuk melengkapi barang-barang yang belum memiliki barcode.
+   - Dilengkapi meteran persentase kelengkapan live (0–100%), filter per lantai, kartu produk aktif, scanner otomatis berpindah (auto-advance), dan daftar antrean barang.
+
+6. **Pusat Cetak Laporan Resmi A4 (Desktop Only)**:
+   - Laporan cetak difokuskan secara eksklusif pada desktop untuk memastikan tata letak kertas A4 proporsional:
+     - Laporan Master Inventaris Lengkap
+     - Laporan Peringatan Stok Menipis & Habis
+     - Rekapitulasi Stok per Lantai (L1, L2, L3)
+     - Laporan Rekonsiliasi Hasil Stock Opname (SO)
+     - Log Riwayat Mutasi Barang Masuk & Keluar
+     - Cetak Lembar Stiker Barcode Rak Standar A4 (Grid 3 Kolom)
+
+7. **Desain Bersih & Standar Industri**:
+   - 100% Bebas Emoji: Seluruh antarmuka menggunakan ikon vektor garis SVG profesional.
+   - Palet warna kontras tinggi bernuansa Slate & Indigo yang ramah mata untuk pencahayaan gudang.
 
 ---
 
-## 📱 Panduan Instalasi Android (.apk)
+## Menjalankan Server Lokal
 
-1. Unduh berkas `Istiqomah-Grosir-Stock.apk`.
-2. Buka berkas APK melalui File Manager di perangkat Android Anda.
-3. Jika muncul peringatan keamanan, izinkan instalasi dari *Sumber Tidak Dikenal (Unknown Sources)*.
-4. Tekan **Pasang (Install)** dan tunggu hingga proses selesai.
+Jalankan perintah PowerShell berikut di direktori proyek:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\Start-Server.ps1
+```
+
+Server otomatis melayani dua antarmuka sekaligus:
+- **Port 3000**: Antarmuka Mobile
+- **Port 3001**: Antarmuka Desktop
+
+---
+
+## Lisensi & Kepemilikan
+
+Dikembangkan khusus untuk **Istiqomah Grosir Cabang Bulusari**.
+Hak Cipta (c) 2026 Istiqomah Grosir.
