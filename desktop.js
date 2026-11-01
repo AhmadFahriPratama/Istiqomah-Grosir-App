@@ -261,17 +261,14 @@ const DesktopApp = {
   },
 
   renderLoginOverlay() {
-    const users = this.state.users || [];
     const current = this.getCurrentUser();
-
-    const sel = document.getElementById('loginUserSelect');
-    if (sel) {
-      sel.innerHTML = users.map(u => `
-        <option value="${u.id}" ${u.id === current.id ? 'selected' : ''}>
-          ${u.name || u.username} (${u.role === 'ADMIN' ? 'Admin' : this.formatAssignedFloors(u)})
-        </option>
-      `).join('');
-      this.onSelectLoginUser(sel.value);
+    const userInput = document.getElementById('loginUsernameInput');
+    if (userInput && !userInput.value) {
+      userInput.value = current ? (current.username || current.name) : 'fahri';
+    }
+    const pwdInput = document.getElementById('loginPasswordInput');
+    if (pwdInput && !pwdInput.value) {
+      pwdInput.value = '819';
     }
   },
 
@@ -284,29 +281,29 @@ const DesktopApp = {
     return user.floorAccess === 'ALL' ? 'Semua Lantai' : this.floorLabel(user.floorAccess);
   },
 
-  onSelectLoginUser(userId) {
-    const user = (this.state.users || []).find(u => u.id === userId);
-    const preview = document.getElementById('loginAccessPreview');
-    const pwdInput = document.getElementById('loginPasswordInput');
-    if (!user) return;
-    if (pwdInput) {
-      pwdInput.value = user.password || (user.role === 'ADMIN' ? '819' : '123');
-    }
-    if (preview) {
-      if (user.role === 'ADMIN') {
-        preview.innerHTML = `<strong>Akses:</strong> Semua Lantai (Admin)`;
-      } else {
-        preview.innerHTML = `<strong>Akses:</strong> ${this.formatAssignedFloors(user)}`;
-      }
-    }
-  },
-
   submitLogin(e) {
     e.preventDefault();
-    const userId = document.getElementById('loginUserSelect').value;
-    const pass = document.getElementById('loginPasswordInput').value.trim();
-    const user = (this.state.users || []).find(u => u.id === userId);
-    if (!user) return;
+    const usernameInput = document.getElementById('loginUsernameInput');
+    const username = (usernameInput ? usernameInput.value : '').trim().toLowerCase();
+    const pass = (document.getElementById('loginPasswordInput')?.value || '').trim();
+
+    if (!username) {
+      IstiqomahSound.playError();
+      this.showToast('Masukkan username');
+      return;
+    }
+
+    const user = (this.state.users || []).find(u =>
+      (u.username && u.username.toLowerCase() === username) ||
+      (u.name && u.name.toLowerCase() === username) ||
+      (u.id && u.id.toLowerCase() === username)
+    );
+
+    if (!user) {
+      IstiqomahSound.playError();
+      this.showToast('Username tidak ditemukan');
+      return;
+    }
 
     if (pass !== user.password && pass !== '819' && pass !== '123') {
       IstiqomahSound.playError();
@@ -349,10 +346,6 @@ const DesktopApp = {
       if (dot) dot.className = 'status-dot offline';
       if (txt) txt.textContent = 'Offline';
       if (badge) { badge.className = 'badge badge-low'; badge.textContent = 'Mencari'; }
-      if (toggleBtn) toggleBtn.textContent = 'Matikan Wi-Fi';
-    }
-  },
-      if (badge) { badge.className = 'badge badge-low'; badge.textContent = 'Mencari Server'; }
       if (toggleBtn) toggleBtn.textContent = 'Matikan Wi-Fi';
     }
   },
@@ -729,12 +722,239 @@ const DesktopApp = {
   },
 
   // ==========================================================================
-  // PROGRESSIVE 3-STEP ITEM WIZARD (SCAN BARCODE AWAL -> INFO -> STOK & BATAS)
+  // PROGRESSIVE 3-STEP ITEM WIZARD & EMBEDDED CAMERA SCANNER
   // ==========================================================================
+  wizardCameraStream: null,
+  wizardScannerRunning: false,
+  wizardBarcodeDetector: null,
+  wizardScannerAnimationId: null,
+  currentWizardSelectedCategory: 'UMUM',
+  currentCategorySearchQuery: '',
+
+  async initWizardCameraScanner() {
+    this.stopWizardCameraScanner();
+    const video = document.getElementById('itemWizardCameraVideo');
+    const statusText = document.getElementById('itemWizardCameraStatus');
+    if (!video) return;
+
+    if (statusText) statusText.innerHTML = '<span>Memulai Kamera...</span>';
+
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        if (statusText) statusText.innerHTML = '<span style="color:#ef4444;">Kamera tidak didukung</span>';
+        return;
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+      });
+      this.wizardCameraStream = stream;
+      video.srcObject = stream;
+      await video.play();
+
+      if (statusText) statusText.innerHTML = '<span>Kamera Aktif &bull; Arahkan ke Barcode</span>';
+      this.wizardScannerRunning = true;
+
+      if ('BarcodeDetector' in window) {
+        try {
+          const supportedFormats = await window.BarcodeDetector.getSupportedFormats();
+          const formatsToUse = ['ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a', 'upc_e', 'qr_code'].filter(f => supportedFormats.includes(f));
+          this.wizardBarcodeDetector = new window.BarcodeDetector({ formats: formatsToUse.length ? formatsToUse : supportedFormats });
+        } catch (e) {
+          this.wizardBarcodeDetector = new window.BarcodeDetector();
+        }
+      }
+
+      this.scanWizardVideoFrame();
+    } catch (err) {
+      if (statusText) {
+        statusText.innerHTML = '<span style="color:#f59e0b;">Kamera tidak aktif (Gunakan input manual)</span>';
+      }
+    }
+  },
+
+  scanWizardVideoFrame() {
+    if (!this.wizardScannerRunning) return;
+    const video = document.getElementById('itemWizardCameraVideo');
+    if (!video || video.readyState < 2) {
+      this.wizardScannerAnimationId = requestAnimationFrame(() => this.scanWizardVideoFrame());
+      return;
+    }
+
+    if (this.wizardBarcodeDetector) {
+      this.wizardBarcodeDetector.detect(video)
+        .then(barcodes => {
+          if (!this.wizardScannerRunning) return;
+          if (barcodes && barcodes.length > 0) {
+            const rawValue = barcodes[0].rawValue;
+            if (rawValue && rawValue.trim()) {
+              this.onWizardBarcodeScanned(rawValue.trim());
+              return;
+            }
+          }
+          this.wizardScannerAnimationId = requestAnimationFrame(() => this.scanWizardVideoFrame());
+        })
+        .catch(() => {
+          if (this.wizardScannerRunning) {
+            this.wizardScannerAnimationId = requestAnimationFrame(() => this.scanWizardVideoFrame());
+          }
+        });
+    }
+  },
+
+  onWizardBarcodeScanned(code) {
+    IstiqomahSound.playBeep();
+    const barcodeInput = document.getElementById('itemFormBarcode');
+    if (barcodeInput) {
+      barcodeInput.value = code;
+      this.onItemBarcodeChange(code);
+    }
+    const statusText = document.getElementById('itemWizardCameraStatus');
+    if (statusText) {
+      statusText.innerHTML = `<span style="color:#10b981; font-weight:800;">Terscan: ${code}</span>`;
+    }
+    this.stopWizardCameraScanner();
+    setTimeout(() => {
+      const btnNext = document.getElementById('btnNextToStep2');
+      if (btnNext && !btnNext.disabled) {
+        this.goToWizardStep(2);
+      }
+    }, 400);
+  },
+
+  stopWizardCameraScanner() {
+    this.wizardScannerRunning = false;
+    if (this.wizardScannerAnimationId) {
+      cancelAnimationFrame(this.wizardScannerAnimationId);
+      this.wizardScannerAnimationId = null;
+    }
+    if (this.wizardCameraStream) {
+      try {
+        this.wizardCameraStream.getTracks().forEach(track => track.stop());
+      } catch (e) {}
+      this.wizardCameraStream = null;
+    }
+    const video = document.getElementById('itemWizardCameraVideo');
+    if (video) {
+      video.srcObject = null;
+    }
+  },
+
+  // ==========================================================================
+  // FITUR PENJENISAN (KATEGORI) UX KETANGGUNGAN
+  // ==========================================================================
+  getAllCategories(floorId = null) {
+    const set = new Set();
+    const defaults = ['SEMBAKO', 'MINUMAN', 'MAKANAN RINGAN', 'BUMBU DAPUR', 'MANDI & TOILETRIES', 'PLASTIK & KEMASAN', 'ROKOK', 'UMUM'];
+    defaults.forEach(c => set.add(c.toUpperCase()));
+
+    (this.state.floors || []).forEach(f => {
+      if (!floorId || f.id === floorId) {
+        (f.slots || []).forEach(s => {
+          if (s && s.trim()) set.add(s.trim().toUpperCase());
+        });
+      }
+    });
+
+    (this.state.items || []).forEach(i => {
+      if (i.category && i.category.trim()) {
+        set.add(i.category.trim().toUpperCase());
+      }
+    });
+
+    return Array.from(set).sort();
+  },
+
+  renderCategoryChips() {
+    const container = document.getElementById('itemFormCategoryChips');
+    const selectedLabel = document.getElementById('itemFormCategorySelectedLabel');
+    const quickBox = document.getElementById('quickCreateCategoryBox');
+    const quickName = document.getElementById('quickCreateCatName');
+    const clearBtn = document.getElementById('btnClearCatSearch');
+    if (!container) return;
+
+    const floorId = document.getElementById('itemFormFloor')?.value || 'L1';
+    const allCats = this.getAllCategories(floorId);
+    const query = (this.currentCategorySearchQuery || '').trim().toUpperCase();
+
+    if (clearBtn) {
+      clearBtn.style.display = query ? 'block' : 'none';
+    }
+
+    const filtered = allCats.filter(c => !query || c.includes(query));
+    const isExactMatch = allCats.some(c => c.toLowerCase() === query.toLowerCase());
+
+    if (selectedLabel) {
+      selectedLabel.textContent = this.currentWizardSelectedCategory || 'BELUM DIPILIH';
+    }
+
+    if (query && !isExactMatch) {
+      if (quickBox) quickBox.style.display = 'block';
+      if (quickName) quickName.textContent = `"${query}"`;
+    } else {
+      if (quickBox) quickBox.style.display = 'none';
+    }
+
+    if (filtered.length === 0) {
+      container.innerHTML = `<div style="font-size:11.5px; color:var(--text-muted); padding:8px; text-align:center; width:100%;">Tidak ada jenis yang cocok dengan "${query}"</div>`;
+      return;
+    }
+
+    container.innerHTML = filtered.map(cat => {
+      const isSelected = (this.currentWizardSelectedCategory || '').toUpperCase() === cat.toUpperCase();
+      return `
+        <button type="button" class="category-chip-btn ${isSelected ? 'active' : ''}" onclick="DesktopApp.selectWizardCategory('${cat.replace(/'/g, "\\'")}')">
+          ${isSelected ? '<span>✓</span>' : ''}
+          <span>${cat}</span>
+        </button>
+      `;
+    }).join('');
+  },
+
+  onCategorySearchInput(val) {
+    this.currentCategorySearchQuery = val;
+    this.renderCategoryChips();
+  },
+
+  clearCategorySearch() {
+    this.currentCategorySearchQuery = '';
+    const inp = document.getElementById('categorySearchInput');
+    if (inp) inp.value = '';
+    this.renderCategoryChips();
+  },
+
+  selectWizardCategory(cat) {
+    IstiqomahSound.playClick();
+    this.currentWizardSelectedCategory = cat.toUpperCase();
+    const hidden = document.getElementById('itemFormCategory');
+    if (hidden) hidden.value = this.currentWizardSelectedCategory;
+    this.renderCategoryChips();
+  },
+
+  createQuickCategory() {
+    IstiqomahSound.playClick();
+    const query = (this.currentCategorySearchQuery || '').trim().toUpperCase();
+    if (!query) return;
+
+    this.currentWizardSelectedCategory = query;
+    const hidden = document.getElementById('itemFormCategory');
+    if (hidden) hidden.value = query;
+
+    this.clearCategorySearch();
+    this.showToast(`Jenis "${query}" dipilih`);
+  },
+
+  onWizardFloorChange(floorId) {
+    this.renderCategoryChips();
+  },
+
   openItemModal(itemId = null) {
     IstiqomahSound.playClick();
     const modal = document.getElementById('itemModal');
     const user = this.getCurrentUser();
+    this.currentCategorySearchQuery = '';
+    const searchInp = document.getElementById('categorySearchInput');
+    if (searchInp) searchInp.value = '';
 
     if (itemId) {
       const item = this.state.items.find(i => i.id === itemId);
@@ -743,8 +963,10 @@ const DesktopApp = {
       document.getElementById('itemFormId').value = item.id;
       document.getElementById('itemFormName').value = item.name;
       document.getElementById('itemFormFloor').value = item.floorId;
-      this.updateCategoryOptionsForFloor(item.floorId, item.category);
-      document.getElementById('itemFormCustomCategory').value = '';
+      this.currentWizardSelectedCategory = (item.category || 'UMUM').toUpperCase();
+      const catHidden = document.getElementById('itemFormCategory');
+      if (catHidden) catHidden.value = this.currentWizardSelectedCategory;
+      this.renderCategoryChips();
       document.getElementById('itemFormLocation').value = item.location || '';
       document.getElementById('itemFormSku').value = item.sku;
       document.getElementById('itemFormBarcode').value = item.barcode || '';
@@ -759,8 +981,10 @@ const DesktopApp = {
       document.getElementById('itemFormName').value = '';
       const fVal = this.selectedFloor !== 'ALL' ? this.selectedFloor : 'L1';
       document.getElementById('itemFormFloor').value = fVal;
-      this.updateCategoryOptionsForFloor(fVal);
-      document.getElementById('itemFormCustomCategory').value = '';
+      this.currentWizardSelectedCategory = 'UMUM';
+      const catHidden = document.getElementById('itemFormCategory');
+      if (catHidden) catHidden.value = this.currentWizardSelectedCategory;
+      this.renderCategoryChips();
       document.getElementById('itemFormLocation').value = 'Rak 1A';
       document.getElementById('itemFormSku').value = 'BRG-' + Math.floor(100 + Math.random() * 899);
       document.getElementById('itemFormBarcode').value = '';
@@ -800,10 +1024,14 @@ const DesktopApp = {
     if (targetStep === 1) {
       setTimeout(() => document.getElementById('itemFormBarcode')?.focus(), 100);
       this.onItemBarcodeChange(document.getElementById('itemFormBarcode')?.value || '');
-    } else if (targetStep === 2) {
-      setTimeout(() => document.getElementById('itemFormName')?.focus(), 100);
-    } else if (targetStep === 3) {
-      this.highlightQuickUnitPill(document.getElementById('itemFormUnit')?.value || 'Pcs');
+      this.initWizardCameraScanner();
+    } else {
+      this.stopWizardCameraScanner();
+      if (targetStep === 2) {
+        setTimeout(() => document.getElementById('itemFormName')?.focus(), 100);
+      } else if (targetStep === 3) {
+        this.highlightQuickUnitPill(document.getElementById('itemFormUnit')?.value || 'Pcs');
+      }
     }
   },
 
@@ -936,8 +1164,7 @@ const DesktopApp = {
       return;
     }
 
-    const customCat = document.getElementById('itemFormCustomCategory').value.trim();
-    const category = customCat || document.getElementById('itemFormCategory').value;
+    const category = (document.getElementById('itemFormCategory')?.value || this.currentWizardSelectedCategory || 'UMUM').toUpperCase();
 
     const payload = {
       name: document.getElementById('itemFormName').value.trim().toUpperCase(),
@@ -1258,7 +1485,11 @@ const DesktopApp = {
 
   closeModal(id) {
     IstiqomahSound.playClick();
-    document.getElementById(id).classList.remove('open');
+    if (id === 'itemModal') {
+      this.stopWizardCameraScanner();
+    }
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('open');
   },
 
   // ==========================================================================
@@ -2636,24 +2867,6 @@ const DesktopApp = {
       this.showToast('Semua stok direset ke 0');
     }
   },
-      this.state.mutations.unshift({
-        id: 'MUT-RESET-' + Date.now().toString().slice(-4),
-        timestamp: IstiqomahUtils.formatNow(),
-        itemId: 'ALL',
-        itemName: 'Semua Barang Gudang',
-        type: 'OPNAME',
-        qty: 0,
-        unit: 'Pcs',
-        floorId: 'L1',
-        user: user.name || user.username,
-        note: 'RESET STOK DARURAT KE 0 OLEH ADMIN'
-      });
-      this.engine.saveState(this.state, user.username);
-      IstiqomahSound.playError();
-      this.renderAll();
-      this.showToast('Semua stok berhasil direset ke 0.');
-    }
-  },
 
   // ==========================================================================
   // 7. MANAJEMEN AKUN & PETUGAS (FAHRI SUPER ADMIN)
@@ -2809,18 +3022,6 @@ const DesktopApp = {
     IstiqomahSound.playStockSubtract();
     this.renderAll();
     this.showToast(`Akun "${target.name || target.username}" dihapus`);
-  },
-    }
-
-    const target = this.state.users.find(u => u.id === userId);
-    if (!target) return;
-    if (!confirm(`Hapus akun petugas "${target.name || target.username}"?`)) return;
-
-    this.state.users = (this.state.users || []).filter(u => u.id !== userId);
-    this.engine.saveState(this.state, currentUser.username);
-    IstiqomahSound.playStockSubtract();
-    this.renderAll();
-    this.showToast(`Akun "${target.name || target.username}" dihapus.`);
   },
 
   showToast(msg) {
