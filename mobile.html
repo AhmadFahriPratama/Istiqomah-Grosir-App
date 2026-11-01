@@ -30,43 +30,48 @@
   <div class="app-container">
 
     <!-- ======================================================================
-         MOBILE DASHBOARD LOGIN SCREEN
+         MOBILE DASHBOARD LOGIN SCREEN (SIMPLE & CLEAN)
          ====================================================================== -->
     <div class="mobile-login-screen" id="mobileLoginScreen">
-      <div>
+      <div class="mobile-login-container">
         <div class="mlogin-top">
-          <img src="logo.svg" alt="Logo" class="mlogin-logo">
-          <div class="mlogin-title">ISTIQOMAH BULUSARI</div>
-          <div class="mlogin-sub">Aplikasi Gudang Mobile Offline — 3 Lantai Fisik</div>
+          <div class="mlogin-logo-wrap">
+            <img src="logo.svg" alt="Logo" class="mlogin-logo">
+          </div>
+          <div class="mlogin-title">
+            <span>ISTIQOMAH</span>
+            <span class="mlogin-badge">BULUSARI</span>
+          </div>
+          <div class="mlogin-sub">Sistem Manajemen Stok Multi-Lantai Offline</div>
         </div>
 
         <div class="mlogin-card">
-          <div class="mlogin-card-title">Dashboard Login</div>
-          <div class="mlogin-card-desc">
-            Pilih akun <strong>Fahri</strong> (Admin Utama) atau staf per lantai:
-          </div>
-
-          <div class="mlogin-quick-grid" id="mobileLoginQuickGrid"></div>
-
-          <form onsubmit="event.preventDefault(); app.submitLoginAccount();" style="display:flex; flex-direction:column; gap:11px;">
+          <form onsubmit="event.preventDefault(); app.submitLoginAccount();" style="display:flex; flex-direction:column; gap:14px;">
             <div class="form-field">
-              <label>Pilih Akun Pengguna</label>
+              <label class="form-field-label">Pilih Akun Pengguna</label>
               <select id="loginUserSelect" class="select" onchange="app.onMobileLoginUserChange(this.value)"></select>
             </div>
             <div class="form-field">
-              <label>Password / PIN Akun</label>
-              <input type="password" id="loginPassInput" class="input" placeholder="Masukkan PIN (default: 123)"
-                value="123" required>
+              <label class="form-field-label">Password / PIN Akun</label>
+              <div style="position:relative; display:flex; align-items:center;">
+                <input type="password" id="loginPassInput" class="input" placeholder="Masukkan PIN (default: 819 / 123)" value="819" required style="padding-right:42px;">
+                <button type="button" class="btn-toggle-eye" onclick="app.toggleLoginPassVisibility()" style="position:absolute; right:8px; background:none; border:none; color:var(--text-muted); cursor:pointer; padding:4px;">
+                  <span id="icEyeMobile"></span>
+                </button>
+              </div>
             </div>
-            <button type="submit" class="btn primary" style="margin-top:6px; padding:12px;">
-              Masuk ke Aplikasi Mobile
+            <div class="mlogin-access-info" id="mobileLoginAccessInfo">
+              Akses Penuh Super Admin: Lantai 1, Lantai 2, Lantai 3
+            </div>
+            <button type="submit" class="btn primary" style="padding:13px; font-weight:800; font-size:14px; margin-top:2px;">
+              Masuk ke Aplikasi
             </button>
           </form>
         </div>
-      </div>
 
-      <div style="text-align:center; font-size:11px; color:#64748B; margin-top:20px;">
-        100% Offline-First &bull; Sinkron Wi-Fi LAN &bull; v5.0 Enterprise
+        <div class="mlogin-footer">
+          100% Offline-First &bull; Sinkron Wi-Fi LAN &bull; v5.0
+        </div>
       </div>
     </div>
 
