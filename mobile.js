@@ -171,10 +171,22 @@ class IstiqomahMobileApp {
     document.getElementById('mobileLoginScreen')?.classList.remove('hidden');
   }
 
+  toggleLoginPassVisibility() {
+    const input = document.getElementById('loginPassInput');
+    const eyeEl = document.getElementById('icEyeMobile');
+    if (!input) return;
+    const isPass = input.type === 'password';
+    input.type = isPass ? 'text' : 'password';
+    if (eyeEl) {
+      eyeEl.innerHTML = isPass ? ICONS.eyeOff : ICONS.eye;
+    }
+  },
+
   renderMobileLoginScreen() {
     const sel = document.getElementById('loginUserSelect');
-    const grid = document.getElementById('mobileLoginQuickGrid');
-    if (!sel || !grid) return;
+    const eyeEl = document.getElementById('icEyeMobile');
+    if (eyeEl) eyeEl.innerHTML = ICONS.eye;
+    if (!sel) return;
 
     const currentId = this.currentUser ? this.currentUser.id : 'usr_fahri';
 
@@ -184,29 +196,26 @@ class IstiqomahMobileApp {
       </option>
     `).join('');
 
-    grid.innerHTML = this.state.users.map(u => `
-      <button type="button" class="mlogin-acc-pill ${u.id === sel.value ? 'active' : ''}" onclick="app.pickMobileLoginUser('${u.id}')">
-        <div class="mlogin-acc-pill-name">${this.escape(u.username)}</div>
-        <div class="mlogin-acc-pill-role">${u.role === 'ADMIN' ? 'ADMIN &bull; Semua Lantai' : this.getFloorLabel(u.floorAccess)}</div>
-      </button>
-    `).join('');
-  }
-
-  pickMobileLoginUser(userId) {
-    IstiqomahSound.click();
-    const sel = document.getElementById('loginUserSelect');
-    if (sel) sel.value = userId;
-    const passInput = document.getElementById('loginPassInput');
-    const u = this.state.users.find(x => x.id === userId);
-    if (passInput) passInput.value = (u && u.password) ? u.password : '123';
-    this.onMobileLoginUserChange(userId);
-  }
+    this.onMobileLoginUserChange(sel.value);
+  },
 
   onMobileLoginUserChange(userId) {
-    document.querySelectorAll('#mobileLoginQuickGrid .mlogin-acc-pill').forEach(btn => {
-      btn.classList.toggle('active', btn.getAttribute('onclick').includes(userId));
-    });
-  }
+    const u = this.state.users.find(x => x.id === userId);
+    const passInput = document.getElementById('loginPassInput');
+    const infoEl = document.getElementById('mobileLoginAccessInfo');
+    if (!u) return;
+
+    if (passInput) {
+      passInput.value = u.password || (u.role === 'ADMIN' ? '819' : '123');
+    }
+    if (infoEl) {
+      if (u.role === 'ADMIN') {
+        infoEl.innerHTML = `<strong>Akses Penuh Super Admin:</strong> Semua Lantai (Lantai 1, 2, 3)`;
+      } else {
+        infoEl.innerHTML = `<strong>Akses Staf:</strong> ${this.getFloorLabel(u.floorAccess)}`;
+      }
+    }
+  },
 
   submitLoginAccount() {
     const uid = document.getElementById('loginUserSelect').value;
