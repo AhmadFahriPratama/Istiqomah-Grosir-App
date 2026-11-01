@@ -1,0 +1,19 @@
+{
+  "name": "Istiqomah Grosir Bulusari - Stock Mobile",
+  "short_name": "Istiqomah Bulusari",
+  "description": "Aplikasi Manajemen Stok Fisik 4 Lantai Offline-First & Sinkronisasi Windows Desktop",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#0F172A",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
+
