@@ -57,13 +57,14 @@ const ICONS = {
 };
 
 // ============================================================================
-// 2. ACOUSTIC WEB AUDIO SYNTHESIZER (FROM KETANGGUNGAN FINAL ARCHITECTURE)
+// 2. VELVET ACOUSTIC WEB AUDIO SYNTHESIZER (FROM KETANGGUNGAN FINAL ARCHITECTURE)
+// Soft Low-Pass Filtered Tactile Tap & Chimes (No Harsh Buzzer/Sawtooth)
 // ============================================================================
 class IstiqomahAudioEngine {
   constructor() {
     this.ctx = null;
-    const stored = localStorage.getItem('istiqomah_sound_enabled');
-    this.soundActive = stored === null ? true : stored === 'true';
+    const stored = (typeof localStorage !== 'undefined') ? localStorage.getItem('istiqomah_sound_enabled') : 'true';
+    this.soundActive = stored !== 'false';
   }
 
   isSoundEnabled() {
@@ -72,7 +73,9 @@ class IstiqomahAudioEngine {
 
   setSoundEnabled(enabled) {
     this.soundActive = !!enabled;
-    localStorage.setItem('istiqomah_sound_enabled', this.soundActive ? 'true' : 'false');
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('istiqomah_sound_enabled', this.soundActive ? 'true' : 'false');
+    }
   }
 
   toggleSound() {
@@ -83,8 +86,10 @@ class IstiqomahAudioEngine {
 
   initCtx() {
     if (!this.ctx && typeof window !== 'undefined') {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (AudioCtx) this.ctx = new AudioCtx();
+      const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtxClass) {
+        this.ctx = new AudioCtxClass();
+      }
     }
   }
 
@@ -97,163 +102,302 @@ class IstiqomahAudioEngine {
     return !!this.ctx;
   }
 
-  // 1. Velvet Marimba Sine Blip for Barcode Scanner
-  playScanBeep() {
-    if (!this.ensureRunning()) return;
-    try {
-      const t = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(1320, t);
-      osc.frequency.exponentialRampToValueAtTime(880, t + 0.08);
-      gain.gain.setValueAtTime(0.28, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-      osc.start(t);
-      osc.stop(t + 0.09);
-    } catch (e) {}
-  }
-
-  // 2. Chime for Stock Add (+)
-  playStockAdd() {
-    if (!this.ensureRunning()) return;
-    try {
-      const t = this.ctx.currentTime;
-      [523.25, 659.25].forEach((freq, idx) => {
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq, t + idx * 0.04);
-        gain.gain.setValueAtTime(0.18, t + idx * 0.04);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.04 + 0.12);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(t + idx * 0.04);
-        osc.stop(t + idx * 0.04 + 0.12);
-      });
-    } catch (e) {}
-  }
-
-  // 3. Drop Chime for Stock Subtract (-)
-  playStockSubtract() {
-    if (!this.ensureRunning()) return;
-    try {
-      const t = this.ctx.currentTime;
-      [587.33, 440].forEach((freq, idx) => {
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, t + idx * 0.04);
-        gain.gain.setValueAtTime(0.16, t + idx * 0.04);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.04 + 0.12);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(t + idx * 0.04);
-        osc.stop(t + idx * 0.04 + 0.12);
-      });
-    } catch (e) {}
-  }
-
-  // 4. Subtle Tactile UI Click
+  // 1. Soft velvet micro-tap for UI buttons (Clean, gentle, mechanical keyboard switch feel)
   playClick() {
     if (!this.ensureRunning()) return;
     try {
-      const t = this.ctx.currentTime;
+      const now = this.ctx.currentTime;
+      if (this._lastClick && now - this._lastClick < 0.035) return;
+      this._lastClick = now;
+
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
+      const filter = this.ctx.createBiquadFilter();
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(1400, now);
+
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(900, t);
-      osc.frequency.exponentialRampToValueAtTime(200, t + 0.03);
-      gain.gain.setValueAtTime(0.12, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
-      osc.connect(gain);
+      osc.frequency.setValueAtTime(480, now);
+      osc.frequency.exponentialRampToValueAtTime(320, now + 0.022);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.022, now + 0.003);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.022);
+
+      osc.connect(filter);
+      filter.connect(gain);
       gain.connect(this.ctx.destination);
-      osc.start(t);
-      osc.stop(t + 0.03);
+
+      osc.start(now);
+      osc.stop(now + 0.024);
+
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate(6);
+      }
     } catch (e) {}
   }
 
-  // 5. Success Chime (Major Chord)
+  // 2. Ultra-smooth velvet blip for barcode scanner (Warm Sine Marimba)
+  playScanBeep() {
+    if (!this.ensureRunning()) return;
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const filter = this.ctx.createBiquadFilter();
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(1600, now);
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, now); // A5
+      osc.frequency.exponentialRampToValueAtTime(1318.51, now + 0.045); // E6
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.045, now + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.095);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.095);
+
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate(12);
+      }
+    } catch (e) {}
+  }
+
+  // 3. Smooth warm ascending chord when stock is added (+)
+  playStockAdd() {
+    if (!this.ensureRunning()) return;
+    try {
+      const now = this.ctx.currentTime;
+      const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+      notes.forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const filter = this.ctx.createBiquadFilter();
+        const start = now + idx * 0.03;
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1500, start);
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, start);
+
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.exponentialRampToValueAtTime(0.035, start + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.14);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(start);
+        osc.stop(start + 0.14);
+      });
+
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate(10);
+      }
+    } catch (e) {}
+  }
+
+  // 4. Smooth warm descending tone when stock is reduced (-)
+  playStockSubtract() {
+    if (!this.ensureRunning()) return;
+    try {
+      const now = this.ctx.currentTime;
+      const notes = [783.99, 659.25]; // G5 -> E5
+      notes.forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const filter = this.ctx.createBiquadFilter();
+        const start = now + idx * 0.035;
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1400, start);
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, start);
+
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.exponentialRampToValueAtTime(0.032, start + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.12);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(start);
+        osc.stop(start + 0.12);
+      });
+
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate(10);
+      }
+    } catch (e) {}
+  }
+
+  // 5. Harmonious smooth velvet chord for success / save
   playSuccess() {
     if (!this.ensureRunning()) return;
     try {
-      const t = this.ctx.currentTime;
-      [523.25, 659.25, 783.99].forEach((freq, idx) => {
+      const now = this.ctx.currentTime;
+      const chord = [523.25, 659.25, 783.99, 1046.5]; // C Major Chord (C5, E5, G5, C6)
+      chord.forEach((freq, idx) => {
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
+        const filter = this.ctx.createBiquadFilter();
+        const start = now + idx * 0.025;
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1800, start);
+
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, t + idx * 0.05);
-        gain.gain.setValueAtTime(0.2, t + idx * 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.05 + 0.22);
-        osc.connect(gain);
+        osc.frequency.setValueAtTime(freq, start);
+
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.exponentialRampToValueAtTime(0.03, start + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.19);
+
+        osc.connect(filter);
+        filter.connect(gain);
         gain.connect(this.ctx.destination);
-        osc.start(t + idx * 0.05);
-        osc.stop(t + idx * 0.05 + 0.22);
+
+        osc.start(start);
+        osc.stop(start + 0.19);
       });
+
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate([10, 10]);
+      }
     } catch (e) {}
   }
 
-  // 6. Security Lock / Unlock Sound
+  // 6. Subtle wood latch click when locking/logging out
   playLock() {
     if (!this.ensureRunning()) return;
     try {
-      const t = this.ctx.currentTime;
+      const now = this.ctx.currentTime;
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(400, t);
-      osc.frequency.exponentialRampToValueAtTime(220, t + 0.08);
-      gain.gain.setValueAtTime(0.18, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
-      osc.connect(gain);
+      const filter = this.ctx.createBiquadFilter();
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(700, now);
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(260, now);
+      osc.frequency.exponentialRampToValueAtTime(90, now + 0.04);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.045, now + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
+
+      osc.connect(filter);
+      filter.connect(gain);
       gain.connect(this.ctx.destination);
-      osc.start(t);
-      osc.stop(t + 0.08);
+
+      osc.start(now);
+      osc.stop(now + 0.04);
+
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate(10);
+      }
     } catch (e) {}
   }
 
-  // 7. Error Thud
+  // 7. Soft two-note pleasant chime when unlocking/logging in
+  playUnlock() {
+    if (!this.ensureRunning()) return;
+    try {
+      const now = this.ctx.currentTime;
+      const notes = [587.33, 880]; // D5 -> A5
+      notes.forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const filter = this.ctx.createBiquadFilter();
+        const start = now + idx * 0.045;
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1800, start);
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, start);
+
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.exponentialRampToValueAtTime(0.045, start + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.16);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(start);
+        osc.stop(start + 0.16);
+      });
+
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate(12);
+      }
+    } catch (e) {}
+  }
+
+  // 8. Soft polite descending two-note minor tone for error/alert (Velvet, never harsh or boomy)
   playError() {
     if (!this.ensureRunning()) return;
     try {
-      const t = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(180, t);
-      gain.gain.setValueAtTime(0.25, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-      osc.start(t);
-      osc.stop(t + 0.16);
+      const now = this.ctx.currentTime;
+      const notes = [349.23, 261.63]; // F4 -> C4
+      notes.forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const filter = this.ctx.createBiquadFilter();
+        const start = now + idx * 0.05;
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(750, start);
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, start);
+
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.exponentialRampToValueAtTime(0.03, start + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.11);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(start);
+        osc.stop(start + 0.11);
+      });
+
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate([12, 10]);
+      }
     } catch (e) {}
   }
 
-  // Handy Aliases for Fast Sound Triggers
+  // Handy Aliases & Ketanggungan compatibility
+  playClickSound() { this.playClick(); }
+  playSuccessSound() { this.playSuccess(); }
+  playErrorSound() { this.playError(); }
+  playLockSound() { this.playLock(); }
+  playUnlockSound() { this.playUnlock(); }
+  playLevelCompleted() { this.playSuccess(); }
+  playBackupSent() { this.playSuccess(); }
   beep() { this.playScanBeep(); }
   click() { this.playClick(); }
   chime() { this.playSuccess(); }
   error() { this.playError(); }
   lock() { this.playLock(); }
-  type() {
-    if (!this.ensureRunning()) return;
-    try {
-      const t = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(1200 + Math.random() * 400, t);
-      gain.gain.setValueAtTime(0.04, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-      osc.start(t);
-      osc.stop(t + 0.02);
-    } catch (e) {}
-  }
+  unlock() { this.playUnlock(); }
 }
 
 const IstiqomahSound = new IstiqomahAudioEngine();
