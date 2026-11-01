@@ -14,21 +14,17 @@
 <body>
 
   <!-- ======================================================================
-       TYPEWRITER INTRO SPLASH SCREEN (KETANGGUNGAN HERITAGE v5.0)
+       MINIMALIST SMOOTH LOADING SCREEN (NO TEXT)
        ====================================================================== -->
   <div class="splash-screen" id="mobileSplashScreen">
-    <img src="logo.svg" alt="Istiqomah Logo" class="splash-emblem">
-    <div class="splash-title">ISTIQOMAH BULUSARI</div>
-    <div class="splash-sub">Sistem Manajemen Gudang & Stok 3 Lantai</div>
-
-    <div class="typewriter-box">
-      <span id="splashTypewriterText"></span><span class="typewriter-cursor"></span>
+    <div class="splash-content">
+      <div class="splash-emblem-wrap">
+        <img src="logo.svg" alt="Logo" class="splash-emblem">
+      </div>
+      <div class="splash-progress-track">
+        <div class="splash-progress-fill" id="splashProgressFill"></div>
+      </div>
     </div>
-
-    <button type="button" class="splash-enter-btn" id="btnSplashEnter" onclick="app.dismissSplash()">
-      <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-      <span>MASUK KE SISTEM GUDANG</span>
-    </button>
   </div>
 
   <div class="app-container">
