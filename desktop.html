@@ -23,7 +23,7 @@
           <span>ISTIQOMAH</span>
           <span class="login-brand-badge">BULUSARI</span>
         </div>
-        <div class="login-brand-sub">Sistem Manajemen Stok Multi-Lantai Offline</div>
+        <div class="login-brand-sub">Gudang 3 Lantai</div>
       </div>
 
       <!-- CLEAN LOGIN FORM -->
@@ -31,7 +31,7 @@
         <div class="form-group">
           <label class="form-label">
             <span id="icLoginUser"></span>
-            <span>Nama Pengguna / Akun</span>
+            <span>Pengguna</span>
           </label>
           <select class="form-control" id="loginUserSelect" onchange="DesktopApp.onSelectLoginUser(this.value)"></select>
         </div>
@@ -39,10 +39,10 @@
         <div class="form-group">
           <label class="form-label">
             <span id="icLoginLock"></span>
-            <span>PIN / Kata Sandi</span>
+            <span>PIN</span>
           </label>
           <div class="password-input-wrap">
-            <input type="password" class="form-control" id="loginPasswordInput" value="819" placeholder="Masukkan PIN (default: 819 / 123)" required />
+            <input type="password" class="form-control" id="loginPasswordInput" value="819" placeholder="PIN" required />
             <button type="button" class="btn-toggle-pwd" id="btnToggleLoginPwd" onclick="DesktopApp.toggleLoginPasswordVisibility()" title="Lihat / Sembunyikan PIN">
               <span id="icEyeLogin"></span>
             </button>
@@ -50,21 +50,17 @@
         </div>
 
         <div class="login-access-preview" id="loginAccessPreview">
-          <strong>Hak Akses Super Admin:</strong> Akses penuh Lantai 1, Lantai 2, Lantai 3, Master Database & Dokumen A4.
+          Akses: Semua Lantai (Admin)
         </div>
 
         <button type="submit" class="btn btn-primary btn-login-submit">
-          <span>Masuk ke Sistem</span>
+          <span>Masuk</span>
           <span id="icLoginArrow"></span>
         </button>
       </form>
 
       <div class="login-card-footer">
-        <span>100% Offline-First</span>
-        <span>&bull;</span>
-        <span>Sinkron Wi-Fi LAN</span>
-        <span>&bull;</span>
-        <span>v5.0 Enterprise</span>
+        <span>Istiqomah Bulusari</span>
       </div>
     </div>
   </div>
@@ -104,7 +100,7 @@
         <img src="/logo.svg" alt="Istiqomah Bulusari" />
         <div>
           <div class="sidebar-brand-name">Istiqomah Bulusari</div>
-          <div class="sidebar-brand-branch">Sistem Gudang 3 Lantai</div>
+          <div class="sidebar-brand-branch">Gudang 3 Lantai</div>
         </div>
       </div>
 
@@ -184,23 +180,23 @@
       <div class="top-toolbar">
         <div class="search-input-box">
           <span class="search-ic" id="icTopSearch"></span>
-          <input type="text" id="globalSearchInput" placeholder="Cari nama barang, SKU, barcode, atau rak... (Ctrl+K)" oninput="DesktopApp.handleGlobalSearch(this.value)" />
-          <kbd class="kbd-shortcut" onclick="document.getElementById('globalSearchInput').focus()" title="Tekan Ctrl+K untuk mencari">Ctrl+K</kbd>
+          <input type="text" id="globalSearchInput" placeholder="Cari barang, SKU, rak... (Ctrl+K)" oninput="DesktopApp.handleGlobalSearch(this.value)" />
+          <kbd class="kbd-shortcut" onclick="document.getElementById('globalSearchInput').focus()" title="Ctrl+K">Ctrl+K</kbd>
         </div>
         <div class="toolbar-action-buttons">
-          <button class="btn btn-outline" onclick="DesktopApp.openBarcodeCompletionModal()" title="Mode Lengkapi Barcode Berprogress (Waktu Senggang)">
+          <button class="btn btn-outline" onclick="DesktopApp.openBarcodeCompletionModal()" title="Lengkapi Barcode">
             <span id="icTopBarcodeComplete"></span>
             <span>Lengkapi Barcode</span>
           </button>
-          <button class="btn btn-outline" onclick="DesktopApp.openReportByType('STOCK_RECAP')" title="Buka Pusat Laporan A4">
+          <button class="btn btn-outline" onclick="DesktopApp.openReportByType('STOCK_RECAP')" title="Laporan A4">
             <span id="icTopReport"></span>
-            <span>Pusat Laporan A4</span>
+            <span>Laporan A4</span>
           </button>
-          <button class="btn btn-outline" onclick="DesktopApp.openTransferModal()" title="Pindah Stok Antar Lantai">
+          <button class="btn btn-outline" onclick="DesktopApp.openTransferModal()" title="Pindah Stok">
             <span id="icTopTransfer"></span>
-            <span>Pindah Lantai</span>
+            <span>Pindah Stok</span>
           </button>
-          <button class="btn btn-primary" onclick="DesktopApp.openItemModal()" title="Tambah Barang Baru (Wizard 3 Langkah)">
+          <button class="btn btn-primary" onclick="DesktopApp.openItemModal()" title="Tambah Barang">
             <span id="icTopAdd"></span>
             <span>Tambah Barang</span>
           </button>
@@ -215,20 +211,19 @@
           <div class="page-headline">
             <div>
               <h1 class="page-title-text">Ringkasan Gudang</h1>
-              <p class="page-subtitle-text">Istiqomah Bulusari — Inventaris Fisik Lantai 1, Lantai 2, dan Lantai 3</p>
             </div>
             <div style="display:flex; gap:8px;">
               <button class="btn btn-outline" onclick="DesktopApp.openReportByType('STOCK_RECAP')">
                 <span id="icDashPrint"></span>
-                <span>Cetak Laporan</span>
+                <span>Cetak</span>
               </button>
               <button class="btn btn-outline" onclick="DesktopApp.exportFullBackup()">
                 <span id="icDashBackup"></span>
-                <span>Cadangkan Data</span>
+                <span>Cadangkan</span>
               </button>
               <button class="btn btn-primary" onclick="DesktopApp.switchView('opname')">
                 <span id="icDashOpname"></span>
-                <span>Mulai Opname</span>
+                <span>Opname</span>
               </button>
             </div>
           </div>
@@ -236,24 +231,20 @@
           <!-- 4 LUXURY KPI CARDS -->
           <div class="kpi-grid-row">
             <div class="kpi-stat-card">
-              <div class="kpi-stat-label">Total SKU Barang</div>
+              <div class="kpi-stat-label">Total SKU</div>
               <div class="kpi-stat-num" id="kpiSku">0</div>
-              <div class="kpi-stat-sub">Terdaftar di 3 lantai</div>
             </div>
             <div class="kpi-stat-card emerald">
-              <div class="kpi-stat-label">Total Fisik Stok</div>
+              <div class="kpi-stat-label">Total Stok Fisik</div>
               <div class="kpi-stat-num emerald" id="kpiTotalStock">0</div>
-              <div class="kpi-stat-sub">Akumulasi seluruh unit fisik</div>
             </div>
             <div class="kpi-stat-card amber">
               <div class="kpi-stat-label">Stok Menipis</div>
               <div class="kpi-stat-num amber" id="kpiLowStock">0</div>
-              <div class="kpi-stat-sub">Perlu pemesanan restock</div>
             </div>
             <div class="kpi-stat-card rose">
               <div class="kpi-stat-label">Stok Habis (0)</div>
               <div class="kpi-stat-num rose" id="kpiEmptyStock">0</div>
-              <div class="kpi-stat-sub">Prioritas restock mendesak</div>
             </div>
           </div>
 
@@ -262,7 +253,6 @@
             <div class="chart-card">
               <div class="chart-card-title">
                 <span>Distribusi Stok 3 Lantai</span>
-                <span style="font-size:12px; color:var(--text-muted); font-weight:600;">Proporsi Unit Fisik</span>
               </div>
               <div class="donut-chart-container">
                 <div id="donutChartSvgBox" style="width:130px; height:130px;"></div>
@@ -272,8 +262,7 @@
 
             <div class="chart-card">
               <div class="chart-card-title">
-                <span>Top 5 Barang Stok Tertinggi</span>
-                <span style="font-size:12px; color:var(--text-muted); font-weight:600;">Volume Terbesar</span>
+                <span>Top 5 Barang Terbanyak</span>
               </div>
               <div id="topItemsBarList" style="display:flex; flex-direction:column; gap:9px; padding-top:4px;"></div>
             </div>
@@ -285,9 +274,9 @@
           <!-- RESTOCK PRIORITY PANEL -->
           <div class="panel">
             <div class="panel-header">
-              <div class="panel-title">Daftar Barang Menipis & Habis (Prioritas Restock)</div>
+              <div class="panel-title">Prioritas Restock</div>
               <div style="display:flex; gap:8px;">
-                <button class="btn btn-outline btn-sm" onclick="DesktopApp.openReportByType('RESTOCK_ORDER')">Cetak Surat Pesanan Restock</button>
+                <button class="btn btn-outline btn-sm" onclick="DesktopApp.openReportByType('RESTOCK_ORDER')">Cetak Pesanan</button>
                 <button class="btn btn-outline btn-sm" onclick="DesktopApp.openFloor('ALL', 'LOW')">Lihat Semua</button>
               </div>
             </div>
@@ -301,7 +290,7 @@
                   <th>Lokasi Rak</th>
                   <th>Sisa Stok</th>
                   <th>Status</th>
-                  <th style="text-align:right;">Aksi Cepat</th>
+                  <th style="text-align:right;">Aksi</th>
                 </tr>
               </thead>
               <tbody id="dashboardAlertTbody"></tbody>
@@ -314,16 +303,15 @@
           <div class="page-headline">
             <div>
               <h1 class="page-title-text" id="floorViewTitle">Stok Semua Lantai</h1>
-              <p class="page-subtitle-text" id="floorViewSub">Inventaris fisik barang Istiqomah Bulusari</p>
             </div>
             <div style="display:flex; gap:8px;">
               <button class="btn btn-outline" onclick="DesktopApp.printCurrentFloorReport()">
                 <span id="icFloorPrint"></span>
-                <span>Cetak Laporan Lantai Ini</span>
+                <span>Cetak Laporan</span>
               </button>
               <button class="btn btn-outline" onclick="DesktopApp.exportCurrentFloorJson()">
                 <span id="icFloorExport"></span>
-                <span>Ekspor File (.JSON)</span>
+                <span>Ekspor JSON</span>
               </button>
               <button class="btn btn-primary" onclick="DesktopApp.openItemModal()">
                 <span id="icFloorAdd"></span>
@@ -375,11 +363,10 @@
           <div class="page-headline">
             <div>
               <h1 class="page-title-text">Stock Opname</h1>
-              <p class="page-subtitle-text">Pencocokan stok fisik per lantai dengan scan barcode dan audit selisih otomatis</p>
             </div>
             <button class="btn btn-outline" onclick="DesktopApp.openReportByType('OPNAME_AUDIT')">
               <span id="icOpnameReport"></span>
-              <span>Cetak Laporan Audit Opname (A4)</span>
+              <span>Cetak Laporan</span>
             </button>
           </div>
 
@@ -392,40 +379,40 @@
               <div class="panel-content">
                 <form onsubmit="DesktopApp.submitOpname(event)">
                   <div class="form-group">
-                    <label class="form-label">Scan Barcode / Ketik SKU</label>
-                    <input type="text" class="form-control" id="soBarcodeInput" placeholder="Arahkan scanner barcode atau ketik SKU lalu Enter..." oninput="DesktopApp.onOpnameBarcodeInput(this.value)" required autofocus />
+                    <label class="form-label">Barcode / SKU</label>
+                    <input type="text" class="form-control" id="soBarcodeInput" placeholder="Scan Barcode / SKU..." oninput="DesktopApp.onOpnameBarcodeInput(this.value)" required autofocus />
                   </div>
                   <div class="form-group">
-                    <label class="form-label">Nama Barang Terdeteksi</label>
-                    <input type="text" class="form-control" id="soNameInput" placeholder="Otomatis terisi saat barcode cocok..." required />
+                    <label class="form-label">Nama Barang</label>
+                    <input type="text" class="form-control" id="soNameInput" placeholder="Nama Barang" required />
                   </div>
                   <div class="form-grid-2">
                     <div class="form-group">
-                      <label class="form-label">Jumlah Fisik Dihitung</label>
+                      <label class="form-label">Jumlah Fisik</label>
                       <input type="number" class="form-control" id="soQtyInput" value="1" min="1" required style="font-weight:800; font-size:16px; text-align:center;" />
                     </div>
                     <div class="form-group">
-                      <label class="form-label">Metode Input</label>
+                      <label class="form-label">Metode</label>
                       <select class="form-control" id="soModeInput">
-                        <option value="ADD">Tambahkan ke Hitungan (+)</option>
-                        <option value="SET">Tetapkan Nilai Baru (=)</option>
+                        <option value="ADD">Tambah (+)</option>
+                        <option value="SET">Tetapkan (=)</option>
                       </select>
                     </div>
                   </div>
-                  <button type="submit" class="btn btn-primary" style="width:100%; padding:11px;">Simpan Hitungan Opname</button>
+                  <button type="submit" class="btn btn-primary" style="width:100%; padding:11px;">Simpan Hitungan</button>
                 </form>
               </div>
             </div>
 
             <div class="panel" style="margin-bottom:0;">
               <div class="panel-header">
-                <div class="panel-title">Buat Kelompok Opname Baru</div>
+                <div class="panel-title">Buat Sesi Baru</div>
               </div>
               <div class="panel-content">
                 <form onsubmit="DesktopApp.createSoGroup(event)">
                   <div class="form-group">
-                    <label class="form-label">Nama Sesi / Kelompok</label>
-                    <input type="text" class="form-control" id="newSoGroupName" placeholder="Contoh: OPNAME HARIAN LANTAI 1" required />
+                    <label class="form-label">Nama Sesi</label>
+                    <input type="text" class="form-control" id="newSoGroupName" placeholder="Nama Sesi" required />
                   </div>
                   <div class="form-group">
                     <label class="form-label">Pilih Lantai</label>
@@ -435,7 +422,7 @@
                       <option value="L3">Lantai 3</option>
                     </select>
                   </div>
-                  <button type="submit" class="btn btn-outline" style="width:100%; padding:11px;">Buat Sesi Opname</button>
+                  <button type="submit" class="btn btn-outline" style="width:100%; padding:11px;">Buat Sesi</button>
                 </form>
               </div>
             </div>
@@ -443,8 +430,8 @@
 
           <div class="panel">
             <div class="panel-header">
-              <div class="panel-title">Daftar Hasil Hitung Sesi Ini</div>
-              <button class="btn btn-primary btn-sm" onclick="DesktopApp.applyActiveOpnameToStock()">Terapkan Hasil ke Stok Fisik</button>
+              <div class="panel-title">Hasil Hitung</div>
+              <button class="btn btn-primary btn-sm" onclick="DesktopApp.applyActiveOpnameToStock()">Terapkan ke Stok</button>
             </div>
             <table class="data-table">
               <thead>
@@ -467,12 +454,11 @@
         <section class="view-pane" id="view-mutations">
           <div class="page-headline">
             <div>
-              <h1 class="page-title-text">Riwayat Mutasi Stok</h1>
-              <p class="page-subtitle-text">Catatan audit keluar, masuk, penyesuaian opname, dan pemindahan antar lantai</p>
+              <h1 class="page-title-text">Riwayat Mutasi</h1>
             </div>
             <button class="btn btn-outline" onclick="DesktopApp.openReportByType('MUTATION_JOURNAL')">
               <span id="icMutPrint"></span>
-              <span>Cetak Jurnal Mutasi (A4)</span>
+              <span>Cetak Jurnal</span>
             </button>
           </div>
           <div class="panel">
@@ -498,22 +484,21 @@
         <section class="view-pane" id="view-report">
           <div class="page-headline no-print">
             <div>
-              <h1 class="page-title-text">Pusat Laporan & Dokumen Resmi A4</h1>
-              <p class="page-subtitle-text">Khusus Desktop — Pilih jenis laporan untuk pratinjau, ekspor Excel/CSV, atau cetak pop-up A4</p>
+              <h1 class="page-title-text">Laporan A4</h1>
             </div>
             <div style="display:flex; gap:8px;">
               <button class="btn btn-outline" onclick="DesktopApp.exportReportExcelCSV()">
                 <span id="icReportExportCsv"></span>
-                <span>Ekspor Excel (.CSV)</span>
+                <span>Ekspor CSV</span>
               </button>
               <button class="btn btn-primary" onclick="DesktopApp.openA4PrintWindow()">
                 <span id="icPrintBtn"></span>
-                <span>Cetak Dokumen A4 Ini</span>
+                <span>Cetak A4</span>
               </button>
             </div>
           </div>
 
-          <!-- 8 COMPREHENSIVE REPORT BRANCH CARDS (AS IN KETANGGUNGAN FINAL ARCHITECTURE) -->
+          <!-- 8 COMPREHENSIVE REPORT BRANCH CARDS -->
           <div class="report-branch-grid no-print">
             <button class="report-branch-card active" data-rpt="STOCK_RECAP" onclick="DesktopApp.selectReportBranch('STOCK_RECAP')">
               <div class="rb-head">
@@ -521,7 +506,6 @@
                 <span id="icRb1"></span>
               </div>
               <div class="rb-title">Stok per Lantai</div>
-              <div class="rb-desc">Daftar stok lengkap per departemen / lantai fisik atau 3 lantai sekaligus.</div>
             </button>
 
             <button class="report-branch-card" data-rpt="CATEGORY" onclick="DesktopApp.selectReportBranch('CATEGORY')">
@@ -529,8 +513,7 @@
                 <span class="rb-badge">Jenis 2</span>
                 <span id="icRbCat"></span>
               </div>
-              <div class="rb-title">Per Jenis / Kategori</div>
-              <div class="rb-desc">Rekapitulasi kuantitas stok per jenis komoditas grosir & rincian produknya dengan subtotal.</div>
+              <div class="rb-title">Per Kategori</div>
             </button>
 
             <button class="report-branch-card" data-rpt="RESTOCK_ORDER" onclick="DesktopApp.selectReportBranch('RESTOCK_ORDER')">
@@ -538,8 +521,7 @@
                 <span class="rb-badge">Jenis 3</span>
                 <span id="icRb2"></span>
               </div>
-              <div class="rb-title">Lembar Pengadaan Restock</div>
-              <div class="rb-desc">Formulir belanja barang prioritas untuk barang habis (0) dan stok menipis dengan saran order.</div>
+              <div class="rb-title">Pesanan Restock</div>
             </button>
 
             <button class="report-branch-card" data-rpt="EXECUTIVE_SUMMARY" onclick="DesktopApp.selectReportBranch('EXECUTIVE_SUMMARY')">
@@ -547,8 +529,7 @@
                 <span class="rb-badge">Jenis 4</span>
                 <span id="icRbExec"></span>
               </div>
-              <div class="rb-title">Rekapitulasi Eksekutif</div>
-              <div class="rb-desc">Ringkasan pimpinan: matriks operasional 3 lantai, kesiapan stok % per lantai, & top kategori.</div>
+              <div class="rb-title">Ringkasan Eksekutif</div>
             </button>
 
             <button class="report-branch-card" data-rpt="MUTATION_JOURNAL" onclick="DesktopApp.selectReportBranch('MUTATION_JOURNAL')">
@@ -556,8 +537,7 @@
                 <span class="rb-badge">Jenis 5</span>
                 <span id="icRb4"></span>
               </div>
-              <div class="rb-title">Audit Mutasi Staf</div>
-              <div class="rb-desc">Rekam jejak transaksi barang masuk, keluar, dan koreksi opname berdasarkan petugas.</div>
+              <div class="rb-title">Audit Mutasi</div>
             </button>
 
             <button class="report-branch-card" data-rpt="OPNAME_AUDIT" onclick="DesktopApp.selectReportBranch('OPNAME_AUDIT')">
@@ -565,8 +545,7 @@
                 <span class="rb-badge">Jenis 6</span>
                 <span id="icRb3"></span>
               </div>
-              <div class="rb-title">Audit Stock Opname</div>
-              <div class="rb-desc">Perbandingan fisik aktual vs sistem beserta selisih (+/-) dan tingkat kecocokan.</div>
+              <div class="rb-title">Audit Opname</div>
             </button>
 
             <button class="report-branch-card" data-rpt="BARCODE_CATALOG" onclick="DesktopApp.selectReportBranch('BARCODE_CATALOG')">
@@ -574,8 +553,7 @@
                 <span class="rb-badge">Jenis 7</span>
                 <span id="icRb6"></span>
               </div>
-              <div class="rb-title">Katalog Barcode Rak</div>
-              <div class="rb-desc">Lembar cetak stiker barcode Code-128 SVG 3 kolom siap potong dan tempel di rak toko.</div>
+              <div class="rb-title">Katalog Barcode</div>
             </button>
 
             <button class="report-branch-card" data-rpt="BLANK_WORKSHEET" onclick="DesktopApp.selectReportBranch('BLANK_WORKSHEET')">
@@ -583,18 +561,17 @@
                 <span class="rb-badge">Jenis 8</span>
                 <span id="icRb5"></span>
               </div>
-              <div class="rb-title">Lembar Kerja Fisik (SO)</div>
-              <div class="rb-desc">Formulir cetak dengan kolom kosong hitung fisik 1, 2, dan paraf manual di gudang.</div>
+              <div class="rb-title">Lembar Fisik (SO)</div>
             </button>
           </div>
 
-          <!-- REPORT FILTER CONTROLS (ENHANCED WITH CATEGORY, PRIORITY, STAFF, SEARCH) -->
+          <!-- REPORT FILTER CONTROLS -->
           <div class="report-filter-bar no-print">
             <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px; width:100%;">
               <div style="display:flex; align-items:center; gap:8px;">
                 <span style="font-size:12px; font-weight:800; color:var(--text-sub);">Lantai:</span>
                 <div class="seg-pills" id="reportFloorPills">
-                  <button class="seg-pill active" data-rfl="ALL" onclick="DesktopApp.setReportFloorFilter('ALL')">Semua Lantai (L1 - L3)</button>
+                  <button class="seg-pill active" data-rfl="ALL" onclick="DesktopApp.setReportFloorFilter('ALL')">Semua Lantai</button>
                   <button class="seg-pill" data-rfl="L1" onclick="DesktopApp.setReportFloorFilter('L1')">Lantai 1</button>
                   <button class="seg-pill" data-rfl="L2" onclick="DesktopApp.setReportFloorFilter('L2')">Lantai 2</button>
                   <button class="seg-pill" data-rfl="L3" onclick="DesktopApp.setReportFloorFilter('L3')">Lantai 3</button>
@@ -680,27 +657,23 @@
         <section class="view-pane" id="view-masterdb">
           <div class="page-headline">
             <div>
-              <h1 class="page-title-text">Master Database & Sinkronisasi</h1>
-              <p class="page-subtitle-text">Pencadangan data offline, pemulihan aman (Merge vs Replace), dan sinkronisasi Wi-Fi</p>
+              <h1 class="page-title-text">Database & Sinkronisasi</h1>
             </div>
           </div>
 
           <div class="panel">
             <div class="panel-header">
-              <div class="panel-title">Sinkronisasi Satu Sinyal (Wi-Fi / LAN Lokal)</div>
+              <div class="panel-title">Sinkronisasi Wi-Fi</div>
               <span class="badge badge-ok" id="wifiActiveBadge">Aktif</span>
             </div>
             <div class="panel-content">
               <div class="form-grid-2" style="align-items:center;">
                 <div>
-                  <div style="font-weight:700; font-size:14px;">Sinkronisasi Otomatis Antar Perangkat</div>
-                  <div style="font-size:12px; color:var(--text-sub); margin-top:2px;">
-                    Perangkat Mobile (:3000) dan Desktop (:3001) yang tersambung ke satu sinyal Wi-Fi yang sama akan saling bertukar data secara otomatis. Matikan jika ingin bekerja secara terisolasi.
-                  </div>
+                  <div style="font-weight:700; font-size:13.5px;">Sinkron Otomatis Antar Perangkat</div>
                 </div>
                 <div style="display:flex; justify-content:flex-end; gap:10px;">
                   <button class="btn btn-outline" onclick="DesktopApp.toggleWifiSync()" id="btnWifiToggle">Matikan Wi-Fi</button>
-                  <button class="btn btn-primary" onclick="DesktopApp.manualWifiSync()">Sinkronkan Sekarang</button>
+                  <button class="btn btn-primary" onclick="DesktopApp.manualWifiSync()">Sinkronkan</button>
                 </div>
               </div>
             </div>
@@ -710,70 +683,66 @@
             <!-- BACKUP EXPORT -->
             <div class="panel">
               <div class="panel-header">
-                <div class="panel-title">Ekspor Cadangan (Offline Total)</div>
+                <div class="panel-title">Ekspor Cadangan</div>
               </div>
               <div class="panel-content" style="display:flex; flex-direction:column; gap:10px;">
                 <button class="btn btn-primary" onclick="DesktopApp.exportFullBackup()">
                   <span id="icExpFull"></span>
-                  <span>Unduh Database Penuh (.JSON)</span>
+                  <span>Ekspor Semua (.JSON)</span>
                 </button>
                 <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;">
-                  <button class="btn btn-outline" onclick="DesktopApp.exportFloorJson('L1')">Ekspor Lantai 1</button>
-                  <button class="btn btn-outline" onclick="DesktopApp.exportFloorJson('L2')">Ekspor Lantai 2</button>
-                  <button class="btn btn-outline" onclick="DesktopApp.exportFloorJson('L3')">Ekspor Lantai 3</button>
+                  <button class="btn btn-outline" onclick="DesktopApp.exportFloorJson('L1')">Lantai 1</button>
+                  <button class="btn btn-outline" onclick="DesktopApp.exportFloorJson('L2')">Lantai 2</button>
+                  <button class="btn btn-outline" onclick="DesktopApp.exportFloorJson('L3')">Lantai 3</button>
                 </div>
                 <button class="btn btn-outline" onclick="DesktopApp.exportZipArchive()">
                   <span id="icExpZip"></span>
-                  <span>Unduh Paket Arsip Lengkap (.ZIP)</span>
+                  <span>Ekspor Arsip (.ZIP)</span>
                 </button>
                 <button class="btn btn-outline" onclick="DesktopApp.exportCsvTable()">
                   <span id="icExpCsv"></span>
-                  <span>Ekspor Tabel Stok (.CSV)</span>
+                  <span>Ekspor Stok (.CSV)</span>
                 </button>
               </div>
             </div>
 
-            <!-- RESTORE IMPORT WITH SAFETY CONFIRMATION -->
+            <!-- RESTORE IMPORT -->
             <div class="panel">
               <div class="panel-header">
-                <div class="panel-title">Pemulihan / Impor Data Aman</div>
+                <div class="panel-title">Impor Data</div>
               </div>
               <div class="panel-content">
-                <p style="font-size:12.5px; color:var(--text-sub); margin-bottom:14px;">
-                  Unggah file cadangan <strong>.JSON</strong> untuk memulihkan atau menggabungkan data dari perangkat lain. Anda akan diberikan opsi <strong>Gabungkan (Merge)</strong> atau <strong>Timpa Total (Replace)</strong>.
-                </p>
                 <input type="file" id="masterImportFileInput" accept=".json" style="display:none;" onchange="DesktopApp.handleMasterFileSelect(event)" />
                 <button class="btn btn-primary" style="width:100%; padding:12px;" onclick="document.getElementById('masterImportFileInput').click()">
                   <span id="icImpSelect"></span>
-                  <span>Pilih File Backup .JSON</span>
+                  <span>Pilih File .JSON</span>
                 </button>
 
                 <div style="margin-top:20px; padding-top:14px; border-top:1.5px solid var(--border-col);">
-                  <div style="font-size:11.5px; font-weight:700; color:var(--danger-tx); margin-bottom:6px;">Tindakan Darurat:</div>
-                  <button class="btn btn-danger btn-sm" onclick="DesktopApp.promptEmergencyReset()">Reset Seluruh Stok ke 0</button>
+                  <div style="font-size:11.5px; font-weight:700; color:var(--danger-tx); margin-bottom:6px;">Reset Data:</div>
+                  <button class="btn btn-danger btn-sm" onclick="DesktopApp.promptEmergencyReset()">Reset Semua Stok ke 0</button>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- VIEW 7: MANAJEMEN AKUN & PETUGAS (FAHRI SUPER ADMIN) -->
+        <!-- VIEW 7: MANAJEMEN AKUN (FAHRI SUPER ADMIN) -->
         <section class="view-pane" id="view-accounts">
           <div class="page-headline">
             <div>
-              <h1 class="page-title-text">Manajemen Akun & Keamanan</h1>
-              <p class="page-subtitle-text">Super Admin <strong>Fahri</strong> dapat membuat akun baru, mengatur hak akses lantai, dan memantau aktivitas</p>
+              <h1 class="page-title-text">Manajemen Akun</h1>
             </div>
             <div style="display:flex; gap:8px;">
               <button class="btn btn-outline" onclick="DesktopApp.openPasswordModal()">Ganti Kata Sandi</button>
-              <button class="btn btn-primary" onclick="DesktopApp.openUserModal()">Tambah Akun Petugas</button>
+              <button class="btn btn-primary" onclick="DesktopApp.openUserModal()">Tambah Akun</button>
             </div>
           </div>
 
           <div class="form-grid-2">
             <div class="panel">
               <div class="panel-header">
-                <div class="panel-title">Daftar Akun Pengguna Terdaftar</div>
+                <div class="panel-title">Daftar Akun</div>
               </div>
               <table class="data-table">
                 <thead>
@@ -810,8 +779,8 @@
     <div class="modal-dialog" style="max-width:580px;">
       <div class="modal-head">
         <div>
-          <div class="modal-head-title" id="itemModalTitle">Tambah Barang Baru</div>
-          <div class="modal-step-sublabel" id="itemModalStepLabel">Langkah 1/3 — Scan Barcode Produk</div>
+          <div class="modal-head-title" id="itemModalTitle">Tambah Barang</div>
+          <div class="modal-step-sublabel" id="itemModalStepLabel">Langkah 1/3: Barcode</div>
         </div>
         <button class="btn btn-outline btn-sm" onclick="DesktopApp.closeModal('itemModal')" id="icCloseItemModal">&times;</button>
       </div>
@@ -820,7 +789,7 @@
       <div class="step-wizard-bar" style="margin:0; border-radius:0; border-left:none; border-right:none;">
         <div class="step-indicator-pill active" id="wizardPill1">
           <span class="step-num-badge">1</span>
-          <span>Scan Barcode</span>
+          <span>Barcode</span>
         </div>
         <div class="step-indicator-pill" id="wizardPill2">
           <span class="step-num-badge">2</span>
@@ -828,7 +797,7 @@
         </div>
         <div class="step-indicator-pill" id="wizardPill3">
           <span class="step-num-badge">3</span>
-          <span>Stok &amp; Batas</span>
+          <span>Stok &amp; Satuan</span>
         </div>
       </div>
 
@@ -841,16 +810,13 @@
           <div id="itemWizardStep1" class="wizard-step-pane">
             <div style="text-align:center; padding:10px 0 16px;">
               <div style="width:48px; height:48px; border-radius:12px; background:var(--bg-subtle); border:2px solid var(--neo-border); box-shadow:var(--neo-shadow-xs); display:flex; align-items:center; justify-content:center; margin:0 auto 10px; color:var(--text-main);" id="icWizardScannerGlyph"></div>
-              <div style="font-weight:800; font-size:15px; color:var(--text-main);">Scan Barcode Produk di Awal</div>
-              <div style="font-size:12px; color:var(--text-muted); max-width:380px; margin:4px auto 0;">
-                Arahkan laser scanner fisik atau masukkan nomor barcode. Sistem akan memverifikasi duplikasi secara otomatis.
-              </div>
+              <div style="font-weight:800; font-size:14px; color:var(--text-main);">Scan Barcode</div>
             </div>
 
             <div class="form-group">
-              <label class="form-label">Nomor Barcode / EAN-13 / SKU</label>
+              <label class="form-label">Barcode / SKU</label>
               <div style="display:flex; gap:8px;">
-                <input type="text" class="form-control" id="itemFormBarcode" placeholder="Scan atau ketik nomor barcode..." style="font-family:var(--font-mono); font-weight:700;" oninput="DesktopApp.onItemBarcodeChange(this.value)" />
+                <input type="text" class="form-control" id="itemFormBarcode" placeholder="Scan atau ketik barcode..." style="font-family:var(--font-mono); font-weight:700;" oninput="DesktopApp.onItemBarcodeChange(this.value)" />
                 <button type="button" class="btn btn-outline" onclick="DesktopApp.generateAutoSku()" style="white-space:nowrap;" title="Generate SKU otomatis">
                   Auto SKU
                 </button>
@@ -861,21 +827,21 @@
             <div id="barcodeStatusFeedback"></div>
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:22px; padding-top:14px; border-top:1px solid var(--border-subtle);">
-              <button type="button" class="btn btn-outline" onclick="DesktopApp.skipBarcodeStep()">Lewati Barcode &rarr;</button>
-              <button type="button" class="btn btn-primary" id="btnNextToStep2" onclick="DesktopApp.goToWizardStep(2)">Lanjut: Info Produk &rarr;</button>
+              <button type="button" class="btn btn-outline" onclick="DesktopApp.skipBarcodeStep()">Lewati &rarr;</button>
+              <button type="button" class="btn btn-primary" id="btnNextToStep2" onclick="DesktopApp.goToWizardStep(2)">Lanjut &rarr;</button>
             </div>
           </div>
 
           <!-- STEP 2: INFO PRODUK -->
           <div id="itemWizardStep2" class="wizard-step-pane" style="display:none;">
             <div class="form-group">
-              <label class="form-label">Nama Barang / Produk <span style="color:var(--danger);">*</span></label>
-              <input type="text" class="form-control" id="itemFormName" placeholder="Contoh: Beras Ramos 5kg..." style="text-transform:uppercase; font-weight:700;" />
+              <label class="form-label">Nama Barang <span style="color:var(--danger);">*</span></label>
+              <input type="text" class="form-control" id="itemFormName" placeholder="Nama barang..." style="text-transform:uppercase; font-weight:700;" />
             </div>
 
             <div class="form-grid-2">
               <div class="form-group">
-                <label class="form-label">Lokasi Lantai (3 Lantai)</label>
+                <label class="form-label">Lantai</label>
                 <select class="form-control" id="itemFormFloor" onchange="DesktopApp.updateCategoryOptionsForFloor(this.value)">
                   <option value="L1">Lantai 1</option>
                   <option value="L2">Lantai 2</option>
@@ -883,13 +849,13 @@
                 </select>
               </div>
               <div class="form-group">
-                <label class="form-label">Posisi Rak / Palet</label>
+                <label class="form-label">Rak / Palet</label>
                 <input type="text" class="form-control" id="itemFormLocation" placeholder="Contoh: Rak 1A" />
               </div>
             </div>
 
             <div class="form-group">
-              <label class="form-label">Kategori / Slot Barang</label>
+              <label class="form-label">Kategori</label>
               <div style="display:flex; gap:8px;">
                 <select class="form-control" id="itemFormCategory" style="flex:1;"></select>
                 <input type="text" class="form-control" id="itemFormCustomCategory" placeholder="Kategori baru..." style="flex:1;" />
@@ -898,18 +864,18 @@
 
             <div class="form-grid-2">
               <div class="form-group">
-                <label class="form-label">Kode SKU Internal</label>
+                <label class="form-label">Kode SKU</label>
                 <input type="text" class="form-control" id="itemFormSku" placeholder="BRG-101" style="font-family:var(--font-mono);" />
               </div>
               <div class="form-group">
-                <label class="form-label">Catatan Tambahan (Opsional)</label>
+                <label class="form-label">Catatan</label>
                 <input type="text" class="form-control" id="itemFormNotes" placeholder="Keterangan..." />
               </div>
             </div>
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:22px; padding-top:14px; border-top:1px solid var(--border-subtle);">
-              <button type="button" class="btn btn-outline" onclick="DesktopApp.goToWizardStep(1)">&larr; Kembali (Barcode)</button>
-              <button type="button" class="btn btn-primary" onclick="DesktopApp.goToWizardStep(3)">Lanjut: Stok &amp; Batas &rarr;</button>
+              <button type="button" class="btn btn-outline" onclick="DesktopApp.goToWizardStep(1)">&larr; Kembali</button>
+              <button type="button" class="btn btn-primary" onclick="DesktopApp.goToWizardStep(3)">Lanjut &rarr;</button>
             </div>
           </div>
 
@@ -917,7 +883,7 @@
           <div id="itemWizardStep3" class="wizard-step-pane" style="display:none;">
             <div class="form-grid-2">
               <div class="form-group">
-                <label class="form-label">Jumlah Stok Awal Fisik</label>
+                <label class="form-label">Stok Awal</label>
                 <input type="number" class="form-control" id="itemFormStock" value="10" min="0" style="font-family:var(--font-mono); font-size:16px; font-weight:800;" />
                 <div style="display:flex; gap:4px; margin-top:6px;">
                   <button type="button" class="btn btn-outline btn-sm" onclick="DesktopApp.stepWizardStock(-5)">-5</button>
@@ -929,13 +895,13 @@
               </div>
 
               <div class="form-group">
-                <label class="form-label">Batas Minimum (Peringatan)</label>
+                <label class="form-label">Batas Minimum</label>
                 <input type="number" class="form-control" id="itemFormMin" value="5" min="0" style="font-family:var(--font-mono); font-size:16px; font-weight:800;" />
               </div>
             </div>
 
             <div class="form-group" style="margin-top:10px;">
-              <label class="form-label">Satuan Produk (Klik Pilihan Cepat)</label>
+              <label class="form-label">Satuan</label>
               <input type="text" class="form-control" id="itemFormUnit" value="Pcs" style="font-weight:700;" />
               <div class="quick-units-deck">
                 <button type="button" class="quick-unit-pill" onclick="DesktopApp.pickQuickUnit('PCS')">PCS</button>
@@ -954,8 +920,8 @@
             </div>
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:22px; padding-top:14px; border-top:1px solid var(--border-subtle);">
-              <button type="button" class="btn btn-outline" onclick="DesktopApp.goToWizardStep(2)">&larr; Kembali (Info)</button>
-              <button type="submit" class="btn btn-primary" style="padding:10px 22px;">Simpan Produk Baru &check;</button>
+              <button type="button" class="btn btn-outline" onclick="DesktopApp.goToWizardStep(2)">&larr; Kembali</button>
+              <button type="submit" class="btn btn-primary" style="padding:10px 22px;">Simpan &check;</button>
             </div>
           </div>
         </form>
@@ -967,13 +933,7 @@
   <div class="modal-backdrop" id="barcodeCompletionModal">
     <div class="modal-dialog" style="max-width:620px;">
       <div class="modal-head">
-        <div>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <div class="modal-head-title">Mode Lengkapi Barcode</div>
-            <span class="badge badge-neutral" style="font-size:10px; padding:2px 8px;">WAKTU SENGGANG</span>
-          </div>
-          <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">Istiqomah Grosir Bulusari — Antrian &amp; Progress Barcode Produk</div>
-        </div>
+        <div class="modal-head-title">Lengkapi Barcode</div>
         <button class="btn btn-outline btn-sm" onclick="DesktopApp.closeModal('barcodeCompletionModal')">&times;</button>
       </div>
 
@@ -981,7 +941,7 @@
         <!-- Live Progress Overview -->
         <div class="completion-hero-card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div style="font-size:13px; font-weight:800; color:var(--text-main);" id="completionProgressTitle">Progress Barcode Barang</div>
+            <div style="font-size:13px; font-weight:800; color:var(--text-main);" id="completionProgressTitle">Progress Barcode</div>
             <div style="font-size:14px; font-weight:800; color:var(--text-main); font-family:var(--font-mono);" id="completionPercentageLabel">0% Selesai</div>
           </div>
           <div class="completion-meter-bar">
@@ -1007,16 +967,16 @@
 
         <!-- Fast Scan Input -->
         <form onsubmit="DesktopApp.submitCompletionBarcode(event)" style="display:flex; gap:8px; margin-bottom:14px;">
-          <input type="text" class="form-control" id="completionBarcodeInput" placeholder="Scan atau ketik barcode produk di sini..." style="font-family:var(--font-mono); font-weight:700; font-size:14px;" />
-          <button type="submit" class="btn btn-primary" style="white-space:nowrap;">Simpan &amp; Lanjut &rarr;</button>
-          <button type="button" class="btn btn-outline" onclick="DesktopApp.skipCompletionItem()" title="Lewati item ini">Skip</button>
+          <input type="text" class="form-control" id="completionBarcodeInput" placeholder="Scan atau ketik barcode..." style="font-family:var(--font-mono); font-weight:700; font-size:14px;" />
+          <button type="submit" class="btn btn-primary" style="white-space:nowrap;">Simpan &rarr;</button>
+          <button type="button" class="btn btn-outline" onclick="DesktopApp.skipCompletionItem()" title="Lewati item ini">Lewati</button>
         </form>
 
         <div id="completionCollisionNotice"></div>
 
         <!-- Queue Preview List -->
         <div style="font-size:11.5px; font-weight:700; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase;">
-          Daftar Antrian Barang Belum Ber-barcode:
+          Antrian Belum Ber-barcode:
         </div>
         <div class="completion-queue-list" id="completionQueueList"></div>
       </div>
@@ -1027,7 +987,7 @@
   <div class="modal-backdrop" id="transferModal">
     <div class="modal-dialog">
       <div class="modal-head">
-        <div class="modal-head-title">Pindah Stok Antar Lantai</div>
+        <div class="modal-head-title">Pindah Stok</div>
         <button class="btn btn-outline btn-sm" onclick="DesktopApp.closeModal('transferModal')" id="icCloseTransferModal"></button>
       </div>
       <div class="modal-body">
@@ -1038,7 +998,7 @@
           </div>
           <div class="form-grid-2">
             <div class="form-group">
-              <label class="form-label">Ke Lantai Tujuan</label>
+              <label class="form-label">Lantai Tujuan</label>
               <select class="form-control" id="transferTargetFloor" required>
                 <option value="L1">Lantai 1</option>
                 <option value="L2">Lantai 2</option>
@@ -1046,13 +1006,13 @@
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label">Jumlah Dipindah</label>
+              <label class="form-label">Jumlah</label>
               <input type="number" class="form-control" id="transferQty" value="1" min="1" required />
             </div>
           </div>
           <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
             <button type="button" class="btn btn-outline" onclick="DesktopApp.closeModal('transferModal')">Batal</button>
-            <button type="submit" class="btn btn-primary">Proses Pindah</button>
+            <button type="submit" class="btn btn-primary">Pindah</button>
           </div>
         </form>
       </div>
@@ -1063,7 +1023,7 @@
   <div class="modal-backdrop" id="barcodeModal">
     <div class="modal-dialog">
       <div class="modal-head">
-        <div class="modal-head-title">Pratinjau Label Barcode Rak</div>
+        <div class="modal-head-title">Label Barcode</div>
         <button class="btn btn-outline btn-sm" onclick="DesktopApp.closeModal('barcodeModal')" id="icCloseBarcodeModal"></button>
       </div>
       <div class="modal-body" style="text-align:center;">
@@ -1076,20 +1036,20 @@
   <div class="modal-backdrop" id="passwordModal">
     <div class="modal-dialog">
       <div class="modal-head">
-        <div class="modal-head-title">Ganti PIN / Kata Sandi</div>
+        <div class="modal-head-title">Ganti PIN</div>
         <button class="btn btn-outline btn-sm" onclick="DesktopApp.closeModal('passwordModal')">&times;</button>
       </div>
       <div class="modal-body">
         <form onsubmit="DesktopApp.submitChangePassword(event)">
           <div class="form-group">
-            <label class="form-label">Kata Sandi Baru</label>
-            <input type="password" class="form-control" id="newPasswordInput" required placeholder="Masukkan kata sandi baru..." />
+            <label class="form-label">PIN Baru</label>
+            <input type="password" class="form-control" id="newPasswordInput" required placeholder="PIN baru..." />
           </div>
           <div class="form-group">
-            <label class="form-label">Konfirmasi Kata Sandi</label>
-            <input type="password" class="form-control" id="confirmPasswordInput" required placeholder="Ulangi kata sandi baru..." />
+            <label class="form-label">Ulangi PIN Baru</label>
+            <input type="password" class="form-control" id="confirmPasswordInput" required placeholder="Ulangi PIN..." />
           </div>
-          <button type="submit" class="btn btn-primary" style="width:100%;">Perbarui Kata Sandi</button>
+          <button type="submit" class="btn btn-primary" style="width:100%;">Simpan PIN</button>
         </form>
       </div>
     </div>
@@ -1099,22 +1059,22 @@
   <div class="modal-backdrop" id="userModal">
     <div class="modal-dialog">
       <div class="modal-head">
-        <div class="modal-head-title">Tambah Akun Petugas Baru</div>
+        <div class="modal-head-title">Tambah Akun</div>
         <button class="btn btn-outline btn-sm" onclick="DesktopApp.closeModal('userModal')">&times;</button>
       </div>
       <div class="modal-body">
         <form onsubmit="DesktopApp.submitCreateUser(event)">
           <div class="form-group">
-            <label class="form-label">Nama Petugas</label>
-            <input type="text" class="form-control" id="newUserName" required placeholder="Contoh: Budi Santoso" />
+            <label class="form-label">Nama</label>
+            <input type="text" class="form-control" id="newUserName" required placeholder="Nama lengkap..." />
           </div>
           <div class="form-grid-2">
             <div class="form-group">
-              <label class="form-label">Username Login</label>
-              <input type="text" class="form-control" id="newUserUsername" required placeholder="budi" />
+              <label class="form-label">Username</label>
+              <input type="text" class="form-control" id="newUserUsername" required placeholder="username" />
             </div>
             <div class="form-group">
-              <label class="form-label">PIN / Password</label>
+              <label class="form-label">PIN</label>
               <input type="text" class="form-control" id="newUserPassword" value="123" required />
             </div>
           </div>
@@ -1122,22 +1082,22 @@
             <div class="form-group">
               <label class="form-label">Peran</label>
               <select class="form-control" id="newUserRole">
-                <option value="STAFF">STAFF (Petugas Gudang)</option>
-                <option value="VIEWER">VIEWER (Auditor / Hanya Lihat)</option>
-                <option value="ADMIN">ADMIN (Akses Penuh)</option>
+                <option value="STAFF">STAFF (Petugas)</option>
+                <option value="VIEWER">VIEWER (Lihat Saja)</option>
+                <option value="ADMIN">ADMIN (Penuh)</option>
               </select>
             </div>
             <div class="form-group">
               <label class="form-label">Akses Lantai</label>
               <select class="form-control" id="newUserFloor">
-                <option value="ALL">Semua Lantai (L1, L2, L3)</option>
+                <option value="ALL">Semua Lantai</option>
                 <option value="L1">Lantai 1</option>
                 <option value="L2">Lantai 2</option>
                 <option value="L3">Lantai 3</option>
               </select>
             </div>
           </div>
-          <button type="submit" class="btn btn-primary" style="width:100%;">Daftarkan Akun</button>
+          <button type="submit" class="btn btn-primary" style="width:100%;">Simpan Akun</button>
         </form>
       </div>
     </div>
