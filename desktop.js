@@ -268,7 +268,7 @@ const DesktopApp = {
     if (sel) {
       sel.innerHTML = users.map(u => `
         <option value="${u.id}" ${u.id === current.id ? 'selected' : ''}>
-          ${u.name || u.username} — ${u.role === 'ADMIN' ? 'SUPER ADMIN (Akses Penuh)' : 'PETUGAS (' + this.formatAssignedFloors(u) + ')'}
+          ${u.name || u.username} (${u.role === 'ADMIN' ? 'Admin' : this.formatAssignedFloors(u)})
         </option>
       `).join('');
       this.onSelectLoginUser(sel.value);
@@ -276,7 +276,7 @@ const DesktopApp = {
   },
 
   formatAssignedFloors(user) {
-    if (user.role === 'ADMIN') return 'Semua Lantai (L1, L2, L3)';
+    if (user.role === 'ADMIN') return 'Semua Lantai';
     if (Array.isArray(user.assignedFloors)) {
       if (user.assignedFloors.includes('ALL') || user.assignedFloors.length >= 3) return 'Semua Lantai';
       return user.assignedFloors.map(f => this.floorLabel(f)).join(', ');
@@ -294,9 +294,9 @@ const DesktopApp = {
     }
     if (preview) {
       if (user.role === 'ADMIN') {
-        preview.innerHTML = `<strong>Hak Akses Super Admin (${user.name || user.username}):</strong> Akses seluruh Lantai 1, 2, 3, Master Database, Manajemen Akun, dan Pusat Laporan Dokumen A4.`;
+        preview.innerHTML = `<strong>Akses:</strong> Semua Lantai (Admin)`;
       } else {
-        preview.innerHTML = `<strong>Hak Akses Petugas (${user.name || user.username}):</strong> Operasional Stok & Opname untuk <strong>${this.formatAssignedFloors(user)}</strong>.`;
+        preview.innerHTML = `<strong>Akses:</strong> ${this.formatAssignedFloors(user)}`;
       }
     }
   },
@@ -310,7 +310,7 @@ const DesktopApp = {
 
     if (pass !== user.password && pass !== '819' && pass !== '123') {
       IstiqomahSound.playError();
-      this.showToast('PIN / Kata sandi tidak sesuai!');
+      this.showToast('PIN tidak sesuai');
       return;
     }
 
@@ -320,7 +320,7 @@ const DesktopApp = {
     document.getElementById('loginOverlay').classList.add('hidden');
     IstiqomahSound.playSuccess();
     this.renderAll();
-    this.showToast(`Selamat datang, ${user.name || user.username} (${user.role})`);
+    this.showToast(`Masuk sebagai ${user.name || user.username}`);
   },
 
   // ==========================================================================
@@ -337,17 +337,21 @@ const DesktopApp = {
 
     if (!this.engine.wifiSyncEnabled) {
       if (dot) dot.className = 'status-dot offline';
-      if (txt) txt.textContent = 'Mode Offline Penuh';
+      if (txt) txt.textContent = 'Offline';
       if (badge) { badge.className = 'badge badge-neutral'; badge.textContent = 'Nonaktif'; }
       if (toggleBtn) toggleBtn.textContent = 'Aktifkan Wi-Fi';
     } else if (this.engine.wifiConnected) {
       if (dot) dot.className = 'status-dot';
-      if (txt) txt.textContent = 'Tersambung Sinyal Wi-Fi';
+      if (txt) txt.textContent = 'Wi-Fi Terhubung';
       if (badge) { badge.className = 'badge badge-ok'; badge.textContent = 'Tersambung'; }
       if (toggleBtn) toggleBtn.textContent = 'Matikan Wi-Fi';
     } else {
       if (dot) dot.className = 'status-dot offline';
-      if (txt) txt.textContent = 'Offline Lokal';
+      if (txt) txt.textContent = 'Offline';
+      if (badge) { badge.className = 'badge badge-low'; badge.textContent = 'Mencari'; }
+      if (toggleBtn) toggleBtn.textContent = 'Matikan Wi-Fi';
+    }
+  },
       if (badge) { badge.className = 'badge badge-low'; badge.textContent = 'Mencari Server'; }
       if (toggleBtn) toggleBtn.textContent = 'Matikan Wi-Fi';
     }
@@ -735,7 +739,7 @@ const DesktopApp = {
     if (itemId) {
       const item = this.state.items.find(i => i.id === itemId);
       if (!item) return;
-      document.getElementById('itemModalTitle').textContent = 'Edit Data Produk';
+      document.getElementById('itemModalTitle').textContent = 'Edit Barang';
       document.getElementById('itemFormId').value = item.id;
       document.getElementById('itemFormName').value = item.name;
       document.getElementById('itemFormFloor').value = item.floorId;
@@ -750,7 +754,7 @@ const DesktopApp = {
       document.getElementById('itemFormNotes').value = item.notes || '';
       this.goToWizardStep(2); // When editing, jump straight to Info
     } else {
-      document.getElementById('itemModalTitle').textContent = 'Tambah Produk Baru';
+      document.getElementById('itemModalTitle').textContent = 'Tambah Barang';
       document.getElementById('itemFormId').value = '';
       document.getElementById('itemFormName').value = '';
       const fVal = this.selectedFloor !== 'ALL' ? this.selectedFloor : 'L1';
@@ -777,9 +781,9 @@ const DesktopApp = {
     document.getElementById('itemCurrentStep').value = targetStep;
 
     const stepLabels = [
-      'Langkah 1/3 — Scan Barcode Produk',
-      'Langkah 2/3 — Info Produk & Kategori',
-      'Langkah 3/3 — Stok Awal & Satuan'
+      'Langkah 1/3: Barcode',
+      'Langkah 2/3: Info Produk',
+      'Langkah 3/3: Stok & Satuan'
     ];
     document.getElementById('itemModalStepLabel').textContent = stepLabels[targetStep - 1];
 
@@ -811,11 +815,7 @@ const DesktopApp = {
     if (!feedback) return;
 
     if (!code) {
-      feedback.innerHTML = `
-        <div style="font-size:11.5px; color:var(--text-muted); padding:8px 0;">
-          Belum ada barcode dimasukkan. Anda bisa scan barcode produk, klik Auto SKU, atau lewati langkah ini.
-        </div>
-      `;
+      feedback.innerHTML = '';
       if (btnNext) btnNext.disabled = false;
       return;
     }
@@ -829,10 +829,10 @@ const DesktopApp = {
         <div class="duplicate-warning-box">
           <div class="duplicate-warning-title">
             <span>&warning;</span>
-            <span>Barcode Sudah Terdaftar di Sistem!</span>
+            <span>Barcode Sudah Digunakan!</span>
           </div>
           <div class="duplicate-warning-desc">
-            Nomor barcode <strong style="font-family:var(--font-mono); color:var(--text-main);">${code}</strong> sudah digunakan oleh produk lain:
+            Barcode <strong style="font-family:var(--font-mono); color:var(--text-main);">${code}</strong> sudah dipakai oleh:
           </div>
           <div class="duplicate-existing-item">
             <div>
@@ -840,7 +840,7 @@ const DesktopApp = {
               <div style="font-size:11px; color:var(--text-muted);">${this.floorLabel(duplicate.floorId)} &bull; ${duplicate.location || 'Rak'} &bull; Stok: <strong style="color:var(--text-main);">${duplicate.stock} ${duplicate.unit}</strong></div>
             </div>
             <button type="button" class="btn btn-primary btn-sm" onclick="DesktopApp.jumpToExistingItem('${duplicate.id}')">
-              Buka Produk Ini &rarr;
+              Buka Produk &rarr;
             </button>
           </div>
         </div>
@@ -848,9 +848,9 @@ const DesktopApp = {
       if (btnNext) btnNext.disabled = true;
     } else {
       feedback.innerHTML = `
-        <div style="display:flex; align-items:center; gap:8px; padding:10px 12px; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); border-radius:var(--radius-sm); margin-top:10px;">
-          <span style="color:var(--success); font-weight:800; font-size:14px;">&check;</span>
-          <span style="font-size:12px; color:var(--success); font-weight:700;">Barcode unik &amp; tersedia untuk produk ini!</span>
+        <div style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); border-radius:var(--radius-sm); margin-top:10px;">
+          <span style="color:var(--success); font-weight:800; font-size:13px;">&check;</span>
+          <span style="font-size:12px; color:var(--success); font-weight:700;">Barcode tersedia</span>
         </div>
       `;
       if (btnNext) btnNext.disabled = false;
@@ -1045,10 +1045,8 @@ const DesktopApp = {
     const container = document.getElementById('completionActiveItemContainer');
     if (!activeItem) {
       container.innerHTML = `
-        <div class="completion-item-card" style="border-left-color:var(--safe-tx); text-align:center; padding:24px;">
-          <div style="font-size:22px; color:var(--safe-tx); font-weight:800; margin-bottom:6px;">&check; Luar Biasa!</div>
-          <div style="font-size:14px; font-weight:800; color:var(--text-main);">Seluruh Produk di ${this.floorLabel(this.completionSelectedFloor)} Sudah Ber-barcode</div>
-          <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Tidak ada antrian barang tanpa barcode.</div>
+        <div class="completion-item-card" style="border-left-color:var(--safe-tx); text-align:center; padding:18px;">
+          <div style="font-size:14px; font-weight:800; color:var(--text-main);">Semua produk di ${this.floorLabel(this.completionSelectedFloor)} sudah ber-barcode.</div>
         </div>
       `;
       document.getElementById('completionBarcodeInput').disabled = true;
@@ -1150,7 +1148,7 @@ const DesktopApp = {
     IstiqomahSound.playSuccess();
     const user = this.getCurrentUser();
     this.engine.saveState(this.state, user.username);
-    this.showToast(`&check; Barcode ${code} tersimpan untuk ${item.name}`);
+    this.showToast(`Barcode ${code} tersimpan`);
 
     // Auto-advance
     document.getElementById('completionBarcodeInput').value = '';
@@ -1164,7 +1162,7 @@ const DesktopApp = {
     const user = this.getCurrentUser();
     if (user.role !== 'ADMIN') {
       IstiqomahSound.playError();
-      this.showToast('Hanya Super Admin (Fahri) yang berwenang menghapus master barang');
+      this.showToast('Hanya Admin yang berwenang menghapus barang');
       return;
     }
     const idx = this.state.items.findIndex(i => i.id === itemId);
@@ -2417,7 +2415,7 @@ const DesktopApp = {
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
     this.downloadBlob(blob, `Laporan_${branch}_${fl}_${IstiqomahUtils.formatDateOnly()}.csv`);
     IstiqomahSound.playSuccess();
-    this.showToast(`Laporan ${branch} berhasil diekspor ke format Excel (.CSV)`);
+    this.showToast(`Laporan diekspor ke CSV`);
   },
 
   // ==========================================================================
@@ -2431,7 +2429,7 @@ const DesktopApp = {
     IstiqomahSound.playClick();
     this.engine.setWifiSyncEnabled(!this.engine.wifiSyncEnabled);
     this.updateWifiStatusUI();
-    this.showToast(this.engine.wifiSyncEnabled ? 'Sinkronisasi Sinyal Wi-Fi Diaktifkan' : 'Mode Offline Terisolasi Diaktifkan');
+    this.showToast(this.engine.wifiSyncEnabled ? 'Wi-Fi diaktifkan' : 'Wi-Fi dinonaktifkan');
   },
 
   async manualWifiSync() {
@@ -2442,9 +2440,9 @@ const DesktopApp = {
     this.updateWifiStatusUI();
     if (ok) {
       IstiqomahSound.playSuccess();
-      this.showToast('Data berhasil disinkronkan ke server Wi-Fi lokal');
+      this.showToast('Data disinkronkan via Wi-Fi');
     } else {
-      this.showToast('Server Wi-Fi belum aktif, data tetap aman tersimpan di komputer');
+      this.showToast('Server Wi-Fi tidak terhubung');
     }
   },
 
@@ -2465,7 +2463,7 @@ const DesktopApp = {
     const blob = new Blob([json], { type: 'application/json' });
     this.downloadBlob(blob, `IstiqomahStock_FULL_BACKUP_${IstiqomahUtils.formatDateOnly()}.json`);
     IstiqomahSound.playSuccess();
-    this.showToast('File JSON Master Database berhasil diunduh');
+    this.showToast('Cadangan JSON diunduh');
   },
 
   exportFloorJson(floorId) {
@@ -2483,7 +2481,7 @@ const DesktopApp = {
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
     this.downloadBlob(blob, `Istiqomah_Bulusari_${floorId}_${IstiqomahUtils.formatDateOnly()}.json`);
     IstiqomahSound.playSuccess();
-    this.showToast(`Data cadangan ${this.floorLabel(floorId)} berhasil diekspor`);
+    this.showToast(`Cadangan ${this.floorLabel(floorId)} diekspor`);
   },
 
   exportCurrentFloorJson() {
@@ -2513,7 +2511,7 @@ const DesktopApp = {
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
     this.downloadBlob(blob, `Tabel_Stok_Istiqomah_Bulusari_${IstiqomahUtils.formatDateOnly()}.csv`);
     IstiqomahSound.playSuccess();
-    this.showToast('File CSV berhasil diunduh');
+    this.showToast('File CSV diunduh');
   },
 
   exportZipArchive() {
@@ -2537,7 +2535,7 @@ const DesktopApp = {
     ]);
     this.downloadBlob(blob, `Arsip_Istiqomah_Bulusari_${IstiqomahUtils.formatDateOnly()}.zip`);
     IstiqomahSound.playSuccess();
-    this.showToast('Paket Arsip ZIP Lengkap berhasil diunduh');
+    this.showToast('Arsip ZIP diunduh');
   },
 
   handleMasterFileSelect(event) {
@@ -2560,7 +2558,7 @@ const DesktopApp = {
             this.engine.saveState(this.state, user.username);
             IstiqomahSound.playSuccess();
             this.renderAll();
-            this.showToast(`Data ${this.floorLabel(fl)} berhasil diperbarui (${count} barang)`);
+            this.showToast(`Data ${this.floorLabel(fl)} diperbarui (${count} barang)`);
           }
         }
         // Full database JSON
@@ -2578,7 +2576,7 @@ const DesktopApp = {
             this.engine.saveState(this.state, user.username);
             IstiqomahSound.playSuccess();
             this.renderAll();
-            this.showToast('Seluruh database berhasil ditimpa dan dipulihkan!');
+            this.showToast('Seluruh database berhasil dipulihkan');
           } else if (choice && choice.toUpperCase() === 'GABUNG') {
             const existingBarcodes = new Set(this.state.items.map(i => i.barcode));
             let addedCount = 0;
@@ -2591,7 +2589,7 @@ const DesktopApp = {
             this.engine.saveState(this.state, user.username);
             IstiqomahSound.playSuccess();
             this.renderAll();
-            this.showToast(`Berhasil menggabungkan ${addedCount} barang baru ke database!`);
+            this.showToast(`Berhasil menambahkan ${addedCount} barang baru`);
           }
         } else {
           IstiqomahSound.playError();
@@ -2610,16 +2608,34 @@ const DesktopApp = {
     const user = this.getCurrentUser();
     if (user.role !== 'ADMIN') {
       IstiqomahSound.playError();
-      this.showToast('Akses Ditolak: Hanya Super Admin (Fahri) yang berwenang mereset stok!');
+      this.showToast('Hanya Admin yang berwenang mereset stok');
       return;
     }
 
-    const conf = prompt("PERINGATAN TINGGI!\nSeluruh jumlah stok di Lantai 1, 2, dan 3 akan disetel ke 0.\nKetik 'RESET STOK' untuk melanjutkan:", "");
+    const conf = prompt("PERINGATAN!\nSeluruh jumlah stok di Lantai 1, 2, dan 3 akan disetel ke 0.\nKetik 'RESET STOK' untuk melanjutkan:", "");
     if (conf === 'RESET STOK') {
       (this.state.items || []).forEach(i => {
         i.stock = 0;
         i.updatedAt = IstiqomahUtils.formatNow();
       });
+      this.state.mutations.unshift({
+        id: 'MUT-RESET-' + Date.now().toString().slice(-4),
+        timestamp: IstiqomahUtils.formatNow(),
+        itemId: 'ALL',
+        itemName: 'Semua Barang Gudang',
+        type: 'OPNAME',
+        qty: 0,
+        unit: 'Pcs',
+        floorId: 'L1',
+        user: user.name || user.username,
+        note: 'RESET STOK DARURAT KE 0 OLEH ADMIN'
+      });
+      this.engine.saveState(this.state, user.username);
+      IstiqomahSound.playError();
+      this.renderAll();
+      this.showToast('Semua stok direset ke 0');
+    }
+  },
       this.state.mutations.unshift({
         id: 'MUT-RESET-' + Date.now().toString().slice(-4),
         timestamp: IstiqomahUtils.formatNow(),
@@ -2687,7 +2703,7 @@ const DesktopApp = {
     if (!target) return;
     this.engine.setCurrentUser(target.id);
     this.renderAll();
-    this.showToast(`Beralih ke sesi akun: ${target.name || target.username}`);
+    this.showToast(`Beralih ke akun ${target.name || target.username}`);
   },
 
   openPasswordModal() {
@@ -2705,7 +2721,7 @@ const DesktopApp = {
     if (!newPass) return;
     if (newPass !== confPass) {
       IstiqomahSound.playError();
-      this.showToast('Konfirmasi kata sandi tidak cocok!');
+      this.showToast('Konfirmasi PIN tidak cocok');
       return;
     }
 
@@ -2714,7 +2730,7 @@ const DesktopApp = {
     this.engine.saveState(this.state, current.username);
     this.closeModal('passwordModal');
     IstiqomahSound.playSuccess();
-    this.showToast('Kata sandi berhasil diperbarui.');
+    this.showToast('PIN diperbarui');
   },
 
   openUserModal() {
@@ -2722,7 +2738,7 @@ const DesktopApp = {
     const user = this.getCurrentUser();
     if (user.role !== 'ADMIN') {
       IstiqomahSound.playError();
-      this.showToast('Hanya Super Admin (Fahri) yang dapat menambahkan akun baru');
+      this.showToast('Hanya Admin yang dapat menambah akun');
       return;
     }
 
@@ -2749,7 +2765,7 @@ const DesktopApp = {
 
     if ((this.state.users || []).some(u => u.username.toLowerCase() === username)) {
       IstiqomahSound.playError();
-      this.showToast(`Username "${username}" sudah digunakan!`);
+      this.showToast(`Username "${username}" sudah digunakan`);
       return;
     }
 
@@ -2768,20 +2784,32 @@ const DesktopApp = {
     this.closeModal('userModal');
     IstiqomahSound.playSuccess();
     this.renderAll();
-    this.showToast(`Akun "${name}" berhasil didaftarkan`);
+    this.showToast(`Akun "${name}" ditambahkan`);
   },
 
   deleteAccount(userId) {
     const currentUser = this.getCurrentUser();
     if (currentUser.role !== 'ADMIN') {
       IstiqomahSound.playError();
-      this.showToast('Hanya Super Admin (Fahri) yang dapat menghapus akun petugas');
+      this.showToast('Hanya Admin yang dapat menghapus akun');
       return;
     }
     if (userId === 'usr_fahri') {
       IstiqomahSound.playError();
-      this.showToast('Akun Super Admin Fahri tidak dapat dihapus');
+      this.showToast('Akun admin utama tidak dapat dihapus');
       return;
+    }
+
+    const target = this.state.users.find(u => u.id === userId);
+    if (!target) return;
+    if (!confirm(`Hapus akun petugas "${target.name || target.username}"?`)) return;
+
+    this.state.users = (this.state.users || []).filter(u => u.id !== userId);
+    this.engine.saveState(this.state, currentUser.username);
+    IstiqomahSound.playStockSubtract();
+    this.renderAll();
+    this.showToast(`Akun "${target.name || target.username}" dihapus`);
+  },
     }
 
     const target = this.state.users.find(u => u.id === userId);
