@@ -192,7 +192,7 @@ class IstiqomahMobileApp {
 
     sel.innerHTML = this.state.users.map(u => `
       <option value="${u.id}" ${u.id === currentId ? 'selected' : ''}>
-        ${u.username} (${u.role === 'ADMIN' ? 'Admin Utama' : this.getFloorLabel(u.floorAccess)})
+        ${u.username} (${u.role === 'ADMIN' ? 'Admin' : this.getFloorLabel(u.floorAccess)})
       </option>
     `).join('');
 
@@ -210,9 +210,9 @@ class IstiqomahMobileApp {
     }
     if (infoEl) {
       if (u.role === 'ADMIN') {
-        infoEl.innerHTML = `<strong>Akses Penuh Super Admin:</strong> Semua Lantai (Lantai 1, 2, 3)`;
+        infoEl.innerHTML = `<strong>Akses:</strong> Semua Lantai (Admin)`;
       } else {
-        infoEl.innerHTML = `<strong>Akses Staf:</strong> ${this.getFloorLabel(u.floorAccess)}`;
+        infoEl.innerHTML = `<strong>Akses:</strong> ${this.getFloorLabel(u.floorAccess)}`;
       }
     }
   }
@@ -233,11 +233,11 @@ class IstiqomahMobileApp {
         this.selectedFloor = user.floorAccess;
       }
       document.getElementById('mobileLoginScreen')?.classList.add('hidden');
-      this.showToast(`Selamat datang, ${user.username}`);
+      this.showToast(`Masuk sebagai ${user.username}`);
       this.render();
     } else {
       IstiqomahSound.error();
-      this.showToast('PIN / Password salah');
+      this.showToast('PIN tidak sesuai');
     }
   }
 
@@ -284,25 +284,25 @@ class IstiqomahMobileApp {
     if (!el) return;
     const uSub = document.getElementById('drawerUserSub');
     if (uSub && this.currentUser) {
-      uSub.textContent = `${this.currentUser.username} (${this.currentUser.role === 'ADMIN' ? 'Admin Utama' : this.getFloorLabel(this.currentUser.floorAccess)})`;
+      uSub.textContent = `${this.currentUser.username}`;
     }
 
     el.innerHTML = `
-      <div class="drawer-group-label">Menu Utama</div>
+      <div class="drawer-group-label">Menu</div>
       <div class="drawer-link ${this.currentView === 'dashboard' ? 'active' : ''}" onclick="app.switchView('dashboard')">
-        <div class="drawer-link-left">${ICONS.grid} <span>Ringkasan Stok</span></div>
+        <div class="drawer-link-left">${ICONS.grid} <span>Ringkasan</span></div>
       </div>
       <div class="drawer-link ${this.currentView === 'opname' ? 'active' : ''}" onclick="app.switchView('opname')">
-        <div class="drawer-link-left">${ICONS.scan} <span>Stock Opname Aisle</span></div>
+        <div class="drawer-link-left">${ICONS.scan} <span>Stock Opname</span></div>
       </div>
       <div class="drawer-link" onclick="app.openBarcodeCompletionModal()">
-        <div class="drawer-link-left">${ICONS.scan} <span>Lengkapi Barcode (Progress)</span></div>
+        <div class="drawer-link-left">${ICONS.scan} <span>Lengkapi Barcode</span></div>
       </div>
       <div class="drawer-link ${this.currentView === 'mutations' ? 'active' : ''}" onclick="app.switchView('mutations')">
         <div class="drawer-link-left">${ICONS.transfer} <span>Riwayat Mutasi</span></div>
       </div>
 
-      <div class="drawer-group-label">3 Lantai Bulusari</div>
+      <div class="drawer-group-label">3 Lantai</div>
       <div class="drawer-link ${this.currentView === 'floors' && this.selectedFloor === 'L1' ? 'active' : ''}" onclick="app.switchView('floors', 'L1')">
         <div class="drawer-link-left">${ICONS.layers} <span>Lantai 1</span></div>
       </div>
@@ -313,12 +313,12 @@ class IstiqomahMobileApp {
         <div class="drawer-link-left">${ICONS.layers} <span>Lantai 3</span></div>
       </div>
 
-      <div class="drawer-group-label">Data & Pengaturan</div>
+      <div class="drawer-group-label">Pengaturan</div>
       <div class="drawer-link ${this.currentView === 'sync' ? 'active' : ''}" onclick="app.switchView('sync')">
-        <div class="drawer-link-left">${ICONS.database} <span>Ekspor Impor & Wi-Fi</span></div>
+        <div class="drawer-link-left">${ICONS.database} <span>Database & Wi-Fi</span></div>
       </div>
       <div class="drawer-link ${this.currentView === 'accounts' ? 'active' : ''}" onclick="app.switchView('accounts')">
-        <div class="drawer-link-left">${ICONS.users} <span>Manajemen Akun</span></div>
+        <div class="drawer-link-left">${ICONS.users} <span>Akun</span></div>
       </div>
     `;
   }
@@ -352,7 +352,7 @@ class IstiqomahMobileApp {
   // ==========================================================================
   renderDashboard(container) {
     document.getElementById('headerTitle').textContent = 'Istiqomah Bulusari';
-    document.getElementById('headerSub').textContent = `3 Lantai &bull; ${this.currentUser.username} (${this.currentUser.role === 'ADMIN' ? 'Admin' : 'Staf'})`;
+    document.getElementById('headerSub').textContent = 'Bulusari';
 
     const totalSku = this.state.items.length;
     const totalUnits = this.state.items.reduce((s, i) => s + i.stock, 0);
@@ -362,9 +362,9 @@ class IstiqomahMobileApp {
     container.innerHTML = `
       <div class="stats-grid-2">
         <div class="stat-box">
-          <div class="stat-label">Total Unit Fisik</div>
+          <div class="stat-label">Total Stok</div>
           <div class="stat-value">${totalUnits.toLocaleString('id-ID')}</div>
-          <div class="stat-meta">${totalSku} SKU Terdaftar</div>
+          <div class="stat-meta">${totalSku} SKU</div>
         </div>
         <div class="stat-box stat-warn" style="cursor:pointer;" onclick="app.switchView('floors')">
           <div class="stat-label">Perlu Restock</div>
@@ -378,7 +378,7 @@ class IstiqomahMobileApp {
       <!-- 3 LANTAI FISIK BULUSARI -->
       <div class="card">
         <div class="card-header">
-          <div class="card-title">${ICONS.layers} <span>3 Lantai Fisik Bulusari</span></div>
+          <div class="card-title">${ICONS.layers} <span>3 Lantai Gudang</span></div>
           <button class="btn btn-sm primary" onclick="app.openNewItemModal()">${ICONS.plus} <span>Barang</span></button>
         </div>
 
@@ -408,7 +408,7 @@ class IstiqomahMobileApp {
       <!-- PERINGATAN RESTOCK -->
       <div class="card">
         <div class="card-header">
-          <div class="card-title">${ICONS.alert} <span>Peringatan Stok Menipis</span></div>
+          <div class="card-title">${ICONS.alert} <span>Stok Menipis &amp; Habis</span></div>
         </div>
         <div class="item-list">
           ${emptyItems.concat(lowItems).slice(0, 5).map(item => `
@@ -424,7 +424,7 @@ class IstiqomahMobileApp {
                 </div>
               </div>
             </div>
-          `).join('') || `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:12px;">Semua stok dalam batas aman.</div>`}
+          `).join('') || `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:12px;">Semua stok aman.</div>`}
         </div>
       </div>
     `;
@@ -436,7 +436,7 @@ class IstiqomahMobileApp {
   renderFloorsView(container) {
     const flName = this.getFloorLabel(this.selectedFloor);
     document.getElementById('headerTitle').textContent = flName;
-    document.getElementById('headerSub').textContent = 'Daftar Stok Fisik Barang';
+    document.getElementById('headerSub').textContent = 'Stok Barang';
 
     const hasAccess = this.canAccessFloor(this.selectedFloor);
 
@@ -525,7 +525,7 @@ class IstiqomahMobileApp {
   // ==========================================================================
   renderOpnameView(container) {
     document.getElementById('headerTitle').textContent = 'Stock Opname';
-    document.getElementById('headerSub').textContent = 'Penghitungan Cepat & Audit Aisle';
+    document.getElementById('headerSub').textContent = 'Hitung Stok';
 
     const groups = this.state.soGroups || [];
     const activeGrp = groups.find(g => g.id === this.activeSoGroupId) || groups[0];
@@ -533,7 +533,7 @@ class IstiqomahMobileApp {
     container.innerHTML = `
       <div class="card">
         <div class="card-header">
-          <div class="card-title">${ICONS.clipboard} <span>Sesi Opname Aktif</span></div>
+          <div class="card-title">${ICONS.clipboard} <span>Sesi Opname</span></div>
           <button class="btn btn-sm" onclick="app.createSoGroup()">${ICONS.plus} <span>Sesi Baru</span></button>
         </div>
 
@@ -723,19 +723,19 @@ class IstiqomahMobileApp {
   // ==========================================================================
   renderMutationsView(container) {
     document.getElementById('headerTitle').textContent = 'Riwayat Mutasi';
-    document.getElementById('headerSub').textContent = 'Audit Log Keluar Masuk & Opname';
+    document.getElementById('headerSub').textContent = 'Riwayat';
 
     container.innerHTML = `
       <div class="card">
         <div class="card-header">
-          <div class="card-title">${ICONS.transfer} <span>Log Mutasi Terkini</span></div>
+          <div class="card-title">${ICONS.transfer} <span>Log Mutasi</span></div>
         </div>
         <div class="item-list">
           ${this.state.mutations.map(m => `
             <div class="item-row" style="cursor:default;">
               <div class="item-info">
                 <div class="item-title">${this.escape(m.itemName)}</div>
-                <div class="item-sub">${this.getFloorLabel(m.floorId)} &bull; Oleh: ${this.escape(m.user || 'Fahri')} &bull; ${m.timestamp}</div>
+                <div class="item-sub">${this.getFloorLabel(m.floorId)} &bull; ${this.escape(m.user || 'Fahri')} &bull; ${m.timestamp}</div>
               </div>
               <div class="item-right">
                 <div>
@@ -755,62 +755,47 @@ class IstiqomahMobileApp {
   // ==========================================================================
   renderSyncView(container) {
     document.getElementById('headerTitle').textContent = 'Data & Sinkronisasi';
-    document.getElementById('headerSub').textContent = 'Cadangan Offline & Opsi Sinyal Wi-Fi';
+    document.getElementById('headerSub').textContent = 'Cadangan & Wi-Fi';
 
     container.innerHTML = `
-      <div class="card" style="border-left: 3.5px solid #38BDF8;">
-        <div style="font-weight:700; font-size:13px; color:#38BDF8; display:flex; align-items:center; gap:6px;">
-          ${ICONS.printer} <span>Pusat Cetak Laporan A4 Multi-Cabang</span>
-        </div>
-        <div style="font-size:12px; color:var(--text-muted); line-height:1.4;">
-          Sesuai standar operasional Istiqomah Bulusari, <strong>6 Jenis Cetak Laporan A4</strong> (Rekap Stok, Pesanan Restock, Audit Opname, Jurnal Mutasi, Lembar Kerja Kosong, Katalog Barcode) dialokasikan eksklusif pada <strong>Desktop (Port 3001)</strong> untuk menjamin presisi tata letak kertas A4 dan kejelasan cetak.
-        </div>
-      </div>
-
       <div class="card">
         <div class="card-header">
-          <div class="card-title">${ICONS.database} <span>Cadangan Data Offline</span></div>
-        </div>
-        <div style="font-size:12px; color:var(--text-secondary);">
-          Gunakan cadangan JSON / ZIP untuk memindahkan database secara 100% offline via file atau USB.
+          <div class="card-title">${ICONS.database} <span>Cadangan Data</span></div>
         </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-          <button class="btn primary" onclick="app.exportFullJson()">${ICONS.download} <span>Ekspor Semua (.JSON)</span></button>
-          <button class="btn" onclick="document.getElementById('importJsonInput').click()">${ICONS.upload} <span>Impor (.JSON)</span></button>
+          <button class="btn primary" onclick="app.exportFullJson()">${ICONS.download} <span>Ekspor JSON</span></button>
+          <button class="btn" onclick="document.getElementById('importJsonInput').click()">${ICONS.upload} <span>Impor JSON</span></button>
         </div>
         <input type="file" id="importJsonInput" accept=".json" style="display:none;" onchange="app.handleImportJson(event)">
 
         <div style="border-top:1px solid var(--border-subtle); padding-top:10px; display:flex; flex-direction:column; gap:8px;">
-          <label style="font-size:11.5px; font-weight:600; color:var(--text-secondary);">Ekspor Cadangan Per Lantai:</label>
+          <label style="font-size:11.5px; font-weight:600; color:var(--text-secondary);">Ekspor Lantai:</label>
           <div style="display:flex; gap:8px;">
             <select id="exportFloorSel" class="select" style="flex:1;">
               <option value="L1">Lantai 1</option>
               <option value="L2">Lantai 2</option>
               <option value="L3">Lantai 3</option>
             </select>
-            <button class="btn" onclick="app.exportFloorJson(document.getElementById('exportFloorSel').value)">${ICONS.download} <span>Ekspor Lantai</span></button>
+            <button class="btn" onclick="app.exportFloorJson(document.getElementById('exportFloorSel').value)">${ICONS.download} <span>Ekspor</span></button>
           </div>
         </div>
 
-        <button class="btn" onclick="app.exportBackupZip()">${ICONS.download} <span>Unduh Arsip Cadangan (.ZIP & CSV Excel)</span></button>
+        <button class="btn" onclick="app.exportBackupZip()">${ICONS.download} <span>Ekspor ZIP &amp; CSV</span></button>
       </div>
 
       <div class="card">
         <div class="card-header">
-          <div class="card-title">${ICONS.wifi} <span>Opsi Sinkron Satu Jaringan (Wi-Fi)</span></div>
-          <span class="badge ${this.engine.wifiSyncEnabled ? 'safe' : 'low'}">${this.engine.wifiSyncEnabled ? 'Aktif' : 'Offline Murni'}</span>
-        </div>
-        <div style="font-size:12px; color:var(--text-secondary);">
-          Hubungkan HP dan Laptop/PC ke satu sinyal Wi-Fi yang sama untuk sinkronisasi otomatis tanpa kabel.
+          <div class="card-title">${ICONS.wifi} <span>Sinkronisasi Wi-Fi</span></div>
+          <span class="badge ${this.engine.wifiSyncEnabled ? 'safe' : 'low'}">${this.engine.wifiSyncEnabled ? 'Aktif' : 'Offline'}</span>
         </div>
 
         <div style="display:flex; gap:8px;">
           <button class="btn ${this.engine.wifiSyncEnabled ? '' : 'primary'}" style="flex:1;" onclick="app.toggleWifiSync()">
-            ${this.engine.wifiSyncEnabled ? 'Matikan Mode Wi-Fi' : 'Aktifkan Mode Wi-Fi'}
+            ${this.engine.wifiSyncEnabled ? 'Matikan Wi-Fi' : 'Aktifkan Wi-Fi'}
           </button>
           <button class="btn primary" style="flex:1;" onclick="app.syncWifiNow()">
-            ${ICONS.sync} <span>Sinkronkan Sekarang</span>
+            ${ICONS.sync} <span>Sinkronkan</span>
           </button>
         </div>
       </div>
@@ -820,7 +805,7 @@ class IstiqomahMobileApp {
   toggleWifiSync() {
     IstiqomahSound.click();
     this.engine.setWifiSyncEnabled(!this.engine.wifiSyncEnabled);
-    this.showToast(this.engine.wifiSyncEnabled ? 'Mode Wi-Fi diaktifkan' : 'Mode Offline Murni');
+    this.showToast(this.engine.wifiSyncEnabled ? 'Wi-Fi aktif' : 'Offline');
     this.render();
   }
 
@@ -830,10 +815,10 @@ class IstiqomahMobileApp {
     const ok = await this.engine.pushWifiSync(this.state);
     if (ok) {
       IstiqomahSound.chime();
-      this.showToast('Berhasil sinkron dengan Desktop melalui Wi-Fi');
+      this.showToast('Data disinkronkan via Wi-Fi');
     } else {
       IstiqomahSound.error();
-      this.showToast('Server Wi-Fi tidak terdeteksi, data tersimpan aman secara offline');
+      this.showToast('Server Wi-Fi tidak terhubung');
     }
     this.render();
   }
@@ -852,7 +837,7 @@ class IstiqomahMobileApp {
     a.href = url;
     a.download = `Istiqomah_Bulusari_Full_${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
-    this.showToast('Database JSON berhasil diunduh');
+    this.showToast('Cadangan JSON diunduh');
   }
 
   exportFloorJson(floorId) {
@@ -871,7 +856,7 @@ class IstiqomahMobileApp {
     a.href = url;
     a.download = `Istiqomah_Bulusari_${floorId}_${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
-    this.showToast(`Data ${this.getFloorLabel(floorId)} berhasil diunduh`);
+    this.showToast(`Cadangan ${this.getFloorLabel(floorId)} diunduh`);
   }
 
   handleImportJson(ev) {
@@ -884,7 +869,7 @@ class IstiqomahMobileApp {
         if (parsed.type === 'ISTIQOMAH_FULL_DB' && parsed.state) {
           this.state = parsed.state;
           IstiqomahSound.chime();
-          this.save('Database penuh berhasil diimpor');
+          this.save('Database berhasil diimpor');
           this.render();
         } else if (parsed.type === 'ISTIQOMAH_FLOOR_DB' && parsed.floorId && Array.isArray(parsed.items)) {
           const other = this.state.items.filter(i => i.floorId !== parsed.floorId);
@@ -926,7 +911,7 @@ class IstiqomahMobileApp {
     a.download = `Backup_Istiqomah_Bulusari_${dateStr}.zip`;
     a.click();
     IstiqomahSound.chime();
-    this.showToast('Arsip cadangan (.ZIP) berhasil diunduh');
+    this.showToast('Arsip ZIP diunduh');
   }
 
   // ==========================================================================
@@ -934,19 +919,19 @@ class IstiqomahMobileApp {
   // ==========================================================================
   renderAccountsView(container) {
     document.getElementById('headerTitle').textContent = 'Manajemen Akun';
-    document.getElementById('headerSub').textContent = 'Admin Utama: Fahri';
+    document.getElementById('headerSub').textContent = 'Kelola Akun';
 
     container.innerHTML = `
       <div class="card">
         <div class="card-header">
-          <div class="card-title">${ICONS.user} <span>Sesi Akun Aktif</span></div>
-          <button class="btn btn-sm danger" onclick="app.openLoginDashboard()">Keluar Sesi</button>
+          <div class="card-title">${ICONS.user} <span>Akun Aktif</span></div>
+          <button class="btn btn-sm danger" onclick="app.openLoginDashboard()">Keluar</button>
         </div>
         <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--bg-surface-elevated); border:1px solid var(--border-medium); border-radius:var(--radius-md);">
           <div>
             <div style="font-weight:800; font-size:14px; color:var(--text-primary);">${this.escape(this.currentUser.username)}</div>
             <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">
-              Hak Akses: ${this.currentUser.role === 'ADMIN' ? 'Admin Utama (Akses Semua Lantai)' : 'Staf (' + this.getFloorLabel(this.currentUser.floorAccess) + ')'}
+              Akses: ${this.currentUser.role === 'ADMIN' ? 'Semua Lantai (Admin)' : this.getFloorLabel(this.currentUser.floorAccess)}
             </div>
           </div>
           <span class="badge safe">${this.currentUser.role}</span>
@@ -956,16 +941,16 @@ class IstiqomahMobileApp {
       ${this.isAdmin() ? `
         <div class="card">
           <div class="card-header">
-            <div class="card-title">${ICONS.plus} <span>Buat Akun Staf Baru</span></div>
+            <div class="card-title">${ICONS.plus} <span>Tambah Akun</span></div>
           </div>
           <form onsubmit="event.preventDefault(); app.createNewUserAccount();" style="display:flex; flex-direction:column; gap:10px;">
             <div class="form-field">
-              <label>Nama Akun / Username</label>
-              <input type="text" id="newAccUsername" class="input" placeholder="Contoh: Petugas Lantai 1..." required>
+              <label>Username</label>
+              <input type="text" id="newAccUsername" class="input" placeholder="username" required>
             </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
               <div class="form-field">
-                <label>PIN / Password</label>
+                <label>PIN</label>
                 <input type="text" id="newAccPassword" class="input" value="123" required>
               </div>
               <div class="form-field">
@@ -977,27 +962,27 @@ class IstiqomahMobileApp {
               </div>
             </div>
             <div class="form-field">
-              <label>Hak Akses Lantai Fisik</label>
+              <label>Akses Lantai</label>
               <select id="newAccFloor" class="select">
-                <option value="ALL">Semua Lantai (Lantai 1, 2, 3)</option>
+                <option value="ALL">Semua Lantai</option>
                 <option value="L1">Lantai 1</option>
                 <option value="L2">Lantai 2</option>
                 <option value="L3">Lantai 3</option>
               </select>
             </div>
-            <button type="submit" class="btn primary">Buat Akun</button>
+            <button type="submit" class="btn primary">Simpan Akun</button>
           </form>
         </div>
 
         <div class="card">
           <div class="card-header">
-            <div class="card-title">${ICONS.users} <span>Daftar Akun Terdaftar (${this.state.users.length})</span></div>
+            <div class="card-title">${ICONS.users} <span>Daftar Akun (${this.state.users.length})</span></div>
           </div>
           <div class="item-list">
             ${this.state.users.map(u => `
               <div class="item-row" style="cursor:default;">
                 <div class="item-info">
-                  <div class="item-title">${this.escape(u.username)} ${u.username.toLowerCase() === 'fahri' ? '(Admin Utama)' : ''}</div>
+                  <div class="item-title">${this.escape(u.username)} ${u.username.toLowerCase() === 'fahri' ? '(Admin)' : ''}</div>
                   <div class="item-sub">Akses: ${u.floorAccess === 'ALL' ? 'Semua Lantai' : this.getFloorLabel(u.floorAccess)} &bull; PIN: ${this.escape(u.password)}</div>
                 </div>
                 <div class="item-right">
@@ -1011,7 +996,7 @@ class IstiqomahMobileApp {
         </div>
       ` : `
         <div class="card" style="text-align:center; color:var(--text-muted); padding:16px;">
-          Hanya Super Admin (<strong>Fahri</strong>) yang dapat menambah dan mengelola akun staf.
+          Hanya Admin yang dapat mengelola akun.
         </div>
       `}
     `;
@@ -1039,7 +1024,7 @@ class IstiqomahMobileApp {
       createdAt: IstiqomahUtils.formatNow().slice(0, 10)
     });
     IstiqomahSound.chime();
-    this.save(`Akun "${username}" berhasil dibuat`);
+    this.save(`Akun "${username}" dibuat`);
     this.render();
   }
 
@@ -1199,7 +1184,7 @@ class IstiqomahMobileApp {
 
   openNewItemModal(floorId = 'L1', barcode = '') {
     IstiqomahSound.click();
-    document.getElementById('itemFormTitle').textContent = 'Tambah Produk Baru';
+    document.getElementById('itemFormTitle').textContent = 'Tambah Barang';
     document.getElementById('formItemId').value = '';
     document.getElementById('formItemName').value = '';
     document.getElementById('formItemFloor').value = floorId;
@@ -1227,7 +1212,7 @@ class IstiqomahMobileApp {
     const item = this.activeItem;
     if (!item) return;
     this.closeModal('mutationModal');
-    document.getElementById('itemFormTitle').textContent = 'Edit Data Produk';
+    document.getElementById('itemFormTitle').textContent = 'Edit Barang';
     document.getElementById('formItemId').value = item.id;
     document.getElementById('formItemName').value = item.name;
     document.getElementById('formItemFloor').value = item.floorId;
@@ -1265,9 +1250,9 @@ class IstiqomahMobileApp {
 
     const stepLabel = document.getElementById('itemFormStepLabel');
     if (stepLabel) {
-      if (step === 1) stepLabel.textContent = 'Langkah 1/3 — Scan Barcode';
-      if (step === 2) stepLabel.textContent = 'Langkah 2/3 — Info Produk';
-      if (step === 3) stepLabel.textContent = 'Langkah 3/3 — Stok & Satuan';
+      if (step === 1) stepLabel.textContent = 'Langkah 1/3: Barcode';
+      if (step === 2) stepLabel.textContent = 'Langkah 2/3: Info Produk';
+      if (step === 3) stepLabel.textContent = 'Langkah 3/3: Stok & Satuan';
     }
 
     document.getElementById('formWizardStep').value = step;
@@ -1292,14 +1277,14 @@ class IstiqomahMobileApp {
       feedback.innerHTML = `
         <div class="duplicate-warning-box">
           <div style="font-weight:700; color:var(--warning); font-size:12px; margin-bottom:4px;">
-            Peringatan: Barcode Sudah Digunakan!
+            Barcode Sudah Digunakan!
           </div>
           <div style="font-size:11.5px; color:var(--text-primary); font-weight:600;">
-            Barang: <strong>${this.escape(dup.name)}</strong> (${this.getFloorLabel(dup.floorId)} &bull; ${this.escape(dup.location)})
+            Barang: <strong>${this.escape(dup.name)}</strong> (${this.getFloorLabel(dup.floorId)})
           </div>
           <div style="margin-top:6px;">
             <button type="button" class="btn btn-sm" onclick="app.closeModal('itemFormModal'); app.openMutationModal('${dup.id}')">
-              Buka Barang Ini &rarr;
+              Buka Barang &rarr;
             </button>
           </div>
         </div>
@@ -1325,7 +1310,7 @@ class IstiqomahMobileApp {
     if (skuInp) skuInp.value = skuCode;
 
     this.onMobileBarcodeChange(autoCode);
-    this.showToast('Barcode & SKU Otomatis Dihasilkan');
+    this.showToast('Auto SKU dibuat');
   }
 
   openScannerForWizard() {
@@ -1470,8 +1455,7 @@ class IstiqomahMobileApp {
       if (card) {
         card.innerHTML = `
           <div class="completion-item-card" style="border-left-color:var(--success); text-align:center; padding:18px;">
-            <div style="font-size:16px; font-weight:800; color:var(--success); margin-bottom:4px;">&check; Selesai!</div>
-            <div style="font-size:12px; color:var(--text-primary); font-weight:700;">Semua barang di ${this.getFloorLabel(this.completionSelectedFloor)} sudah ber-barcode</div>
+            <div style="font-size:13px; color:var(--text-primary); font-weight:700;">Semua produk di ${this.getFloorLabel(this.completionSelectedFloor)} sudah ber-barcode</div>
           </div>
         `;
       }
@@ -1509,7 +1493,7 @@ class IstiqomahMobileApp {
     const qList = document.getElementById('mCompletionQueueList');
     if (qList) {
       if (unbarcoded.length === 0) {
-        qList.innerHTML = `<div style="text-align:center; padding:12px; font-size:11px; color:var(--text-muted); font-weight:600;">Tidak ada antrian barang belum ber-barcode.</div>`;
+        qList.innerHTML = `<div style="text-align:center; padding:12px; font-size:11px; color:var(--text-muted); font-weight:600;">Tidak ada antrian tersisa.</div>`;
       } else {
         qList.innerHTML = unbarcoded.map((it, idx) => `
           <div class="completion-queue-item ${activeItem && activeItem.id === it.id ? 'active' : ''}" onclick="app.pickMobileCompletionItem('${it.id}')">
@@ -1551,7 +1535,7 @@ class IstiqomahMobileApp {
     const notice = document.getElementById('mCompletionNotice');
 
     if (!barcode) {
-      if (notice) notice.innerHTML = `<div style="font-size:11px; color:var(--warning); padding:4px 0;">Silakan masukkan atau scan barcode.</div>`;
+      if (notice) notice.innerHTML = `<div style="font-size:11px; color:var(--warning); padding:4px 0;">Masukkan atau scan barcode.</div>`;
       return;
     }
 
@@ -1562,7 +1546,7 @@ class IstiqomahMobileApp {
     if (dup) {
       IstiqomahSound.error();
       if (notice) {
-        notice.innerHTML = `<div style="font-size:11px; color:var(--danger); padding:4px 0; font-weight:700;">Gagal: Barcode sudah dipakai oleh "${this.escape(dup.name)}"!</div>`;
+        notice.innerHTML = `<div style="font-size:11px; color:var(--danger); padding:4px 0; font-weight:700;">Barcode sudah digunakan oleh "${this.escape(dup.name)}"</div>`;
       }
       return;
     }
@@ -1570,8 +1554,8 @@ class IstiqomahMobileApp {
     currentItem.barcode = barcode;
     currentItem.updatedAt = IstiqomahUtils.formatNow();
     IstiqomahSound.chime();
-    this.save(`Barcode ${barcode} disimpan untuk "${currentItem.name}"`);
-    this.showToast(`Barcode untuk ${currentItem.name} tersimpan`);
+    this.save(`Barcode ${barcode} disimpan`);
+    this.showToast(`Barcode tersimpan`);
 
     this.completionActiveItemId = null;
     this.renderMobileBarcodeCompletion();
@@ -1581,11 +1565,11 @@ class IstiqomahMobileApp {
     const id = document.getElementById('formItemId')?.value;
     if (!id) return;
     const item = this.state.items.find(i => i.id === id);
-    if (!item || !confirm(`Hapus "${item.name}" dari sistem?`)) return;
+    if (!item || !confirm(`Hapus "${item.name}"?`)) return;
     this.state.items = this.state.items.filter(i => i.id !== id);
     IstiqomahSound.click();
     this.closeModal('itemFormModal');
-    this.save(`Barang "${item.name}" dihapus`);
+    this.save(`Barang dihapus`);
     this.render();
   }
 
