@@ -52,6 +52,18 @@ const DesktopApp = {
       document.getElementById('loginOverlay').classList.add('hidden');
     }
 
+    // Global keyboard shortcut: Ctrl+K or Cmd+K focuses global search bar
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        const input = document.getElementById('globalSearchInput');
+        if (input) {
+          input.focus();
+          input.select();
+        }
+      }
+    });
+
     setInterval(() => this.updateWifiStatusUI(), 1500);
   },
 
@@ -73,6 +85,8 @@ const DesktopApp = {
       icNavData: ICONS.database,
       icNavAccounts: ICONS.users,
       icSound: IstiqomahSound.isSoundEnabled() ? ICONS.soundOn : ICONS.soundOff,
+      icTitleSound: IstiqomahSound.isSoundEnabled() ? ICONS.soundOn : ICONS.soundOff,
+      icTitleLock: ICONS.lock,
       icLogout: ICONS.lock,
       icTopSearch: ICONS.search,
       icTopBarcodeComplete: ICONS.scan,
@@ -205,11 +219,20 @@ const DesktopApp = {
 
   toggleSound() {
     const enabled = IstiqomahSound.toggleSound();
+    const icon = enabled ? ICONS.soundOn : ICONS.soundOff;
+    const label = enabled ? 'Suara On' : 'Suara Off';
+
     const ic = document.getElementById('icSound');
     const txt = document.getElementById('txtSound');
-    if (ic) ic.innerHTML = enabled ? ICONS.soundOn : ICONS.soundOff;
-    if (txt) txt.textContent = enabled ? 'Suara On' : 'Suara Off';
-    this.showToast(enabled ? 'Efek Suara Diaktifkan' : 'Efek Suara Dinonaktifkan');
+    if (ic) ic.innerHTML = icon;
+    if (txt) txt.textContent = label;
+
+    const icTitle = document.getElementById('icTitleSound');
+    const txtTitle = document.getElementById('txtTitleSound');
+    if (icTitle) icTitle.innerHTML = icon;
+    if (txtTitle) txtTitle.textContent = label;
+
+    this.showToast(enabled ? 'Efek Suara Velvet Diaktifkan' : 'Efek Suara Dibisukan (Mute)');
   },
 
   // ==========================================================================
