@@ -58,63 +58,42 @@ class IstiqomahMobileApp {
     // Hardware Scanner Listener
     this.setupHardwareBarcodeScanner();
 
-    // Check splash / auth
-    const hasSeenSplash = sessionStorage.getItem('istiqomah_bulusari_splash_seen');
-    if (!hasSeenSplash) {
-      this.runTypewriterIntro();
-    } else {
-      document.getElementById('mobileSplashScreen')?.classList.add('hidden');
-      if (!this.engine.isAuthenticated()) {
-        this.openLoginDashboard();
-      } else {
-        document.getElementById('mobileLoginScreen')?.classList.add('hidden');
-      }
-    }
+    // Smooth minimalist loading (zero text)
+    this.runSmoothLoading();
 
     this.render();
   }
 
   // ==========================================================================
-  // TYPEWRITER INTRO ANIMATION
+  // MINIMALIST SMOOTH LOADING (NO TEXT, SILKY SMOOTH ANIMATION)
   // ==========================================================================
-  runTypewriterIntro() {
+  runSmoothLoading() {
     const splashEl = document.getElementById('mobileSplashScreen');
-    const textEl = document.getElementById('splashTypewriterText');
-    if (!splashEl || !textEl) return;
+    const fillEl = document.getElementById('splashProgressFill');
+    if (!splashEl) {
+      this.checkInitialAuth();
+      return;
+    }
 
     splashEl.classList.remove('hidden');
-    const lines = [
-      'ISTIQOMAH BULUSARI STOCK SYSTEM v5.0',
-      '>> 3 LANTAI FISIK: LANTAI 1, 2, & 3',
-      '>> 100% OFFLINE-FIRST ARCHITECTURE',
-      '>> WI-FI LAN SYNC READY',
-      '>> SUPER ADMIN: FAHRI'
-    ];
-    const fullText = lines.join('\n');
-    let idx = 0;
-    textEl.textContent = '';
 
-    const typeChar = () => {
-      if (idx < fullText.length) {
-        textEl.textContent += fullText.charAt(idx);
-        if (fullText.charAt(idx) !== ' ' && fullText.charAt(idx) !== '\n') {
-          IstiqomahSound.type();
-        }
-        idx++;
-        setTimeout(typeChar, 25);
-      }
-    };
-    setTimeout(typeChar, 200);
+    // Trigger smooth progress line expansion
+    setTimeout(() => {
+      if (fillEl) fillEl.style.width = '100%';
+    }, 60);
+
+    // Seamless fade out
+    setTimeout(() => {
+      splashEl.classList.add('hidden');
+      this.checkInitialAuth();
+    }, 850);
   }
 
-  dismissSplash() {
-    sessionStorage.setItem('istiqomah_bulusari_splash_seen', '1');
-    const splashEl = document.getElementById('mobileSplashScreen');
-    if (splashEl) splashEl.classList.add('hidden');
-    IstiqomahSound.click();
-
+  checkInitialAuth() {
     if (!this.engine.isAuthenticated()) {
       this.openLoginDashboard();
+    } else {
+      document.getElementById('mobileLoginScreen')?.classList.add('hidden');
     }
   }
 
@@ -395,10 +374,10 @@ class IstiqomahMobileApp {
 
         <div class="item-list">
           ${this.state.floors.map(fl => {
-            const fItems = this.state.items.filter(i => i.floorId === fl.id);
-            const fUnits = fItems.reduce((s, i) => s + i.stock, 0);
-            const fEmpty = fItems.filter(i => i.stock <= 0).length;
-            return `
+      const fItems = this.state.items.filter(i => i.floorId === fl.id);
+      const fUnits = fItems.reduce((s, i) => s + i.stock, 0);
+      const fEmpty = fItems.filter(i => i.stock <= 0).length;
+      return `
               <div class="item-row fl-${fl.id}" onclick="app.switchView('floors', '${fl.id}')">
                 <div class="item-info">
                   <div class="item-title">${fl.name}</div>
@@ -412,7 +391,7 @@ class IstiqomahMobileApp {
                 </div>
               </div>
             `;
-          }).join('')}
+    }).join('')}
         </div>
       </div>
 
@@ -492,8 +471,8 @@ class IstiqomahMobileApp {
           ${items.length === 0 ? `
             <div class="card" style="text-align:center; color:var(--text-muted);">Tidak ada barang ditemukan di ${flName}.</div>
           ` : items.map(item => {
-            const st = item.stock <= 0 ? 'empty' : (item.stock <= item.minStock ? 'low' : 'safe');
-            return `
+      const st = item.stock <= 0 ? 'empty' : (item.stock <= item.minStock ? 'low' : 'safe');
+      return `
               <div class="item-row fl-${item.floorId} ${st !== 'safe' ? st : ''}" onclick="app.openMutationModal('${item.id}')">
                 <div class="item-info">
                   <div class="item-title">${this.escape(item.name)}</div>
@@ -511,7 +490,7 @@ class IstiqomahMobileApp {
                 </div>
               </div>
             `;
-          }).join('')}
+    }).join('')}
         </div>
       `}
     `;
@@ -582,9 +561,9 @@ class IstiqomahMobileApp {
             ${activeGrp.entries.length === 0 ? `
               <div style="font-size:12px; color:var(--text-muted); text-align:center; padding:14px;">Belum ada barang discan pada sesi ini.</div>
             ` : activeGrp.entries.map(e => {
-              const diff = e.countedQty - e.systemQty;
-              const statusClass = diff === 0 ? 'balance' : (diff > 0 ? 'surplus' : 'deficit');
-              return `
+      const diff = e.countedQty - e.systemQty;
+      const statusClass = diff === 0 ? 'balance' : (diff > 0 ? 'surplus' : 'deficit');
+      return `
                 <div class="item-row" style="flex-direction:column; align-items:stretch; gap:8px;">
                   <div style="display:flex; justify-content:space-between; align-items:center;">
                     <div class="item-info">
@@ -605,7 +584,7 @@ class IstiqomahMobileApp {
                   </div>
                 </div>
               `;
-            }).join('')}
+    }).join('')}
           </div>
         </div>
       ` : ''}
@@ -1076,7 +1055,7 @@ class IstiqomahMobileApp {
           v.play();
         }
       }
-    } catch (e) {}
+    } catch (e) { }
   }
 
   closeScannerModal() {
