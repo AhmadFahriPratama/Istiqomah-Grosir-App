@@ -48,8 +48,8 @@
         <div class="mlogin-card">
           <form onsubmit="event.preventDefault(); app.submitLoginAccount();" style="display:flex; flex-direction:column; gap:14px;">
             <div class="form-field">
-              <label class="form-field-label">Pengguna</label>
-              <select id="loginUserSelect" class="select" onchange="app.onMobileLoginUserChange(this.value)"></select>
+              <label class="form-field-label">Username</label>
+              <input type="text" id="loginUsernameInput" class="input" placeholder="Masukkan username..." value="fahri" required autocomplete="username">
             </div>
             <div class="form-field">
               <label class="form-field-label">PIN</label>
@@ -59,9 +59,6 @@
                   <span id="icEyeMobile"></span>
                 </button>
               </div>
-            </div>
-            <div class="mlogin-access-info" id="mobileLoginAccessInfo">
-              Akses: Semua Lantai (Admin)
             </div>
             <button type="submit" class="btn primary" style="padding:13px; font-weight:800; font-size:14px; margin-top:2px;">
               Masuk
@@ -277,21 +274,24 @@
         <input type="hidden" id="formItemId">
         <input type="hidden" id="formWizardStep" value="1">
 
-        <!-- STEP 1: SCAN BARCODE (AWAL) -->
+        <!-- STEP 1: SCAN BARCODE (AWAL - EMBEDDED CAMERA DIRECT SCANNER) -->
         <div id="mWizardStep1">
-          <div style="text-align:center; padding:6px 0 12px;">
-            <div style="font-weight:800; font-size:13.5px; color:var(--text-primary);">Scan Barcode</div>
+          <div class="embedded-camera-scanner" id="mWizardScannerBox">
+            <video id="mWizardCameraVideo" autoplay playsinline muted></video>
+            <div class="camera-reticle-overlay">
+              <div class="camera-reticle-corners">
+                <div class="camera-laser-sweep"></div>
+              </div>
+            </div>
+            <div class="camera-scanner-status" id="mWizardCameraStatus">
+              <span>Mencari Barcode...</span>
+            </div>
           </div>
-
-          <button type="button" class="btn primary" style="width:100%; margin-bottom:10px;" onclick="app.openScannerForWizard()">
-            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>
-            <span>Scan Kamera</span>
-          </button>
 
           <div class="form-field">
             <label>Barcode / SKU</label>
             <div style="display:flex; gap:6px;">
-              <input type="text" id="formItemBarcode" class="input" placeholder="Scan barcode..." style="font-family:var(--font-mono); font-weight:700;" oninput="app.onMobileBarcodeChange(this.value)">
+              <input type="text" id="formItemBarcode" class="input" placeholder="Scan atau ketik barcode..." style="font-family:var(--font-mono); font-weight:700;" oninput="app.onMobileBarcodeChange(this.value)">
               <button type="button" class="btn btn-sm" onclick="app.generateMobileAutoSku()" style="white-space:nowrap;">Auto SKU</button>
             </div>
           </div>
@@ -304,7 +304,7 @@
           </div>
         </div>
 
-        <!-- STEP 2: INFO PRODUK -->
+        <!-- STEP 2: INFO PRODUK (KETANGGUNGAN PENJENISAN UX) -->
         <div id="mWizardStep2" style="display:none;">
           <div class="form-field">
             <label>Nama Barang <span style="color:var(--danger);">*</span></label>
@@ -314,7 +314,7 @@
           <div style="grid-template-columns:1fr 1fr; gap:8px; display:grid;">
             <div class="form-field">
               <label>Lantai</label>
-              <select id="formItemFloor" class="select">
+              <select id="formItemFloor" class="select" onchange="app.onMobileWizardFloorChange(this.value)">
                 <option value="L1">Lantai 1</option>
                 <option value="L2">Lantai 2</option>
                 <option value="L3">Lantai 3</option>
@@ -323,6 +323,33 @@
             <div class="form-field">
               <label>Rak</label>
               <input type="text" id="formItemLocation" class="input" value="Rak 1A">
+            </div>
+          </div>
+
+          <!-- FITUR PENJENISAN (KATEGORI) UX KETANGGUNGAN -->
+          <div class="form-field">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <label style="margin-bottom:0; font-weight:800; font-size:11.5px;">Jenis / Kategori:</label>
+              <span style="font-size:11px; font-weight:800; color:var(--text-sub);">
+                Terpilih: <strong id="mFormCategorySelectedLabel" style="color:var(--neo-black); text-transform:uppercase;">UMUM</strong>
+              </span>
+            </div>
+            <input type="hidden" id="formItemCategory" value="UMUM">
+
+            <div style="position:relative; margin-bottom:6px;">
+              <input type="text" id="mCategorySearchInput" class="input" placeholder="Cari atau ketik jenis baru..." style="text-transform:uppercase; font-weight:700; padding-right:28px;" oninput="app.onMobileCategorySearchInput(this.value)">
+              <button type="button" id="btnMClearCatSearch" onclick="app.clearMobileCategorySearch()" style="display:none; position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-weight:bold; font-size:14px; color:var(--text-muted);">&times;</button>
+            </div>
+
+            <div id="mQuickCreateCategoryBox" style="margin-bottom:6px; display:none;">
+              <button type="button" class="quick-create-cat-btn" onclick="app.createMobileQuickCategory()">
+                <span>+ Buat jenis: <strong id="mQuickCreateCatName" style="text-decoration:underline;"></strong></span>
+                <span style="background:var(--neo-black); color:#fff; padding:2px 6px; border-radius:4px; font-size:10px;">Gunakan</span>
+              </button>
+            </div>
+
+            <div class="category-chips-grid" id="mFormCategoryChips">
+              <!-- Dynamically populated chips -->
             </div>
           </div>
 
