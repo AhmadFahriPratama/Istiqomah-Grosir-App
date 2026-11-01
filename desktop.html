@@ -31,9 +31,9 @@
         <div class="form-group">
           <label class="form-label">
             <span id="icLoginUser"></span>
-            <span>Pengguna</span>
+            <span>Username</span>
           </label>
-          <select class="form-control" id="loginUserSelect" onchange="DesktopApp.onSelectLoginUser(this.value)"></select>
+          <input type="text" class="form-control" id="loginUsernameInput" value="fahri" placeholder="Masukkan username..." required autocomplete="username" />
         </div>
 
         <div class="form-group">
@@ -47,10 +47,6 @@
               <span id="icEyeLogin"></span>
             </button>
           </div>
-        </div>
-
-        <div class="login-access-preview" id="loginAccessPreview">
-          Akses: Semua Lantai (Admin)
         </div>
 
         <button type="submit" class="btn btn-primary btn-login-submit">
@@ -806,11 +802,18 @@
           <input type="hidden" id="itemFormId" />
           <input type="hidden" id="itemCurrentStep" value="1" />
 
-          <!-- STEP 1: SCAN BARCODE (AWAL) -->
+          <!-- STEP 1: SCAN BARCODE (DIRECT EMBEDDED CAMERA SCANNER) -->
           <div id="itemWizardStep1" class="wizard-step-pane">
-            <div style="text-align:center; padding:10px 0 16px;">
-              <div style="width:48px; height:48px; border-radius:12px; background:var(--bg-subtle); border:2px solid var(--neo-border); box-shadow:var(--neo-shadow-xs); display:flex; align-items:center; justify-content:center; margin:0 auto 10px; color:var(--text-main);" id="icWizardScannerGlyph"></div>
-              <div style="font-weight:800; font-size:14px; color:var(--text-main);">Scan Barcode</div>
+            <div class="embedded-camera-scanner" id="itemWizardScannerBox">
+              <video id="itemWizardCameraVideo" autoplay playsinline muted></video>
+              <div class="camera-reticle-overlay">
+                <div class="camera-reticle-corners">
+                  <div class="camera-laser-sweep"></div>
+                </div>
+              </div>
+              <div class="camera-scanner-status" id="itemWizardCameraStatus">
+                <span>Mencari Barcode...</span>
+              </div>
             </div>
 
             <div class="form-group">
@@ -832,7 +835,7 @@
             </div>
           </div>
 
-          <!-- STEP 2: INFO PRODUK -->
+          <!-- STEP 2: INFO PRODUK (PENJENISAN KETANGGUNGAN UX) -->
           <div id="itemWizardStep2" class="wizard-step-pane" style="display:none;">
             <div class="form-group">
               <label class="form-label">Nama Barang <span style="color:var(--danger);">*</span></label>
@@ -842,7 +845,7 @@
             <div class="form-grid-2">
               <div class="form-group">
                 <label class="form-label">Lantai</label>
-                <select class="form-control" id="itemFormFloor" onchange="DesktopApp.updateCategoryOptionsForFloor(this.value)">
+                <select class="form-control" id="itemFormFloor" onchange="DesktopApp.onWizardFloorChange(this.value)">
                   <option value="L1">Lantai 1</option>
                   <option value="L2">Lantai 2</option>
                   <option value="L3">Lantai 3</option>
@@ -854,11 +857,32 @@
               </div>
             </div>
 
+            <!-- FITUR PENJENISAN (KATEGORI) UX KETANGGUNGAN -->
             <div class="form-group">
-              <label class="form-label">Kategori</label>
-              <div style="display:flex; gap:8px;">
-                <select class="form-control" id="itemFormCategory" style="flex:1;"></select>
-                <input type="text" class="form-control" id="itemFormCustomCategory" placeholder="Kategori baru..." style="flex:1;" />
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <label class="form-label" style="margin-bottom:0;">
+                  <span>Jenis / Kategori:</span>
+                </label>
+                <span style="font-size:11px; font-weight:800; color:var(--text-sub);">
+                  Terpilih: <strong id="itemFormCategorySelectedLabel" style="color:var(--neo-black); text-transform:uppercase;">UMUM</strong>
+                </span>
+              </div>
+              <input type="hidden" id="itemFormCategory" value="UMUM" />
+
+              <div style="position:relative; margin-bottom:8px;">
+                <input type="text" class="form-control" id="categorySearchInput" placeholder="Cari atau ketik jenis baru..." style="text-transform:uppercase; font-weight:700; padding-right:30px;" oninput="DesktopApp.onCategorySearchInput(this.value)" />
+                <button type="button" id="btnClearCatSearch" onclick="DesktopApp.clearCategorySearch()" style="display:none; position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-weight:bold; font-size:14px; color:var(--text-sub);">&times;</button>
+              </div>
+
+              <div id="quickCreateCategoryBox" style="margin-bottom:8px; display:none;">
+                <button type="button" class="quick-create-cat-btn" onclick="DesktopApp.createQuickCategory()">
+                  <span>+ Buat jenis baru: <strong id="quickCreateCatName" style="text-decoration:underline;"></strong></span>
+                  <span style="background:var(--neo-black); color:#fff; padding:2px 8px; border-radius:4px; font-size:10px;">Gunakan Ini</span>
+                </button>
+              </div>
+
+              <div class="category-chips-grid" id="itemFormCategoryChips">
+                <!-- Dynamically populated chips -->
               </div>
             </div>
 
