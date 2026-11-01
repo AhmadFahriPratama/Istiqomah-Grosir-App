@@ -810,12 +810,12 @@ const DesktopApp = {
             <span>Barcode Sudah Terdaftar di Sistem!</span>
           </div>
           <div class="duplicate-warning-desc">
-            Nomor barcode <strong style="font-family:var(--font-mono); color:#FFFFFF;">${code}</strong> sudah digunakan oleh produk lain:
+            Nomor barcode <strong style="font-family:var(--font-mono); color:var(--text-main);">${code}</strong> sudah digunakan oleh produk lain:
           </div>
           <div class="duplicate-existing-item">
             <div>
-              <div style="font-weight:800; font-size:13px; color:#FFFFFF;">${duplicate.name}</div>
-              <div style="font-size:11px; color:var(--text-muted);">${this.floorLabel(duplicate.floorId)} &bull; ${duplicate.location || 'Rak'} &bull; Stok: <strong style="color:#FFFFFF;">${duplicate.stock} ${duplicate.unit}</strong></div>
+              <div style="font-weight:800; font-size:13px; color:var(--text-main);">${duplicate.name}</div>
+              <div style="font-size:11px; color:var(--text-muted);">${this.floorLabel(duplicate.floorId)} &bull; ${duplicate.location || 'Rak'} &bull; Stok: <strong style="color:var(--text-main);">${duplicate.stock} ${duplicate.unit}</strong></div>
             </div>
             <button type="button" class="btn btn-primary btn-sm" onclick="DesktopApp.jumpToExistingItem('${duplicate.id}')">
               Buka Produk Ini &rarr;
@@ -1023,9 +1023,9 @@ const DesktopApp = {
     const container = document.getElementById('completionActiveItemContainer');
     if (!activeItem) {
       container.innerHTML = `
-        <div class="completion-item-card" style="border-left-color:var(--success); text-align:center; padding:24px;">
-          <div style="font-size:22px; color:var(--success); font-weight:800; margin-bottom:6px;">&check; Luar Biasa!</div>
-          <div style="font-size:13.5px; font-weight:700; color:#FFFFFF;">Seluruh Produk di ${this.floorLabel(this.completionSelectedFloor)} Sudah Ber-barcode</div>
+        <div class="completion-item-card" style="border-left-color:var(--safe-tx); text-align:center; padding:24px;">
+          <div style="font-size:22px; color:var(--safe-tx); font-weight:800; margin-bottom:6px;">&check; Luar Biasa!</div>
+          <div style="font-size:14px; font-weight:800; color:var(--text-main);">Seluruh Produk di ${this.floorLabel(this.completionSelectedFloor)} Sudah Ber-barcode</div>
           <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Tidak ada antrian barang tanpa barcode.</div>
         </div>
       `;
@@ -1036,15 +1036,15 @@ const DesktopApp = {
         <div class="completion-item-card fl-${activeItem.floorId}">
           <div style="display:flex; justify-content:space-between; align-items:flex-start;">
             <div>
-              <div style="font-size:16px; font-weight:800; color:#FFFFFF; letter-spacing:-0.2px;">${activeItem.name}</div>
+              <div style="font-size:16px; font-weight:800; color:var(--text-main); letter-spacing:-0.2px;">${activeItem.name}</div>
               <div style="font-size:12px; color:var(--text-muted); margin-top:3px;">
                 <span class="floor-badge ${activeItem.floorId}">${this.floorLabel(activeItem.floorId)}</span>
-                <span style="margin-left:6px;">&bull; Lokasi: <strong style="color:#FFFFFF;">${activeItem.location || 'Rak'}</strong></span>
+                <span style="margin-left:6px;">&bull; Lokasi: <strong style="color:var(--text-main);">${activeItem.location || 'Rak'}</strong></span>
                 <span style="margin-left:6px;">&bull; Kategori: <strong>${activeItem.category || '-'}</strong></span>
               </div>
             </div>
             <div style="text-align:right;">
-              <div style="font-size:16px; font-weight:800; color:#FFFFFF; font-family:var(--font-mono);">${activeItem.stock} ${activeItem.unit}</div>
+              <div style="font-size:16px; font-weight:800; color:var(--text-main); font-family:var(--font-mono);">${activeItem.stock} ${activeItem.unit}</div>
               <div style="font-size:10.5px; color:var(--text-muted);">Stok Saat Ini</div>
             </div>
           </div>
@@ -1061,10 +1061,10 @@ const DesktopApp = {
         queueList.innerHTML = unbarcoded.map((it, idx) => `
           <div class="completion-queue-item ${activeItem && activeItem.id === it.id ? 'active' : ''}" onclick="DesktopApp.pickCompletionItem('${it.id}')">
             <div>
-              <div style="font-weight:700; font-size:12.5px; color:#FFFFFF;">${idx + 1}. ${it.name}</div>
+              <div style="font-weight:800; font-size:12.5px; color:var(--text-main);">${idx + 1}. ${it.name}</div>
               <div style="font-size:11px; color:var(--text-muted);">${this.floorLabel(it.floorId)} &bull; ${it.location || 'Rak'}</div>
             </div>
-            <span class="badge ${it.stock > 0 ? 'badge-safe' : 'badge-empty'}">${it.stock} ${it.unit}</span>
+            <span class="badge-stock ${it.stock > 0 ? 'badge-safe' : 'badge-empty'}">${it.stock} ${it.unit}</span>
           </div>
         `).join('');
       }
