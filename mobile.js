@@ -561,8 +561,8 @@ class IstiqomahMobileApp {
         ${this.lastSoCallback ? `
           <div class="opname-delta-box">
             <div>
-              <div style="font-weight:700; font-size:12.5px; color:#FFFFFF;">${this.escape(this.lastSoCallback.name)}</div>
-              <div style="font-size:11px; color:#94A3B8;">Sebelum: ${this.lastSoCallback.prev} &bull; Ditambah: +${this.lastSoCallback.added}</div>
+              <div style="font-weight:800; font-size:12.5px; color:var(--text-primary);">${this.escape(this.lastSoCallback.name)}</div>
+              <div style="font-size:11px; color:var(--text-muted); font-weight:600;">Sebelum: ${this.lastSoCallback.prev} &bull; Ditambah: +${this.lastSoCallback.added}</div>
             </div>
             <div class="delta-pill ${this.lastSoCallback.diff === 0 ? 'balance' : (this.lastSoCallback.diff > 0 ? 'surplus' : 'deficit')}">
               ${this.lastSoCallback.diff === 0 ? 'BALANCE' : (this.lastSoCallback.diff > 0 ? '+' + this.lastSoCallback.diff + ' SURPLUS' : this.lastSoCallback.diff + ' DEFISIT')}
@@ -954,7 +954,7 @@ class IstiqomahMobileApp {
         </div>
         <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--bg-surface-elevated); border:1px solid var(--border-medium); border-radius:var(--radius-md);">
           <div>
-            <div style="font-weight:700; font-size:14px; color:#FFFFFF;">${this.escape(this.currentUser.username)}</div>
+            <div style="font-weight:800; font-size:14px; color:var(--text-primary);">${this.escape(this.currentUser.username)}</div>
             <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">
               Hak Akses: ${this.currentUser.role === 'ADMIN' ? 'Admin Utama (Akses Semua Lantai)' : 'Staf (' + this.getFloorLabel(this.currentUser.floorAccess) + ')'}
             </div>
@@ -1299,7 +1299,7 @@ class IstiqomahMobileApp {
           <div style="font-weight:700; color:var(--warning); font-size:12px; margin-bottom:4px;">
             Peringatan: Barcode Sudah Digunakan!
           </div>
-          <div style="font-size:11.5px; color:#FFFFFF;">
+          <div style="font-size:11.5px; color:var(--text-primary); font-weight:600;">
             Barang: <strong>${this.escape(dup.name)}</strong> (${this.getFloorLabel(dup.floorId)} &bull; ${this.escape(dup.location)})
           </div>
           <div style="margin-top:6px;">
@@ -1476,7 +1476,7 @@ class IstiqomahMobileApp {
         card.innerHTML = `
           <div class="completion-item-card" style="border-left-color:var(--success); text-align:center; padding:18px;">
             <div style="font-size:16px; font-weight:800; color:var(--success); margin-bottom:4px;">&check; Selesai!</div>
-            <div style="font-size:12px; color:#FFFFFF;">Semua barang di ${this.getFloorLabel(this.completionSelectedFloor)} sudah ber-barcode</div>
+            <div style="font-size:12px; color:var(--text-primary); font-weight:700;">Semua barang di ${this.getFloorLabel(this.completionSelectedFloor)} sudah ber-barcode</div>
           </div>
         `;
       }
@@ -1495,15 +1495,15 @@ class IstiqomahMobileApp {
           <div class="completion-item-card fl-${activeItem.floorId}">
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
               <div>
-                <div style="font-size:14px; font-weight:800; color:#FFFFFF;">${this.escape(activeItem.name)}</div>
+                <div style="font-size:14.5px; font-weight:800; color:var(--text-primary);">${this.escape(activeItem.name)}</div>
                 <div style="font-size:11px; color:var(--text-muted); margin-top:3px;">
                   <span class="badge ${activeItem.floorId}">${this.getFloorLabel(activeItem.floorId)}</span>
-                  <span style="margin-left:4px;">Rak: <strong>${this.escape(activeItem.location || '1A')}</strong></span>
+                  <span style="margin-left:4px; font-weight:600;">Rak: <strong>${this.escape(activeItem.location || '1A')}</strong></span>
                 </div>
               </div>
               <div style="text-align:right;">
-                <div style="font-size:14px; font-weight:800; color:#FFFFFF; font-family:var(--font-mono);">${activeItem.stock} ${this.escape(activeItem.unit)}</div>
-                <div style="font-size:10px; color:var(--text-muted);">Stok</div>
+                <div style="font-size:14.5px; font-weight:800; color:var(--text-primary); font-family:var(--font-mono);">${activeItem.stock} ${this.escape(activeItem.unit)}</div>
+                <div style="font-size:10px; color:var(--text-muted); font-weight:600;">Stok</div>
               </div>
             </div>
           </div>
@@ -1514,13 +1514,13 @@ class IstiqomahMobileApp {
     const qList = document.getElementById('mCompletionQueueList');
     if (qList) {
       if (unbarcoded.length === 0) {
-        qList.innerHTML = `<div style="text-align:center; padding:12px; font-size:11px; color:var(--text-muted);">Tidak ada antrian barang belum ber-barcode.</div>`;
+        qList.innerHTML = `<div style="text-align:center; padding:12px; font-size:11px; color:var(--text-muted); font-weight:600;">Tidak ada antrian barang belum ber-barcode.</div>`;
       } else {
         qList.innerHTML = unbarcoded.map((it, idx) => `
           <div class="completion-queue-item ${activeItem && activeItem.id === it.id ? 'active' : ''}" onclick="app.pickMobileCompletionItem('${it.id}')">
             <div>
-              <div style="font-weight:700; font-size:11.5px; color:#FFFFFF;">${idx + 1}. ${this.escape(it.name)}</div>
-              <div style="font-size:10px; color:var(--text-muted);">${this.getFloorLabel(it.floorId)} &bull; ${this.escape(it.location || 'Rak')}</div>
+              <div style="font-weight:800; font-size:12px; color:var(--text-primary);">${idx + 1}. ${this.escape(it.name)}</div>
+              <div style="font-size:10.5px; color:var(--text-muted); font-weight:600;">${this.getFloorLabel(it.floorId)} &bull; ${this.escape(it.location || 'Rak')}</div>
             </div>
             <span class="badge ${it.stock > 0 ? 'safe' : 'empty'}">${it.stock} ${this.escape(it.unit)}</span>
           </div>
