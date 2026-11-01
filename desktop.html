@@ -10,71 +10,61 @@
 <body>
 
   <!-- ======================================================================
-       1. DASHBOARD LOGIN OVERLAY (FULL SCREEN)
+       1. DASHBOARD LOGIN OVERLAY (CLEAN CENTERED NEOBRUTALISM - SIMPLE)
        ====================================================================== -->
   <div class="login-overlay" id="loginOverlay">
     <div class="login-card-shell">
-      <!-- LEFT SHOWCASE -->
-      <div class="login-side-showcase">
-        <div>
-          <div class="login-brand-header">
-            <img src="/logo.svg" alt="Istiqomah Bulusari" />
-            <div>
-              <div class="login-brand-title">ISTIQOMAH BULUSARI</div>
-              <div class="login-brand-sub">Sistem Manajemen Stok 3 Lantai Offline-First</div>
-            </div>
-          </div>
-
-          <div class="login-quick-section">
-            <div class="login-section-title">Pilih Cepat Akun Terdaftar</div>
-            <div class="login-quick-cards" id="loginQuickCards"></div>
-          </div>
+      <!-- BRAND LOGO & TITLE -->
+      <div class="login-brand-center">
+        <div class="login-brand-logo-wrap">
+          <img src="/logo.svg" alt="Istiqomah Bulusari" />
         </div>
-
-        <div>
-          <div class="login-showcase-bottom">
-            <div class="login-kpi-mini">
-              <div class="login-kpi-val" id="loginCountL1">0</div>
-              <div class="login-kpi-lbl">Barang Lantai 1</div>
-            </div>
-            <div class="login-kpi-mini">
-              <div class="login-kpi-val" id="loginCountL2">0</div>
-              <div class="login-kpi-lbl">Barang Lantai 2</div>
-            </div>
-            <div class="login-kpi-mini">
-              <div class="login-kpi-val" id="loginCountL3">0</div>
-              <div class="login-kpi-lbl">Barang Lantai 3</div>
-            </div>
-          </div>
-          <div style="margin-top:14px; font-size:11.5px; color:#94A3B8; display:flex; justify-content:space-between;">
-            <span>Mode: 100% Offline-First + Sinyal Wi-Fi</span>
-            <span>Versi 5.0 Enterprise</span>
-          </div>
+        <div class="login-brand-title">
+          <span>ISTIQOMAH</span>
+          <span class="login-brand-badge">BULUSARI</span>
         </div>
+        <div class="login-brand-sub">Sistem Manajemen Stok Multi-Lantai Offline</div>
       </div>
 
-      <!-- RIGHT LOGIN FORM -->
-      <div class="login-form-container">
-        <div class="login-form-title">Dashboard Login</div>
-        <div class="login-form-desc">Masuk sebagai Admin Utama <strong>Fahri</strong> atau petugas lantai yang ditugaskan.</div>
+      <!-- CLEAN LOGIN FORM -->
+      <form class="login-form-box" onsubmit="DesktopApp.submitLogin(event)">
+        <div class="form-group">
+          <label class="form-label">
+            <span id="icLoginUser"></span>
+            <span>Nama Pengguna / Akun</span>
+          </label>
+          <select class="form-control" id="loginUserSelect" onchange="DesktopApp.onSelectLoginUser(this.value)"></select>
+        </div>
 
-        <form onsubmit="DesktopApp.submitLogin(event)">
-          <div class="form-group">
-            <label class="form-label">Pilih Akun Pengguna</label>
-            <select class="form-control" id="loginUserSelect" onchange="DesktopApp.onSelectLoginUser(this.value)"></select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">PIN / Kata Sandi</label>
-            <input type="password" class="form-control" id="loginPasswordInput" value="123" placeholder="Masukkan PIN (default: 819 / 123)" required />
-          </div>
-          <div style="background:var(--bg-subtle); border:1.5px solid var(--border-col); border-radius:8px; padding:11px 14px; font-size:12px; color:var(--text-sub); margin-bottom:18px;" id="loginAccessPreview">
-            Akses Penuh Super Admin: Lantai 1, Lantai 2, Lantai 3, Master Database & Pusat Laporan A4
-          </div>
-          <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; font-size:14px;">
+        <div class="form-group">
+          <label class="form-label">
             <span id="icLoginLock"></span>
-            <span>Buka Sistem Gudang</span>
-          </button>
-        </form>
+            <span>PIN / Kata Sandi</span>
+          </label>
+          <div class="password-input-wrap">
+            <input type="password" class="form-control" id="loginPasswordInput" value="819" placeholder="Masukkan PIN (default: 819 / 123)" required />
+            <button type="button" class="btn-toggle-pwd" id="btnToggleLoginPwd" onclick="DesktopApp.toggleLoginPasswordVisibility()" title="Lihat / Sembunyikan PIN">
+              <span id="icEyeLogin"></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="login-access-preview" id="loginAccessPreview">
+          <strong>Hak Akses Super Admin:</strong> Akses penuh Lantai 1, Lantai 2, Lantai 3, Master Database & Dokumen A4.
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-login-submit">
+          <span>Masuk ke Sistem</span>
+          <span id="icLoginArrow"></span>
+        </button>
+      </form>
+
+      <div class="login-card-footer">
+        <span>100% Offline-First</span>
+        <span>&bull;</span>
+        <span>Sinkron Wi-Fi LAN</span>
+        <span>&bull;</span>
+        <span>v5.0 Enterprise</span>
       </div>
     </div>
   </div>
@@ -514,76 +504,124 @@
             </div>
           </div>
 
-          <!-- 6 REPORT BRANCH CARDS -->
+          <!-- 8 COMPREHENSIVE REPORT BRANCH CARDS (AS IN KETANGGUNGAN FINAL ARCHITECTURE) -->
           <div class="report-branch-grid no-print">
             <button class="report-branch-card active" data-rpt="STOCK_RECAP" onclick="DesktopApp.selectReportBranch('STOCK_RECAP')">
               <div class="rb-head">
                 <span class="rb-badge">Jenis 1</span>
                 <span id="icRb1"></span>
               </div>
-              <div class="rb-title">Rekapitulasi Stok Gudang</div>
-              <div class="rb-desc">Daftar lengkap seluruh barang per kategori & lokasi rak dengan status ketersediaan.</div>
+              <div class="rb-title">Stok per Lantai</div>
+              <div class="rb-desc">Daftar stok lengkap per departemen / lantai fisik atau 3 lantai sekaligus.</div>
+            </button>
+
+            <button class="report-branch-card" data-rpt="CATEGORY" onclick="DesktopApp.selectReportBranch('CATEGORY')">
+              <div class="rb-head">
+                <span class="rb-badge">Jenis 2</span>
+                <span id="icRbCat"></span>
+              </div>
+              <div class="rb-title">Per Jenis / Kategori</div>
+              <div class="rb-desc">Rekapitulasi kuantitas stok per jenis komoditas grosir & rincian produknya dengan subtotal.</div>
             </button>
 
             <button class="report-branch-card" data-rpt="RESTOCK_ORDER" onclick="DesktopApp.selectReportBranch('RESTOCK_ORDER')">
               <div class="rb-head">
-                <span class="rb-badge">Jenis 2</span>
+                <span class="rb-badge">Jenis 3</span>
                 <span id="icRb2"></span>
               </div>
-              <div class="rb-title">Surat Pesanan Restock</div>
-              <div class="rb-desc">Daftar belanja barang habis/menipis dengan perhitungan saran order pembelian.</div>
+              <div class="rb-title">Lembar Pengadaan Restock</div>
+              <div class="rb-desc">Formulir belanja barang prioritas untuk barang habis (0) dan stok menipis dengan saran order.</div>
             </button>
 
-            <button class="report-branch-card" data-rpt="OPNAME_AUDIT" onclick="DesktopApp.selectReportBranch('OPNAME_AUDIT')">
+            <button class="report-branch-card" data-rpt="EXECUTIVE_SUMMARY" onclick="DesktopApp.selectReportBranch('EXECUTIVE_SUMMARY')">
               <div class="rb-head">
-                <span class="rb-badge">Jenis 3</span>
-                <span id="icRb3"></span>
+                <span class="rb-badge">Jenis 4</span>
+                <span id="icRbExec"></span>
               </div>
-              <div class="rb-title">Audit Stock Opname</div>
-              <div class="rb-desc">Perbandingan fisik aktual vs sistem beserta selisih (+/-) dan persentase kecocokan.</div>
+              <div class="rb-title">Rekapitulasi Eksekutif</div>
+              <div class="rb-desc">Ringkasan pimpinan: matriks operasional 3 lantai, kesiapan stok % per lantai, & top kategori.</div>
             </button>
 
             <button class="report-branch-card" data-rpt="MUTATION_JOURNAL" onclick="DesktopApp.selectReportBranch('MUTATION_JOURNAL')">
               <div class="rb-head">
-                <span class="rb-badge">Jenis 4</span>
+                <span class="rb-badge">Jenis 5</span>
                 <span id="icRb4"></span>
               </div>
-              <div class="rb-title">Jurnal Mutasi Transaksi</div>
-              <div class="rb-desc">Kronologis keluar-masuk barang, penyesuaian opname, dan perpindahan lantai per petugas.</div>
+              <div class="rb-title">Audit Mutasi Staf</div>
+              <div class="rb-desc">Rekam jejak transaksi barang masuk, keluar, dan koreksi opname berdasarkan petugas.</div>
             </button>
 
-            <button class="report-branch-card" data-rpt="BLANK_WORKSHEET" onclick="DesktopApp.selectReportBranch('BLANK_WORKSHEET')">
+            <button class="report-branch-card" data-rpt="OPNAME_AUDIT" onclick="DesktopApp.selectReportBranch('OPNAME_AUDIT')">
               <div class="rb-head">
-                <span class="rb-badge">Jenis 5</span>
-                <span id="icRb5"></span>
+                <span class="rb-badge">Jenis 6</span>
+                <span id="icRb3"></span>
               </div>
-              <div class="rb-title">Lembar Kerja Fisik (Clipboard)</div>
-              <div class="rb-desc">Formulir cetak dengan kolom kosong untuk pencatatan hitung fisik manual di gudang.</div>
+              <div class="rb-title">Audit Stock Opname</div>
+              <div class="rb-desc">Perbandingan fisik aktual vs sistem beserta selisih (+/-) dan tingkat kecocokan.</div>
             </button>
 
             <button class="report-branch-card" data-rpt="BARCODE_CATALOG" onclick="DesktopApp.selectReportBranch('BARCODE_CATALOG')">
               <div class="rb-head">
-                <span class="rb-badge">Jenis 6</span>
+                <span class="rb-badge">Jenis 7</span>
                 <span id="icRb6"></span>
               </div>
               <div class="rb-title">Katalog Barcode Rak</div>
               <div class="rb-desc">Lembar cetak stiker barcode Code-128 SVG 3 kolom siap potong dan tempel di rak toko.</div>
             </button>
+
+            <button class="report-branch-card" data-rpt="BLANK_WORKSHEET" onclick="DesktopApp.selectReportBranch('BLANK_WORKSHEET')">
+              <div class="rb-head">
+                <span class="rb-badge">Jenis 8</span>
+                <span id="icRb5"></span>
+              </div>
+              <div class="rb-title">Lembar Kerja Fisik (SO)</div>
+              <div class="rb-desc">Formulir cetak dengan kolom kosong hitung fisik 1, 2, dan paraf manual di gudang.</div>
+            </button>
           </div>
 
-          <!-- REPORT FILTER CONTROLS -->
+          <!-- REPORT FILTER CONTROLS (ENHANCED WITH CATEGORY, PRIORITY, STAFF, SEARCH) -->
           <div class="report-filter-bar no-print">
-            <div style="display:flex; align-items:center; gap:12px;">
-              <span style="font-size:12.5px; font-weight:800; color:var(--text-sub);">Filter Cakupan Lantai:</span>
-              <div class="seg-pills" id="reportFloorPills">
-                <button class="seg-pill active" data-rfl="ALL" onclick="DesktopApp.setReportFloorFilter('ALL')">Semua Lantai (L1 - L3)</button>
-                <button class="seg-pill" data-rfl="L1" onclick="DesktopApp.setReportFloorFilter('L1')">Lantai 1</button>
-                <button class="seg-pill" data-rfl="L2" onclick="DesktopApp.setReportFloorFilter('L2')">Lantai 2</button>
-                <button class="seg-pill" data-rfl="L3" onclick="DesktopApp.setReportFloorFilter('L3')">Lantai 3</button>
+            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px; width:100%;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:12px; font-weight:800; color:var(--text-sub);">Lantai:</span>
+                <div class="seg-pills" id="reportFloorPills">
+                  <button class="seg-pill active" data-rfl="ALL" onclick="DesktopApp.setReportFloorFilter('ALL')">Semua Lantai (L1 - L3)</button>
+                  <button class="seg-pill" data-rfl="L1" onclick="DesktopApp.setReportFloorFilter('L1')">Lantai 1</button>
+                  <button class="seg-pill" data-rfl="L2" onclick="DesktopApp.setReportFloorFilter('L2')">Lantai 2</button>
+                  <button class="seg-pill" data-rfl="L3" onclick="DesktopApp.setReportFloorFilter('L3')">Lantai 3</button>
+                </div>
+              </div>
+
+              <!-- DYNAMIC CATEGORY FILTER -->
+              <div id="wrapReportCategory" style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:12px; font-weight:800; color:var(--text-sub);">Jenis / Kategori:</span>
+                <select class="form-control" id="reportCategorySelect" onchange="DesktopApp.setReportCategoryFilter(this.value)" style="height:32px; padding:2px 10px; font-size:12px; font-weight:700; width:auto; min-width:160px;"></select>
+              </div>
+
+              <!-- DYNAMIC RESTOCK PRIORITY FILTER -->
+              <div id="wrapReportPriority" style="display:none; align-items:center; gap:6px;">
+                <span style="font-size:12px; font-weight:800; color:var(--text-sub);">Prioritas:</span>
+                <select class="form-control" id="reportPrioritySelect" onchange="DesktopApp.setReportPriorityFilter(this.value)" style="height:32px; padding:2px 10px; font-size:12px; font-weight:700; width:auto;">
+                  <option value="ALL">Semua (Habis + Menipis)</option>
+                  <option value="HABIS">Habis Saja (0)</option>
+                  <option value="MENIPIS">Menipis Saja</option>
+                </select>
+              </div>
+
+              <!-- DYNAMIC STAFF FILTER -->
+              <div id="wrapReportStaff" style="display:none; align-items:center; gap:6px;">
+                <span style="font-size:12px; font-weight:800; color:var(--text-sub);">Petugas:</span>
+                <select class="form-control" id="reportStaffSelect" onchange="DesktopApp.setReportStaffFilter(this.value)" style="height:32px; padding:2px 10px; font-size:12px; font-weight:700; width:auto; min-width:140px;"></select>
+              </div>
+
+              <!-- SEARCH INPUT -->
+              <div style="display:flex; align-items:center; gap:6px; margin-left:auto;">
+                <input type="text" class="form-control" id="reportSearchInput" oninput="DesktopApp.setReportSearchQuery(this.value)" placeholder="Cari barang / barcode / rak..." style="height:32px; padding:4px 10px; font-size:12px; font-weight:600; width:220px;" />
               </div>
             </div>
-            <div style="font-size:12px; color:var(--text-sub);">
-              Dokumen: <strong id="reportActiveTitleBadge">Rekapitulasi Stok Gudang</strong>
+            <div style="font-size:11.5px; color:var(--text-sub); margin-top:8px; display:flex; justify-content:space-between; width:100%;">
+              <span>Pratinjau Dokumen: <strong id="reportActiveTitleBadge">Stok per Lantai</strong></span>
+              <span id="reportFilterCountBadge" style="font-weight:700; color:var(--text-main);">Menampilkan 0 baris</span>
             </div>
           </div>
 
