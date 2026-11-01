@@ -1644,6 +1644,145 @@ body {
 /* ============================================================================
  * 9. PROGRESSIVE 3-STEP ITEM ENTRY WIZARD (NEOBRUTALISM)
  * ============================================================================ */
+.embedded-camera-scanner {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  background: #090D16;
+  border: 2.5px solid var(--neo-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--neo-shadow-sm);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.embedded-camera-scanner video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-reticle-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.camera-reticle-corners {
+  width: 72%;
+  height: 58%;
+  border: 2px dashed rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4);
+  position: relative;
+}
+
+.camera-laser-sweep {
+  position: absolute;
+  top: 20%;
+  left: 14%;
+  width: 72%;
+  height: 2px;
+  background: #EF4444;
+  box-shadow: 0 0 8px #EF4444, 0 0 16px #EF4444;
+  animation: laserSweep 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes laserSweep {
+  0% { top: 22%; }
+  100% { top: 78%; }
+}
+
+.camera-scanner-status {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(4px);
+  color: #F8FAFC;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* FITUR PENJENISAN (KATEGORI) CHIPS & SEARCH */
+.category-chips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 125px;
+  overflow-y: auto;
+  padding: 8px;
+  background: var(--bg-subtle);
+  border: 2px solid var(--neo-border);
+  border-radius: var(--radius-sm);
+}
+
+.category-chip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  font-size: 11.5px;
+  font-weight: 800;
+  border-radius: 6px;
+  border: 1.5px solid var(--border-subtle);
+  background: #FFFFFF;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+  text-transform: uppercase;
+}
+
+.category-chip-btn:hover {
+  border-color: var(--neo-border);
+  background: #F8FAFC;
+}
+
+.category-chip-btn.active {
+  background: var(--neo-black);
+  color: #FFFFFF;
+  border-color: var(--neo-black);
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.35);
+}
+
+.quick-create-cat-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #FFFBEB;
+  border: 2px solid #D97706;
+  border-radius: var(--radius-sm);
+  color: #78350F;
+  font-size: 11.5px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--neo-shadow-xs);
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+}
+
+.quick-create-cat-btn:hover {
+  background: #FEF3C7;
+}
+
 .step-wizard-bar {
   display: flex;
   align-items: center;
