@@ -180,7 +180,7 @@ class IstiqomahMobileApp {
     if (eyeEl) {
       eyeEl.innerHTML = isPass ? ICONS.eyeOff : ICONS.eye;
     }
-  },
+  }
 
   renderMobileLoginScreen() {
     const sel = document.getElementById('loginUserSelect');
@@ -197,7 +197,7 @@ class IstiqomahMobileApp {
     `).join('');
 
     this.onMobileLoginUserChange(sel.value);
-  },
+  }
 
   onMobileLoginUserChange(userId) {
     const u = this.state.users.find(x => x.id === userId);
@@ -215,11 +215,12 @@ class IstiqomahMobileApp {
         infoEl.innerHTML = `<strong>Akses Staf:</strong> ${this.getFloorLabel(u.floorAccess)}`;
       }
     }
-  },
+  }
 
   submitLoginAccount() {
-    const uid = document.getElementById('loginUserSelect').value;
-    const pass = document.getElementById('loginPassInput').value.trim();
+    const uid = document.getElementById('loginUserSelect')?.value;
+    const pass = document.getElementById('loginPassInput')?.value.trim() || '';
+    if (!uid) return;
     const user = this.state.users.find(u => u.id === uid);
     if (!user) return;
 
@@ -601,10 +602,11 @@ class IstiqomahMobileApp {
   }
 
   submitOpnameScan() {
-    const code = document.getElementById('soBarcodeInput')?.value.trim();
+    const input = document.getElementById('soBarcodeInput');
+    const code = input?.value.trim();
     const addQty = parseInt(document.getElementById('soQtyInput')?.value, 10) || 1;
     if (!code) return;
-    document.getElementById('soBarcodeInput').value = '';
+    if (input) input.value = '';
 
     const grp = (this.state.soGroups || []).find(g => g.id === this.activeSoGroupId) || this.state.soGroups[0];
     if (!grp) return;
@@ -1017,10 +1019,15 @@ class IstiqomahMobileApp {
 
   createNewUserAccount() {
     if (!this.isAdmin()) return;
-    const username = document.getElementById('newAccUsername').value.trim();
-    const password = document.getElementById('newAccPassword').value.trim();
-    const role = document.getElementById('newAccRole').value;
-    const floorAccess = role === 'ADMIN' ? 'ALL' : document.getElementById('newAccFloor').value;
+    const usernameEl = document.getElementById('newAccUsername');
+    const passwordEl = document.getElementById('newAccPassword');
+    const roleEl = document.getElementById('newAccRole');
+    const floorEl = document.getElementById('newAccFloor');
+    if (!usernameEl || !passwordEl) return;
+    const username = usernameEl.value.trim();
+    const password = passwordEl.value.trim();
+    const role = roleEl ? roleEl.value : 'STAFF';
+    const floorAccess = role === 'ADMIN' ? 'ALL' : (floorEl ? floorEl.value : 'L1');
     if (!username || !password) return;
 
     this.state.users.push({
@@ -1347,15 +1354,15 @@ class IstiqomahMobileApp {
   }
 
   handleMobileWizardSubmit() {
-    const id = document.getElementById('formItemId').value;
-    const name = document.getElementById('formItemName').value.trim();
-    const floorId = document.getElementById('formItemFloor').value;
-    const location = document.getElementById('formItemLocation').value.trim() || 'Rak 1A';
-    const sku = document.getElementById('formItemSku').value.trim() || ('SKU-' + Date.now().toString().slice(-4));
-    const barcode = document.getElementById('formItemBarcode').value.trim();
-    const stock = parseInt(document.getElementById('formItemStock').value, 10) || 0;
-    const minStock = parseInt(document.getElementById('formItemMin').value, 10) || 0;
-    const unit = (document.getElementById('formItemUnit').value.trim() || 'PCS').toUpperCase();
+    const id = document.getElementById('formItemId')?.value || '';
+    const name = document.getElementById('formItemName')?.value.trim() || '';
+    const floorId = document.getElementById('formItemFloor')?.value || 'L1';
+    const location = document.getElementById('formItemLocation')?.value.trim() || 'Rak 1A';
+    const sku = document.getElementById('formItemSku')?.value.trim() || ('SKU-' + Date.now().toString().slice(-4));
+    const barcode = document.getElementById('formItemBarcode')?.value.trim() || '';
+    const stock = parseInt(document.getElementById('formItemStock')?.value, 10) || 0;
+    const minStock = parseInt(document.getElementById('formItemMin')?.value, 10) || 0;
+    const unit = (document.getElementById('formItemUnit')?.value.trim() || 'PCS').toUpperCase();
 
     if (!name) {
       this.goToMobileStep(2);
@@ -1571,7 +1578,8 @@ class IstiqomahMobileApp {
   }
 
   deleteCurrentItem() {
-    const id = document.getElementById('formItemId').value;
+    const id = document.getElementById('formItemId')?.value;
+    if (!id) return;
     const item = this.state.items.find(i => i.id === id);
     if (!item || !confirm(`Hapus "${item.name}" dari sistem?`)) return;
     this.state.items = this.state.items.filter(i => i.id !== id);
