@@ -1252,7 +1252,7 @@ class IstiqomahMobileApp {
         statusText.innerHTML = '<span style="color:#f59e0b;">Kamera tidak aktif (Gunakan input manual)</span>';
       }
     }
-  },
+  }
 
   scanMobileWizardVideoFrame() {
     if (!this.mWizardScannerRunning) return;
@@ -1281,7 +1281,7 @@ class IstiqomahMobileApp {
           }
         });
     }
-  },
+  }
 
   onMobileWizardBarcodeScanned(code) {
     IstiqomahSound.beep();
@@ -1301,7 +1301,7 @@ class IstiqomahMobileApp {
         this.goToMobileStep(2);
       }
     }, 400);
-  },
+  }
 
   stopMobileWizardCameraScanner() {
     this.mWizardScannerRunning = false;
@@ -1317,7 +1317,7 @@ class IstiqomahMobileApp {
     }
     const video = document.getElementById('mWizardCameraVideo');
     if (video) video.srcObject = null;
-  },
+  }
 
   // ==========================================================================
   // MOBILE KETANGGUNGAN PENJENISAN (KATEGORI) UX
@@ -1342,7 +1342,7 @@ class IstiqomahMobileApp {
     });
 
     return Array.from(set).sort();
-  },
+  }
 
   renderMobileCategoryChips() {
     const container = document.getElementById('mFormCategoryChips');
@@ -1388,19 +1388,19 @@ class IstiqomahMobileApp {
         </button>
       `;
     }).join('');
-  },
+  }
 
   onMobileCategorySearchInput(val) {
     this.currentMobileCategorySearchQuery = val;
     this.renderMobileCategoryChips();
-  },
+  }
 
   clearMobileCategorySearch() {
     this.currentMobileCategorySearchQuery = '';
     const inp = document.getElementById('mCategorySearchInput');
     if (inp) inp.value = '';
     this.renderMobileCategoryChips();
-  },
+  }
 
   selectMobileWizardCategory(cat) {
     IstiqomahSound.click();
@@ -1408,7 +1408,7 @@ class IstiqomahMobileApp {
     const hidden = document.getElementById('formItemCategory');
     if (hidden) hidden.value = this.currentMobileSelectedCategory;
     this.renderMobileCategoryChips();
-  },
+  }
 
   createMobileQuickCategory() {
     IstiqomahSound.click();
@@ -1421,11 +1421,11 @@ class IstiqomahMobileApp {
 
     this.clearMobileCategorySearch();
     this.showToast(`Jenis "${query}" dipilih`);
-  },
+  }
 
   onMobileWizardFloorChange(floorId) {
     this.renderMobileCategoryChips();
-  },
+  }
 
   openNewItemModal(floorId = 'L1', barcode = '') {
     IstiqomahSound.click();
@@ -1457,7 +1457,7 @@ class IstiqomahMobileApp {
       if (fb) fb.innerHTML = '';
     }
     this.openModal('itemFormModal');
-  },
+  }
 
   openEditItemModal() {
     IstiqomahSound.click();
@@ -1486,7 +1486,7 @@ class IstiqomahMobileApp {
 
     this.goToMobileStep(2);
     this.openModal('itemFormModal');
-  },
+  }
 
   goToMobileStep(step) {
     if (step === 3) {
@@ -1527,7 +1527,7 @@ class IstiqomahMobileApp {
         setTimeout(() => document.getElementById('formItemName')?.focus(), 200);
       }
     }
-  },
+  }
 
   onMobileBarcodeChange(code) {
     const val = (code || '').trim();
