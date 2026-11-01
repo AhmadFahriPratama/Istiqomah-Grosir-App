@@ -165,7 +165,7 @@ const DesktopApp = {
     IstiqomahSound.playScanBeep();
     const item = (this.state.items || []).find(
       i => (i.barcode && i.barcode.toLowerCase() === code.toLowerCase()) ||
-           (i.sku && i.sku.toLowerCase() === code.toLowerCase())
+        (i.sku && i.sku.toLowerCase() === code.toLowerCase())
     );
 
     if (item) {
@@ -1329,7 +1329,7 @@ const DesktopApp = {
 
     const item = (this.state.items || []).find(
       i => (i.barcode && i.barcode.toLowerCase() === code.toLowerCase()) ||
-           (i.sku && i.sku.toLowerCase() === code.toLowerCase())
+        (i.sku && i.sku.toLowerCase() === code.toLowerCase())
     );
 
     let entry = group.entries.find(en => en.barcode.toLowerCase() === code.toLowerCase() || en.sku.toLowerCase() === code.toLowerCase());
@@ -1650,9 +1650,9 @@ const DesktopApp = {
             ${items.length === 0 ? `
               <tr><td colspan="10" style="text-align:center; padding:24px; color:#71717A;">Tidak ada barang yang sesuai dengan filter yang dipilih.</td></tr>
             ` : items.map((it, idx) => {
-              const st = it.stock <= 0 ? 'HABIS' : (it.stock <= it.minStock ? 'MENIPIS' : 'AMAN');
-              const badgeStyle = st === 'HABIS' ? 'background:#FEF2F2; color:#991B1B; border:1px solid #F87171;' : (st === 'MENIPIS' ? 'background:#FFFBEB; color:#92400E; border:1px solid #FCD34D;' : 'background:#F0FDF4; color:#166534; border:1px solid #86EFAC;');
-              return `
+        const st = it.stock <= 0 ? 'HABIS' : (it.stock <= it.minStock ? 'MENIPIS' : 'AMAN');
+        const badgeStyle = st === 'HABIS' ? 'background:#FEF2F2; color:#991B1B; border:1px solid #F87171;' : (st === 'MENIPIS' ? 'background:#FFFBEB; color:#92400E; border:1px solid #FCD34D;' : 'background:#F0FDF4; color:#166534; border:1px solid #86EFAC;');
+        return `
                 <tr>
                   <td style="text-align:center; font-family:var(--font-mono);">${idx + 1}</td>
                   <td><strong>${this.floorLabel(it.floorId)}</strong></td>
@@ -1666,7 +1666,7 @@ const DesktopApp = {
                   <td style="text-align:center;"><span style="font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:4px; ${badgeStyle}">${st}</span></td>
                 </tr>
               `;
-            }).join('')}
+      }).join('')}
           </tbody>
           <tfoot>
             <tr class="a4-subtotal-tr">
@@ -1767,9 +1767,9 @@ const DesktopApp = {
                 </thead>
                 <tbody>
                   ${catList.map((it, idx) => {
-                    const st = it.stock <= 0 ? 'HABIS' : (it.stock <= it.minStock ? 'MENIPIS' : 'AMAN');
-                    const badgeStyle = st === 'HABIS' ? 'background:#FEF2F2; color:#991B1B; border:1px solid #F87171;' : (st === 'MENIPIS' ? 'background:#FFFBEB; color:#92400E; border:1px solid #FCD34D;' : 'background:#F0FDF4; color:#166534; border:1px solid #86EFAC;');
-                    return `
+            const st = it.stock <= 0 ? 'HABIS' : (it.stock <= it.minStock ? 'MENIPIS' : 'AMAN');
+            const badgeStyle = st === 'HABIS' ? 'background:#FEF2F2; color:#991B1B; border:1px solid #F87171;' : (st === 'MENIPIS' ? 'background:#FFFBEB; color:#92400E; border:1px solid #FCD34D;' : 'background:#F0FDF4; color:#166534; border:1px solid #86EFAC;');
+            return `
                       <tr>
                         <td style="text-align:center; font-family:var(--font-mono);">${idx + 1}</td>
                         <td><code>${it.barcode || it.sku}</code></td>
@@ -1782,7 +1782,7 @@ const DesktopApp = {
                         <td style="text-align:center;"><span style="font-size:9px; font-weight:800; padding:2px 5px; border-radius:3px; ${badgeStyle}">${st}</span></td>
                       </tr>
                     `;
-                  }).join('')}
+          }).join('')}
                 </tbody>
                 <tfoot>
                   <tr class="a4-subtotal-tr">
@@ -1864,9 +1864,9 @@ const DesktopApp = {
             ${restockItems.length === 0 ? `
               <tr><td colspan="10" style="text-align:center; padding:28px; color:#166534; font-weight:800;">Seluruh stok barang pada lantai ini dalam kondisi cukup. Tidak ada barang yang memerlukan restock mendesak saat ini.</td></tr>
             ` : restockItems.map((it, idx) => {
-              const suggest = Math.max(10, (it.minStock * 3) - it.stock);
-              const isZero = Number(it.stock) <= 0;
-              return `
+        const suggest = Math.max(10, (it.minStock * 3) - it.stock);
+        const isZero = Number(it.stock) <= 0;
+        return `
                 <tr>
                   <td style="text-align:center; font-family:var(--font-mono);">${idx + 1}</td>
                   <td><strong>${this.floorLabel(it.floorId)}</strong></td>
@@ -1880,7 +1880,7 @@ const DesktopApp = {
                   <td style="text-align:center; font-family:var(--font-mono); color:#71717A;">...... ${it.unit}</td>
                 </tr>
               `;
-            }).join('')}
+      }).join('')}
           </tbody>
           <tfoot>
             <tr class="a4-subtotal-tr">
@@ -1961,15 +1961,15 @@ const DesktopApp = {
             </thead>
             <tbody>
               ${floors.map((flDef, idx) => {
-                const fItems = allItems.filter(i => i.floorId === flDef.id);
-                const fQty = fItems.reduce((s, i) => s + Number(i.stock || 0), 0);
-                const fLow = fItems.filter(i => Number(i.stock) > 0 && Number(i.stock) <= Number(i.minStock)).length;
-                const fEmpty = fItems.filter(i => Number(i.stock) <= 0).length;
-                const fSafe = Math.max(0, fItems.length - (fLow + fEmpty));
-                const fRate = fItems.length > 0 ? Math.round((fSafe / fItems.length) * 100) : 100;
-                const badgeSt = fRate >= 80 ? 'background:#F0FDF4; color:#166534; border:1px solid #86EFAC;' : (fRate >= 60 ? 'background:#FFFBEB; color:#92400E; border:1px solid #FCD34D;' : 'background:#FEF2F2; color:#991B1B; border:1px solid #F87171;');
-                const labelSt = fRate >= 80 ? 'PRIMA' : (fRate >= 60 ? 'WASPADA' : 'KRITIS');
-                return `
+        const fItems = allItems.filter(i => i.floorId === flDef.id);
+        const fQty = fItems.reduce((s, i) => s + Number(i.stock || 0), 0);
+        const fLow = fItems.filter(i => Number(i.stock) > 0 && Number(i.stock) <= Number(i.minStock)).length;
+        const fEmpty = fItems.filter(i => Number(i.stock) <= 0).length;
+        const fSafe = Math.max(0, fItems.length - (fLow + fEmpty));
+        const fRate = fItems.length > 0 ? Math.round((fSafe / fItems.length) * 100) : 100;
+        const badgeSt = fRate >= 80 ? 'background:#F0FDF4; color:#166534; border:1px solid #86EFAC;' : (fRate >= 60 ? 'background:#FFFBEB; color:#92400E; border:1px solid #FCD34D;' : 'background:#FEF2F2; color:#991B1B; border:1px solid #F87171;');
+        const labelSt = fRate >= 80 ? 'PRIMA' : (fRate >= 60 ? 'WASPADA' : 'KRITIS');
+        return `
                   <tr>
                     <td style="text-align:center; font-family:var(--font-mono);">${idx + 1}</td>
                     <td><strong>${flDef.name}</strong></td>
@@ -1983,7 +1983,7 @@ const DesktopApp = {
                     <td style="text-align:center;"><span style="font-size:9.5px; font-weight:900; padding:2px 6px; border-radius:4px; ${badgeSt}">${labelSt}</span></td>
                   </tr>
                 `;
-              }).join('')}
+      }).join('')}
             </tbody>
             <tfoot>
               <tr class="a4-subtotal-tr">
@@ -2016,8 +2016,8 @@ const DesktopApp = {
             </thead>
             <tbody>
               ${top8Categories.map(([cName, cStats], idx) => {
-                const pct = totalStoreUnits > 0 ? ((cStats.qty / totalStoreUnits) * 100).toFixed(1) : 0;
-                return `
+        const pct = totalStoreUnits > 0 ? ((cStats.qty / totalStoreUnits) * 100).toFixed(1) : 0;
+        return `
                   <tr>
                     <td style="text-align:center; font-family:var(--font-mono); font-weight:800;">#${idx + 1}</td>
                     <td><strong>${cName}</strong></td>
@@ -2026,7 +2026,7 @@ const DesktopApp = {
                     <td style="text-align:right; font-family:var(--font-mono);">${pct}%</td>
                   </tr>
                 `;
-              }).join('')}
+      }).join('')}
             </tbody>
           </table>
         </div>
@@ -2078,8 +2078,8 @@ const DesktopApp = {
             ${mutations.length === 0 ? `
               <tr><td colspan="9" style="text-align:center; padding:24px; color:#71717A;">Belum ada riwayat mutasi barang pada cakupan lantai ini.</td></tr>
             ` : mutations.map((m, idx) => {
-              const typeSt = m.type === 'IN' ? 'background:#F0FDF4; color:#166534; border:1px solid #86EFAC;' : (m.type === 'OUT' ? 'background:#FEF2F2; color:#991B1B; border:1px solid #F87171;' : 'background:#EFF6FF; color:#1D4ED8; border:1px solid #BFDBFE;');
-              return `
+        const typeSt = m.type === 'IN' ? 'background:#F0FDF4; color:#166534; border:1px solid #86EFAC;' : (m.type === 'OUT' ? 'background:#FEF2F2; color:#991B1B; border:1px solid #F87171;' : 'background:#EFF6FF; color:#1D4ED8; border:1px solid #BFDBFE;');
+        return `
                 <tr>
                   <td style="text-align:center; font-family:var(--font-mono);">${idx + 1}</td>
                   <td style="font-family:var(--font-mono);">${m.timestamp}</td>
@@ -2092,7 +2092,7 @@ const DesktopApp = {
                   <td>${m.note || '-'}</td>
                 </tr>
               `;
-            }).join('')}
+      }).join('')}
           </tbody>
         </table>
       `;
@@ -2146,10 +2146,10 @@ const DesktopApp = {
             ${rows.length === 0 ? `
               <tr><td colspan="9" style="text-align:center; padding:24px; color:#71717A;">Belum ada sesi hasil scan opname yang tercatat pada cakupan lantai ini.</td></tr>
             ` : rows.map((r, idx) => {
-              const diff = Number(r.countedQty) - Number(r.systemQty);
-              const status = diff === 0 ? 'COCOK' : (diff > 0 ? 'SELISIH LEBIH' : 'SELISIH KURANG');
-              const badgeSt = diff === 0 ? 'background:#F0FDF4; color:#166534; border:1px solid #86EFAC;' : 'background:#FEF2F2; color:#991B1B; border:1px solid #F87171;';
-              return `
+        const diff = Number(r.countedQty) - Number(r.systemQty);
+        const status = diff === 0 ? 'COCOK' : (diff > 0 ? 'SELISIH LEBIH' : 'SELISIH KURANG');
+        const badgeSt = diff === 0 ? 'background:#F0FDF4; color:#166534; border:1px solid #86EFAC;' : 'background:#FEF2F2; color:#991B1B; border:1px solid #F87171;';
+        return `
                 <tr>
                   <td style="text-align:center; font-family:var(--font-mono);">${idx + 1}</td>
                   <td>${r.groupName}</td>
@@ -2162,7 +2162,7 @@ const DesktopApp = {
                   <td style="text-align:center;"><span style="font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:4px; ${badgeSt}">${status}</span></td>
                 </tr>
               `;
-            }).join('')}
+      }).join('')}
           </tbody>
         </table>
       `;
