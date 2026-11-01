@@ -23,9 +23,13 @@ const DesktopApp = {
   statusFilter: 'ALL',
   searchQuery: '',
 
-  // A4 Report Hub State (Desktop Exclusive)
+  // A4 Report Hub State (Desktop Exclusive - Full Suite)
   activeReportBranch: 'STOCK_RECAP',
   reportFloorFilter: 'ALL',
+  reportCategoryFilter: 'ALL',
+  reportPriorityFilter: 'ALL',
+  reportStaffFilter: 'ALL',
+  reportSearchQuery: '',
 
   // Physical Barcode Scanner Rapid Key Buffer
   scannerBuffer: '',
@@ -53,7 +57,10 @@ const DesktopApp = {
 
   injectIcons() {
     const map = {
+      icLoginUser: ICONS.user,
       icLoginLock: ICONS.lock,
+      icEyeLogin: ICONS.eye,
+      icLoginArrow: ICONS.arrowRight,
       icSidebarChevron: ICONS.users,
       icNavDash: ICONS.grid,
       icNavAll: ICONS.layers,
@@ -91,11 +98,13 @@ const DesktopApp = {
       icCloseTransferModal: ICONS.close,
       icCloseBarcodeModal: ICONS.close,
       icRb1: ICONS.layers,
+      icRbCat: ICONS.tag,
       icRb2: ICONS.alert,
-      icRb3: ICONS.scan,
+      icRbExec: ICONS.grid,
       icRb4: ICONS.transfer,
-      icRb5: ICONS.clipboard,
-      icRb6: ICONS.tag
+      icRb3: ICONS.scan,
+      icRb6: ICONS.tag,
+      icRb5: ICONS.clipboard
     };
     Object.keys(map).forEach(id => {
       const el = document.getElementById(id);
@@ -217,34 +226,30 @@ const DesktopApp = {
     this.openLoginOverlay();
   },
 
+  toggleLoginPasswordVisibility() {
+    const input = document.getElementById('loginPasswordInput');
+    const eyeBtn = document.getElementById('icEyeLogin');
+    if (!input) return;
+    const isPass = input.type === 'password';
+    input.type = isPass ? 'text' : 'password';
+    if (eyeBtn) {
+      eyeBtn.innerHTML = isPass ? ICONS.eyeOff : ICONS.eye;
+    }
+  },
+
   renderLoginOverlay() {
-    const items = this.state.items || [];
     const users = this.state.users || [];
     const current = this.getCurrentUser();
 
-    document.getElementById('loginCountL1').textContent = items.filter(i => i.floorId === 'L1').length;
-    document.getElementById('loginCountL2').textContent = items.filter(i => i.floorId === 'L2').length;
-    document.getElementById('loginCountL3').textContent = items.filter(i => i.floorId === 'L3').length;
-
     const sel = document.getElementById('loginUserSelect');
-    sel.innerHTML = users.map(u => `
-      <option value="${u.id}" ${u.id === current.id ? 'selected' : ''}>
-        ${u.name || u.username} — ${u.role === 'ADMIN' ? 'SUPER ADMIN (Akses Penuh)' : 'PETUGAS (' + this.formatAssignedFloors(u) + ')'}
-      </option>
-    `).join('');
-
-    const grid = document.getElementById('loginQuickCards');
-    grid.innerHTML = users.map(u => `
-      <button type="button" class="login-account-card ${u.id === sel.value ? 'selected' : ''}" onclick="DesktopApp.quickPickUser('${u.id}')">
-        <div class="login-account-name">
-          <span>${u.name || u.username}</span>
-          <span style="font-size:10px; font-weight:800; padding:1px 6px; border-radius:4px; background:rgba(255,255,255,0.16);">${u.role}</span>
-        </div>
-        <div class="login-account-role">${this.formatAssignedFloors(u)}</div>
-      </button>
-    `).join('');
-
-    this.onSelectLoginUser(sel.value);
+    if (sel) {
+      sel.innerHTML = users.map(u => `
+        <option value="${u.id}" ${u.id === current.id ? 'selected' : ''}>
+          ${u.name || u.username} — ${u.role === 'ADMIN' ? 'SUPER ADMIN (Akses Penuh)' : 'PETUGAS (' + this.formatAssignedFloors(u) + ')'}
+        </option>
+      `).join('');
+      this.onSelectLoginUser(sel.value);
+    }
   },
 
   formatAssignedFloors(user) {
@@ -256,26 +261,20 @@ const DesktopApp = {
     return user.floorAccess === 'ALL' ? 'Semua Lantai' : this.floorLabel(user.floorAccess);
   },
 
-  quickPickUser(userId) {
-    IstiqomahSound.playClick();
-    const sel = document.getElementById('loginUserSelect');
-    sel.value = userId;
-    const user = (this.state.users || []).find(u => u.id === userId);
-    document.getElementById('loginPasswordInput').value = user ? (user.password || '123') : '123';
-    this.onSelectLoginUser(userId);
-    document.querySelectorAll('#loginQuickCards .login-account-card').forEach(c => {
-      c.classList.toggle('selected', c.getAttribute('onclick').includes(userId));
-    });
-  },
-
   onSelectLoginUser(userId) {
     const user = (this.state.users || []).find(u => u.id === userId);
     const preview = document.getElementById('loginAccessPreview');
-    if (!user || !preview) return;
-    if (user.role === 'ADMIN') {
-      preview.innerHTML = `<strong>Hak Akses Super Admin (${user.name}):</strong> Akses seluruh Lantai 1, 2, 3, Master Database, Manajemen Akun, dan Pusat Laporan Dokumen A4.`;
-    } else {
-      preview.innerHTML = `<strong>Hak Akses Petugas (${user.name}):</strong> Operasional Stok & Opname untuk <strong>${this.formatAssignedFloors(user)}</strong>.`;
+    const pwdInput = document.getElementById('loginPasswordInput');
+    if (!user) return;
+    if (pwdInput) {
+      pwdInput.value = user.password || (user.role === 'ADMIN' ? '819' : '123');
+    }
+    if (preview) {
+      if (user.role === 'ADMIN') {
+        preview.innerHTML = `<strong>Hak Akses Super Admin (${user.name || user.username}):</strong> Akses seluruh Lantai 1, 2, 3, Master Database, Manajemen Akun, dan Pusat Laporan Dokumen A4.`;
+      } else {
+        preview.innerHTML = `<strong>Hak Akses Petugas (${user.name || user.username}):</strong> Operasional Stok & Opname untuk <strong>${this.formatAssignedFloors(user)}</strong>.`;
+      }
     }
   },
 
@@ -1453,6 +1452,7 @@ const DesktopApp = {
     document.querySelectorAll('.report-branch-card').forEach(c => {
       c.classList.toggle('active', c.getAttribute('data-rpt') === branch);
     });
+    this.populateReportFilterControls();
     this.renderReport();
   },
 
@@ -1462,21 +1462,114 @@ const DesktopApp = {
     document.querySelectorAll('#reportFloorPills .seg-pill').forEach(b => {
       b.classList.toggle('active', b.getAttribute('data-rfl') === floorId);
     });
+    this.populateReportFilterControls();
     this.renderReport();
+  },
+
+  setReportCategoryFilter(cat) {
+    IstiqomahSound.playClick();
+    this.reportCategoryFilter = cat;
+    this.renderReport();
+  },
+
+  setReportPriorityFilter(pri) {
+    IstiqomahSound.playClick();
+    this.reportPriorityFilter = pri;
+    this.renderReport();
+  },
+
+  setReportStaffFilter(staff) {
+    IstiqomahSound.playClick();
+    this.reportStaffFilter = staff;
+    this.renderReport();
+  },
+
+  setReportSearchQuery(query) {
+    this.reportSearchQuery = (query || '').trim().toLowerCase();
+    this.renderReport();
+  },
+
+  populateReportFilterControls() {
+    const branch = this.activeReportBranch;
+    const catWrap = document.getElementById('wrapReportCategory');
+    const priWrap = document.getElementById('wrapReportPriority');
+    const staffWrap = document.getElementById('wrapReportStaff');
+    const catSel = document.getElementById('reportCategorySelect');
+    const staffSel = document.getElementById('reportStaffSelect');
+
+    if (catWrap) {
+      catWrap.style.display = (branch === 'STOCK_RECAP' || branch === 'CATEGORY' || branch === 'RESTOCK_ORDER' || branch === 'BLANK_WORKSHEET' || branch === 'BARCODE_CATALOG') ? 'flex' : 'none';
+    }
+    if (priWrap) {
+      priWrap.style.display = (branch === 'RESTOCK_ORDER') ? 'flex' : 'none';
+    }
+    if (staffWrap) {
+      staffWrap.style.display = (branch === 'MUTATION_JOURNAL') ? 'flex' : 'none';
+    }
+
+    if (catSel) {
+      const fl = this.reportFloorFilter;
+      const items = (this.state.items || []).filter(i => fl === 'ALL' || i.floorId === fl);
+      const catSet = new Set();
+      items.forEach(i => {
+        if (i.category) catSet.add(i.category.trim());
+      });
+      const cats = Array.from(catSet).sort((a, b) => a.localeCompare(b));
+      const cur = this.reportCategoryFilter;
+
+      catSel.innerHTML = `
+        <option value="ALL" ${cur === 'ALL' ? 'selected' : ''}>Semua Kategori / Jenis (${cats.length})</option>
+        ${cats.map(c => `<option value="${c}" ${cur === c ? 'selected' : ''}>${c}</option>`).join('')}
+      `;
+    }
+
+    if (staffSel) {
+      const users = this.state.users || [];
+      const curStaff = this.reportStaffFilter;
+      staffSel.innerHTML = `
+        <option value="ALL" ${curStaff === 'ALL' ? 'selected' : ''}>Semua Petugas (${users.length})</option>
+        ${users.map(u => `<option value="${u.name || u.username}" ${curStaff === (u.name || u.username) ? 'selected' : ''}>${u.name || u.username}</option>`).join('')}
+      `;
+    }
   },
 
   renderReport() {
     const user = this.getCurrentUser();
     const fl = this.reportFloorFilter;
+    const cat = this.reportCategoryFilter;
+    const pri = this.reportPriorityFilter;
+    const staff = this.reportStaffFilter;
+    const q = this.reportSearchQuery;
     const flLabel = fl === 'ALL' ? 'Semua Lantai (Lantai 1, Lantai 2, Lantai 3)' : this.floorLabel(fl);
 
-    document.getElementById('a4PrintDate').textContent = IstiqomahUtils.formatNow();
-    document.getElementById('a4PrintUser').textContent = user.name || user.username;
-    document.getElementById('a4SigPrepared').textContent = `${user.name || user.username} (${user.role})`;
+    const dateEl = document.getElementById('a4PrintDate');
+    const userEl = document.getElementById('a4PrintUser');
+    const sigPreparedEl = document.getElementById('a4SigPrepared');
+    if (dateEl) dateEl.textContent = IstiqomahUtils.formatNow();
+    if (userEl) userEl.textContent = user.name || user.username;
+    if (sigPreparedEl) sigPreparedEl.textContent = `${user.name || user.username} (${user.role})`;
 
-    const items = (this.state.items || []).filter(i => fl === 'ALL' || i.floorId === fl);
-    const mutations = (this.state.mutations || []).filter(m => fl === 'ALL' || m.floorId === fl);
-    const soGroups = (this.state.soGroups || []).filter(g => fl === 'ALL' || g.floorId === fl);
+    // Raw dataset matching current floor
+    let items = (this.state.items || []).filter(i => fl === 'ALL' || i.floorId === fl);
+    let mutations = (this.state.mutations || []).filter(m => fl === 'ALL' || m.floorId === fl);
+    let soGroups = (this.state.soGroups || []).filter(g => fl === 'ALL' || g.floorId === fl);
+
+    // Apply search query
+    if (q) {
+      items = items.filter(i =>
+        (i.name && i.name.toLowerCase().includes(q)) ||
+        (i.barcode && i.barcode.includes(q)) ||
+        (i.sku && i.sku.toLowerCase().includes(q)) ||
+        (i.location && i.location.toLowerCase().includes(q)) ||
+        (i.category && i.category.toLowerCase().includes(q))
+      );
+      mutations = mutations.filter(m =>
+        (m.itemName && m.itemName.toLowerCase().includes(q)) ||
+        (m.id && m.id.toLowerCase().includes(q)) ||
+        (m.user && m.user.toLowerCase().includes(q)) ||
+        (m.note && m.note.toLowerCase().includes(q))
+      );
+    }
 
     const summaryEl = document.getElementById('a4KpiSummaryStrip');
     const contentEl = document.getElementById('a4ReportDynamicBody');
@@ -1485,24 +1578,30 @@ const DesktopApp = {
     const badgeEl = document.getElementById('a4DocStamp');
     const regNumEl = document.getElementById('a4DocRegNum');
     const activeBadgeTitle = document.getElementById('reportActiveTitleBadge');
+    const countBadge = document.getElementById('reportFilterCountBadge');
 
-    subEl.textContent = `ISTIQOMAH GROSIR BULUSARI — Cakupan: ${flLabel}`;
+    if (subEl) subEl.textContent = `ISTIQOMAH GROSIR BULUSARI — Cakupan: ${flLabel}`;
 
     // ------------------------------------------------------------------------
-    // BRANCH 1: REKAPITULASI STOK GUDANG (STOCK_RECAP)
+    // BRANCH 1: STOK PER LANTAI (STOCK_RECAP)
     // ------------------------------------------------------------------------
     if (this.activeReportBranch === 'STOCK_RECAP') {
-      badgeEl.textContent = 'JENIS 1 · INVENTARIS STOK FISIK';
-      titleEl.textContent = 'LAPORAN REKAPITULASI STOK GUDANG';
+      if (cat !== 'ALL') {
+        items = items.filter(i => i.category && i.category.trim() === cat);
+      }
+      badgeEl.textContent = 'JENIS 1 · INVENTARIS STOK PER LANTAI';
+      titleEl.textContent = 'LAPORAN REKAPITULASI STOK PER LANTAI';
       regNumEl.textContent = `STK-BLS-${fl}-${IstiqomahUtils.formatDateOnly()}`;
-      activeBadgeTitle.textContent = `Rekapitulasi Stok Gudang (${flLabel})`;
+      activeBadgeTitle.textContent = `Stok per Lantai (${flLabel}${cat !== 'ALL' ? ' · ' + cat : ''})`;
+      if (countBadge) countBadge.textContent = `Menampilkan ${items.length} macam barang`;
 
       const totalUnits = items.reduce((s, i) => s + Number(i.stock || 0), 0);
       const lowCnt = items.filter(i => i.stock > 0 && i.stock <= i.minStock).length;
       const emptyCnt = items.filter(i => Number(i.stock) === 0).length;
+      const safeCnt = Math.max(0, items.length - (lowCnt + emptyCnt));
 
       summaryEl.innerHTML = `
-        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Total Barang</div><div class="a4-kpi-tile-val">${items.length} SKU</div></div>
+        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Total Macam SKU</div><div class="a4-kpi-tile-val">${items.length} SKU</div></div>
         <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Total Fisik Stok</div><div class="a4-kpi-tile-val">${totalUnits.toLocaleString('id-ID')} Unit</div></div>
         <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Stok Menipis</div><div class="a4-kpi-tile-val">${lowCnt} SKU</div></div>
         <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Stok Habis (0)</div><div class="a4-kpi-tile-val">${emptyCnt} SKU</div></div>
@@ -1512,95 +1611,462 @@ const DesktopApp = {
         <table class="a4-official-table">
           <thead>
             <tr>
-              <th>No</th>
-              <th>Lantai</th>
-              <th>Kategori</th>
-              <th>Lokasi Rak</th>
-              <th>SKU / Barcode</th>
-              <th>Nama Barang</th>
-              <th>Stok Fisik</th>
-              <th>Batas Min</th>
-              <th>Satuan</th>
-              <th>Status</th>
+              <th style="width:38px; text-align:center;">No</th>
+              <th style="width:75px;">Lantai</th>
+              <th style="width:130px;">Kategori / Jenis</th>
+              <th style="width:90px;">Lokasi Rak</th>
+              <th style="width:115px;">Barcode / SKU</th>
+              <th>Nama Produk</th>
+              <th style="width:70px; text-align:right;">Batas Min</th>
+              <th style="width:75px; text-align:right;">Fisik Stok</th>
+              <th style="width:65px; text-align:center;">Satuan</th>
+              <th style="width:80px; text-align:center;">Status</th>
             </tr>
           </thead>
           <tbody>
-            ${items.map((it, idx) => {
-              const st = it.stock === 0 ? 'HABIS' : (it.stock <= it.minStock ? 'MENIPIS' : 'AMAN');
+            ${items.length === 0 ? `
+              <tr><td colspan="10" style="text-align:center; padding:24px; color:#71717A;">Tidak ada barang yang sesuai dengan filter yang dipilih.</td></tr>
+            ` : items.map((it, idx) => {
+              const st = it.stock <= 0 ? 'HABIS' : (it.stock <= it.minStock ? 'MENIPIS' : 'AMAN');
+              const badgeStyle = st === 'HABIS' ? 'background:#FEF2F2; color:#991B1B; border:1px solid #F87171;' : (st === 'MENIPIS' ? 'background:#FFFBEB; color:#92400E; border:1px solid #FCD34D;' : 'background:#F0FDF4; color:#166534; border:1px solid #86EFAC;');
               return `
                 <tr>
-                  <td>${idx + 1}</td>
+                  <td style="text-align:center; font-family:var(--font-mono);">${idx + 1}</td>
                   <td><strong>${this.floorLabel(it.floorId)}</strong></td>
                   <td>${it.category || 'Umum'}</td>
                   <td>${it.location || '-'}</td>
-                  <td>${it.sku} / ${it.barcode}</td>
+                  <td><code>${it.barcode || it.sku}</code></td>
                   <td><strong>${it.name}</strong></td>
-                  <td><strong>${it.stock}</strong></td>
-                  <td>${it.minStock}</td>
-                  <td>${it.unit}</td>
-                  <td><strong>${st}</strong></td>
+                  <td style="text-align:right; font-family:var(--font-mono);">${it.minStock}</td>
+                  <td style="text-align:right; font-family:var(--font-mono); font-weight:800;">${it.stock}</td>
+                  <td style="text-align:center;">${it.unit}</td>
+                  <td style="text-align:center;"><span style="font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:4px; ${badgeStyle}">${st}</span></td>
                 </tr>
               `;
             }).join('')}
           </tbody>
+          <tfoot>
+            <tr class="a4-subtotal-tr">
+              <td colspan="6" style="text-align:right; font-weight:900;">TOTAL KESELURUHAN UNIT FISIK:</td>
+              <td colspan="2" style="text-align:right; font-family:var(--font-mono); font-weight:900; font-size:12px;">${totalUnits.toLocaleString('id-ID')} Unit</td>
+              <td colspan="2" style="text-align:center; font-weight:800;">${items.length} SKU</td>
+            </tr>
+          </tfoot>
         </table>
       `;
     }
 
     // ------------------------------------------------------------------------
-    // BRANCH 2: SURAT PESANAN RESTOCK (RESTOCK_ORDER)
+    // BRANCH 2: LAPORAN PER JENIS / KATEGORI (CATEGORY) - EXACT AS KETANGGUNGAN
+    // ------------------------------------------------------------------------
+    else if (this.activeReportBranch === 'CATEGORY') {
+      badgeEl.textContent = 'JENIS 2 · REKAPITULASI PER JENIS / KATEGORI';
+      titleEl.textContent = 'LAPORAN STOK PER JENIS KOMODITAS GROSIR';
+      regNumEl.textContent = `CAT-BLS-${fl}-${IstiqomahUtils.formatDateOnly()}`;
+      activeBadgeTitle.textContent = `Laporan per Jenis / Kategori (${flLabel}${cat !== 'ALL' ? ' · ' + cat : ''})`;
+
+      // Filter by selected category if specific
+      let targetItems = items;
+      if (cat !== 'ALL') {
+        targetItems = items.filter(i => i.category && i.category.trim() === cat);
+      }
+
+      // Group items by category
+      const groupMap = new Map();
+      targetItems.forEach(it => {
+        const cName = (it.category || 'Umum').trim();
+        if (!groupMap.has(cName)) {
+          groupMap.set(cName, []);
+        }
+        groupMap.get(cName).push(it);
+      });
+
+      const categoriesSorted = Array.from(groupMap.keys()).sort((a, b) => a.localeCompare(b));
+      const grandTotalUnits = targetItems.reduce((s, i) => s + Number(i.stock || 0), 0);
+      const grandTotalSKU = targetItems.length;
+
+      if (countBadge) countBadge.textContent = `Menampilkan ${categoriesSorted.length} kategori · ${grandTotalSKU} SKU`;
+
+      // Top category
+      let topCategory = '-';
+      let topCategoryQty = 0;
+      categoriesSorted.forEach(c => {
+        const qSum = groupMap.get(c).reduce((s, i) => s + Number(i.stock || 0), 0);
+        if (qSum > topCategoryQty) {
+          topCategoryQty = qSum;
+          topCategory = c;
+        }
+      });
+
+      summaryEl.innerHTML = `
+        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Kategori Terdaftar</div><div class="a4-kpi-tile-val">${categoriesSorted.length} Kategori</div></div>
+        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Total Macam SKU</div><div class="a4-kpi-tile-val">${grandTotalSKU} SKU</div></div>
+        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Total Fisik Unit</div><div class="a4-kpi-tile-val">${grandTotalUnits.toLocaleString('id-ID')} Unit</div></div>
+        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Kategori Terbesar</div><div class="a4-kpi-tile-val" style="font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${topCategory}</div></div>
+      `;
+
+      if (categoriesSorted.length === 0) {
+        contentEl.innerHTML = `<div style="text-align:center; padding:36px; color:#71717A; font-weight:700;">Tidak ada kategori barang yang ditemukan dengan filter ini.</div>`;
+      } else {
+        let htmlTables = '';
+        categoriesSorted.forEach((catName, cIdx) => {
+          const catList = groupMap.get(catName);
+          const catTotalQty = catList.reduce((s, i) => s + Number(i.stock || 0), 0);
+          const catLow = catList.filter(i => i.stock > 0 && i.stock <= i.minStock).length;
+          const catEmpty = catList.filter(i => Number(i.stock) === 0).length;
+
+          htmlTables += `
+            <div style="margin-bottom:24px;">
+              <div class="a4-category-header-bar">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="background:var(--neo-black); color:#FFFFFF; padding:2px 7px; border-radius:4px; font-size:10px;">${cIdx + 1}</span>
+                  <span>KOMODITAS: ${catName.toUpperCase()}</span>
+                </div>
+                <div style="font-size:11px; font-weight:800; color:#52525B;">
+                  ${catList.length} SKU &bull; Subtotal: <strong style="color:var(--neo-black);">${catTotalQty.toLocaleString('id-ID')} Unit</strong>
+                  ${catEmpty > 0 ? ` &bull; <span style="color:#DC2626;">(${catEmpty} Habis)</span>` : ''}
+                </div>
+              </div>
+
+              <table class="a4-official-table" style="margin-top:6px;">
+                <thead>
+                  <tr>
+                    <th style="width:36px; text-align:center;">No</th>
+                    <th style="width:115px;">Barcode / SKU</th>
+                    <th>Nama Produk</th>
+                    <th style="width:75px;">Lantai</th>
+                    <th style="width:90px;">Lokasi Rak</th>
+                    <th style="width:65px; text-align:right;">Min</th>
+                    <th style="width:75px; text-align:right;">Fisik</th>
+                    <th style="width:65px; text-align:center;">Satuan</th>
+                    <th style="width:80px; text-align:center;">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${catList.map((it, idx) => {
+                    const st = it.stock <= 0 ? 'HABIS' : (it.stock <= it.minStock ? 'MENIPIS' : 'AMAN');
+                    const badgeStyle = st === 'HABIS' ? 'background:#FEF2F2; color:#991B1B; border:1px solid #F87171;' : (st === 'MENIPIS' ? 'background:#FFFBEB; color:#92400E; border:1px solid #FCD34D;' : 'background:#F0FDF4; color:#166534; border:1px solid #86EFAC;');
+                    return `
+                      <tr>
+                        <td style="text-align:center; font-family:var(--font-mono);">${idx + 1}</td>
+                        <td><code>${it.barcode || it.sku}</code></td>
+                        <td><strong>${it.name}</strong></td>
+                        <td>${this.floorLabel(it.floorId)}</td>
+                        <td>${it.location || '-'}</td>
+                        <td style="text-align:right; font-family:var(--font-mono);">${it.minStock}</td>
+                        <td style="text-align:right; font-family:var(--font-mono); font-weight:800;">${it.stock}</td>
+                        <td style="text-align:center;">${it.unit}</td>
+                        <td style="text-align:center;"><span style="font-size:9px; font-weight:800; padding:2px 5px; border-radius:3px; ${badgeStyle}">${st}</span></td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+                <tfoot>
+                  <tr class="a4-subtotal-tr">
+                    <td colspan="5" style="text-align:right; font-weight:900;">Subtotal Kategori ${catName}:</td>
+                    <td colspan="2" style="text-align:right; font-family:var(--font-mono); font-weight:900;">${catTotalQty.toLocaleString('id-ID')} Unit</td>
+                    <td colspan="2" style="text-align:center; font-size:10.5px;">${catList.length} item</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          `;
+        });
+
+        // Append grand total block
+        htmlTables += `
+          <div style="background:#F4F4F5; border:2.5px solid var(--neo-border); border-radius:8px; padding:12px 18px; margin-top:20px; display:flex; justify-content:space-between; align-items:center;">
+            <div style="font-size:13px; font-weight:900; text-transform:uppercase;">TOTAL SELURUH JENIS / KATEGORI (${categoriesSorted.length} Komoditas):</div>
+            <div style="font-size:15px; font-weight:900; font-family:var(--font-mono);">${grandTotalUnits.toLocaleString('id-ID')} UNIT (${grandTotalSKU} SKU)</div>
+          </div>
+        `;
+
+        contentEl.innerHTML = htmlTables;
+      }
+    }
+
+    // ------------------------------------------------------------------------
+    // BRANCH 3: LEMBAR PENGADAAN RESTOCK (RESTOCK_ORDER)
     // ------------------------------------------------------------------------
     else if (this.activeReportBranch === 'RESTOCK_ORDER') {
-      badgeEl.textContent = 'JENIS 2 · PENGADAAN & SURAT RESTOCK';
+      badgeEl.textContent = 'JENIS 3 · LEMBAR PENGADAAN & SURAT RESTOCK';
       titleEl.textContent = 'SURAT PESANAN RESTOCK BARANG MENIPIS & HABIS';
       regNumEl.textContent = `RST-BLS-${fl}-${IstiqomahUtils.formatDateOnly()}`;
       activeBadgeTitle.textContent = `Surat Pesanan Restock (${flLabel})`;
 
-      const restockItems = items.filter(i => i.stock <= i.minStock);
-      const emptyCnt = restockItems.filter(i => i.stock === 0).length;
-      const lowCnt = restockItems.filter(i => i.stock > 0).length;
+      if (cat !== 'ALL') {
+        items = items.filter(i => i.category && i.category.trim() === cat);
+      }
+
+      // Priority filter: ALL (stock <= minStock), HABIS (stock <= 0), MENIPIS (stock > 0 && stock <= minStock)
+      let restockItems = [];
+      if (pri === 'HABIS') {
+        restockItems = items.filter(i => Number(i.stock) <= 0);
+      } else if (pri === 'MENIPIS') {
+        restockItems = items.filter(i => Number(i.stock) > 0 && Number(i.stock) <= Number(i.minStock));
+      } else {
+        restockItems = items.filter(i => Number(i.stock) <= Number(i.minStock));
+      }
+
+      const emptyCnt = restockItems.filter(i => Number(i.stock) <= 0).length;
+      const lowCnt = restockItems.filter(i => Number(i.stock) > 0).length;
       const recTotal = restockItems.reduce((s, i) => s + Math.max(10, (i.minStock * 3) - i.stock), 0);
+
+      if (countBadge) countBadge.textContent = `Menampilkan ${restockItems.length} SKU perlu restock`;
 
       summaryEl.innerHTML = `
         <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Perlu Di-Order</div><div class="a4-kpi-tile-val">${restockItems.length} SKU</div></div>
-        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Status Kosong (0)</div><div class="a4-kpi-tile-val">${emptyCnt} SKU</div></div>
-        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Status Menipis</div><div class="a4-kpi-tile-val">${lowCnt} SKU</div></div>
-        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Estimasi Order Unit</div><div class="a4-kpi-tile-val">${recTotal} Unit</div></div>
+        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Status Habis (0)</div><div class="a4-kpi-tile-val" style="color:#DC2626;">${emptyCnt} SKU</div></div>
+        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Status Menipis</div><div class="a4-kpi-tile-val" style="color:#D97706;">${lowCnt} SKU</div></div>
+        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Estimasi Order Unit</div><div class="a4-kpi-tile-val">${recTotal.toLocaleString('id-ID')} Unit</div></div>
       `;
 
       contentEl.innerHTML = `
         <table class="a4-official-table">
           <thead>
             <tr>
-              <th>No</th>
-              <th>Lantai</th>
-              <th>Kategori</th>
-              <th>Lokasi Rak</th>
-              <th>SKU / Barcode</th>
-              <th>Nama Barang</th>
-              <th>Sisa Stok</th>
-              <th>Batas Min</th>
-              <th>Saran Order</th>
-              <th>Rencana Belanja Aktual</th>
+              <th style="width:36px; text-align:center;">No</th>
+              <th style="width:75px;">Lantai</th>
+              <th style="width:120px;">Kategori</th>
+              <th style="width:85px;">Lokasi Rak</th>
+              <th style="width:115px;">Barcode / SKU</th>
+              <th>Nama Produk</th>
+              <th style="width:70px; text-align:right;">Sisa Stok</th>
+              <th style="width:65px; text-align:right;">Batas Min</th>
+              <th style="width:85px; text-align:right;">Saran Order</th>
+              <th style="width:110px; text-align:center;">Order Aktual</th>
             </tr>
           </thead>
           <tbody>
             ${restockItems.length === 0 ? `
-              <tr><td colspan="10" style="text-align:center; padding:24px;">Seluruh stok barang pada lantai ini dalam kondisi cukup. Tidak ada barang yang perlu direstock saat ini.</td></tr>
+              <tr><td colspan="10" style="text-align:center; padding:28px; color:#166534; font-weight:800;">Seluruh stok barang pada lantai ini dalam kondisi cukup. Tidak ada barang yang memerlukan restock mendesak saat ini.</td></tr>
             ` : restockItems.map((it, idx) => {
               const suggest = Math.max(10, (it.minStock * 3) - it.stock);
+              const isZero = Number(it.stock) <= 0;
               return `
                 <tr>
-                  <td>${idx + 1}</td>
+                  <td style="text-align:center; font-family:var(--font-mono);">${idx + 1}</td>
                   <td><strong>${this.floorLabel(it.floorId)}</strong></td>
                   <td>${it.category || 'Umum'}</td>
                   <td>${it.location || '-'}</td>
-                  <td>${it.sku} / ${it.barcode}</td>
+                  <td><code>${it.barcode || it.sku}</code></td>
                   <td><strong>${it.name}</strong></td>
-                  <td><strong>${it.stock} ${it.unit}</strong></td>
-                  <td>${it.minStock} ${it.unit}</td>
-                  <td><strong>+${suggest} ${it.unit}</strong></td>
-                  <td>....... ${it.unit}</td>
+                  <td style="text-align:right; font-family:var(--font-mono); font-weight:800; ${isZero ? 'color:#DC2626;' : 'color:#D97706;'}">${it.stock} ${it.unit}</td>
+                  <td style="text-align:right; font-family:var(--font-mono);">${it.minStock} ${it.unit}</td>
+                  <td style="text-align:right; font-family:var(--font-mono); font-weight:800; color:#1D4ED8;">+${suggest} ${it.unit}</td>
+                  <td style="text-align:center; font-family:var(--font-mono); color:#71717A;">...... ${it.unit}</td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+          <tfoot>
+            <tr class="a4-subtotal-tr">
+              <td colspan="7" style="text-align:right; font-weight:900;">TOTAL ESTIMASI KEBUTUHAN UNIT RESTOCK:</td>
+              <td colspan="2" style="text-align:right; font-family:var(--font-mono); font-weight:900; font-size:12px;">+${recTotal.toLocaleString('id-ID')} Unit</td>
+              <td style="text-align:center; font-weight:800;">${restockItems.length} SKU</td>
+            </tr>
+          </tfoot>
+        </table>
+      `;
+    }
+
+    // ------------------------------------------------------------------------
+    // BRANCH 4: REKAPITULASI EKSEKUTIF 3 LANTAI (EXECUTIVE_SUMMARY)
+    // ------------------------------------------------------------------------
+    else if (this.activeReportBranch === 'EXECUTIVE_SUMMARY') {
+      badgeEl.textContent = 'JENIS 4 · REKAPITULASI EKSEKUTIF PIMPINAN';
+      titleEl.textContent = 'RINGKASAN EKSEKUTIF KESIAPAN STOK 3 LANTAI';
+      regNumEl.textContent = `EXC-BLS-ALL-${IstiqomahUtils.formatDateOnly()}`;
+      activeBadgeTitle.textContent = 'Rekapitulasi Eksekutif (Lantai 1 - Lantai 3)';
+
+      const allItems = this.state.items || [];
+      const totalStoreUnits = allItems.reduce((s, i) => s + Number(i.stock || 0), 0);
+      const totalStoreSKU = allItems.length;
+      const totalStoreEmpty = allItems.filter(i => Number(i.stock) <= 0).length;
+      const totalStoreLow = allItems.filter(i => Number(i.stock) > 0 && Number(i.stock) <= Number(i.minStock)).length;
+      const totalStoreSafe = Math.max(0, totalStoreSKU - (totalStoreEmpty + totalStoreLow));
+      const storeReadyRate = totalStoreSKU > 0 ? Math.round((totalStoreSafe / totalStoreSKU) * 100) : 100;
+
+      if (countBadge) countBadge.textContent = `Kesiapan Gudang: ${storeReadyRate}%`;
+
+      summaryEl.innerHTML = `
+        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Total Portofolio SKU</div><div class="a4-kpi-tile-val">${totalStoreSKU} SKU</div></div>
+        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Valuasi Fisik Unit</div><div class="a4-kpi-tile-val">${totalStoreUnits.toLocaleString('id-ID')} Unit</div></div>
+        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Tingkat Kesiapan</div><div class="a4-kpi-tile-val" style="color:#166534;">${storeReadyRate}% SIAP</div></div>
+        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Defisit Kritis (Habis)</div><div class="a4-kpi-tile-val" style="color:#DC2626;">${totalStoreEmpty} SKU</div></div>
+      `;
+
+      // Matrix per Lantai (L1, L2, L3)
+      const floors = [
+        { id: 'L1', name: 'Lantai 1', dept: 'Sembako, Minyak, Sabun, Popok & Minuman' },
+        { id: 'L2', name: 'Lantai 2', dept: 'Fashion Muslim, Gamis, Koko, Sarung & Hijab' },
+        { id: 'L3', name: 'Lantai 3', dept: 'Alat Masak, Dapur, Box Storage & Elektronik' }
+      ];
+
+      // Top 8 categories across store
+      const catVolumeMap = new Map();
+      allItems.forEach(i => {
+        const c = i.category || 'Umum';
+        const cur = catVolumeMap.get(c) || { count: 0, qty: 0 };
+        cur.count += 1;
+        cur.qty += Number(i.stock || 0);
+        catVolumeMap.set(c, cur);
+      });
+      const top8Categories = Array.from(catVolumeMap.entries())
+        .sort((a, b) => b[1].qty - a[1].qty)
+        .slice(0, 8);
+
+      contentEl.innerHTML = `
+        <div style="margin-bottom:20px;">
+          <div style="font-size:12px; font-weight:900; text-transform:uppercase; margin-bottom:8px; color:var(--text-main);">
+            I. MATRIKS OPERASIONAL TINGKAT LANTAI FISIK (LANTAI 1 S/D 3):
+          </div>
+          <table class="a4-official-table" style="margin-top:4px;">
+            <thead>
+              <tr>
+                <th style="width:40px; text-align:center;">No</th>
+                <th style="width:90px;">Lantai</th>
+                <th>Departemen Komoditas</th>
+                <th style="width:80px; text-align:right;">Total SKU</th>
+                <th style="width:85px; text-align:right;">Unit Fisik</th>
+                <th style="width:65px; text-align:right;">Aman</th>
+                <th style="width:65px; text-align:right;">Menipis</th>
+                <th style="width:65px; text-align:right;">Habis</th>
+                <th style="width:85px; text-align:center;">Kesiapan</th>
+                <th style="width:80px; text-align:center;">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${floors.map((flDef, idx) => {
+                const fItems = allItems.filter(i => i.floorId === flDef.id);
+                const fQty = fItems.reduce((s, i) => s + Number(i.stock || 0), 0);
+                const fLow = fItems.filter(i => Number(i.stock) > 0 && Number(i.stock) <= Number(i.minStock)).length;
+                const fEmpty = fItems.filter(i => Number(i.stock) <= 0).length;
+                const fSafe = Math.max(0, fItems.length - (fLow + fEmpty));
+                const fRate = fItems.length > 0 ? Math.round((fSafe / fItems.length) * 100) : 100;
+                const badgeSt = fRate >= 80 ? 'background:#F0FDF4; color:#166534; border:1px solid #86EFAC;' : (fRate >= 60 ? 'background:#FFFBEB; color:#92400E; border:1px solid #FCD34D;' : 'background:#FEF2F2; color:#991B1B; border:1px solid #F87171;');
+                const labelSt = fRate >= 80 ? 'PRIMA' : (fRate >= 60 ? 'WASPADA' : 'KRITIS');
+                return `
+                  <tr>
+                    <td style="text-align:center; font-family:var(--font-mono);">${idx + 1}</td>
+                    <td><strong>${flDef.name}</strong></td>
+                    <td>${flDef.dept}</td>
+                    <td style="text-align:right; font-family:var(--font-mono);">${fItems.length}</td>
+                    <td style="text-align:right; font-family:var(--font-mono); font-weight:800;">${fQty.toLocaleString('id-ID')}</td>
+                    <td style="text-align:right; font-family:var(--font-mono); color:#166534;">${fSafe}</td>
+                    <td style="text-align:right; font-family:var(--font-mono); color:#D97706;">${fLow}</td>
+                    <td style="text-align:right; font-family:var(--font-mono); color:#DC2626;">${fEmpty}</td>
+                    <td style="text-align:center; font-family:var(--font-mono); font-weight:800;">${fRate}%</td>
+                    <td style="text-align:center;"><span style="font-size:9.5px; font-weight:900; padding:2px 6px; border-radius:4px; ${badgeSt}">${labelSt}</span></td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+            <tfoot>
+              <tr class="a4-subtotal-tr">
+                <td colspan="3" style="text-align:right; font-weight:900;">KONSOLIDASI 3 LANTAI BULUSARI:</td>
+                <td style="text-align:right; font-family:var(--font-mono); font-weight:900;">${totalStoreSKU} SKU</td>
+                <td style="text-align:right; font-family:var(--font-mono); font-weight:900;">${totalStoreUnits.toLocaleString('id-ID')} Unit</td>
+                <td style="text-align:right; font-family:var(--font-mono); color:#166534; font-weight:900;">${totalStoreSafe}</td>
+                <td style="text-align:right; font-family:var(--font-mono); color:#D97706; font-weight:900;">${totalStoreLow}</td>
+                <td style="text-align:right; font-family:var(--font-mono); color:#DC2626; font-weight:900;">${totalStoreEmpty}</td>
+                <td style="text-align:center; font-family:var(--font-mono); font-weight:900;">${storeReadyRate}%</td>
+                <td style="text-align:center; font-weight:900;">SEHAT</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div>
+          <div style="font-size:12px; font-weight:900; text-transform:uppercase; margin-bottom:8px; color:var(--text-main);">
+            II. TOP 8 KATEGORI / JENIS DENGAN VOLUME FISIK TERBESAR:
+          </div>
+          <table class="a4-official-table" style="margin-top:4px;">
+            <thead>
+              <tr>
+                <th style="width:40px; text-align:center;">Ranking</th>
+                <th>Nama Komoditas / Jenis Barang</th>
+                <th style="width:110px; text-align:right;">Jumlah SKU</th>
+                <th style="width:120px; text-align:right;">Total Volume Unit</th>
+                <th style="width:120px; text-align:right;">Porsi Volume</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${top8Categories.map(([cName, cStats], idx) => {
+                const pct = totalStoreUnits > 0 ? ((cStats.qty / totalStoreUnits) * 100).toFixed(1) : 0;
+                return `
+                  <tr>
+                    <td style="text-align:center; font-family:var(--font-mono); font-weight:800;">#${idx + 1}</td>
+                    <td><strong>${cName}</strong></td>
+                    <td style="text-align:right; font-family:var(--font-mono);">${cStats.count} SKU</td>
+                    <td style="text-align:right; font-family:var(--font-mono); font-weight:800;">${cStats.qty.toLocaleString('id-ID')} Unit</td>
+                    <td style="text-align:right; font-family:var(--font-mono);">${pct}%</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    // ------------------------------------------------------------------------
+    // BRANCH 5: JURNAL MUTASI TRANSAKSI (MUTATION_JOURNAL)
+    // ------------------------------------------------------------------------
+    else if (this.activeReportBranch === 'MUTATION_JOURNAL') {
+      badgeEl.textContent = 'JENIS 5 · JURNAL MUTASI & AUDIT STAF';
+      titleEl.textContent = 'JURNAL AUDIT MUTASI KELUAR-MASUK & PINDAH LANTAI';
+      regNumEl.textContent = `MUT-BLS-${fl}-${IstiqomahUtils.formatDateOnly()}`;
+      activeBadgeTitle.textContent = `Jurnal Mutasi Transaksi (${flLabel})`;
+
+      if (staff !== 'ALL') {
+        mutations = mutations.filter(m => m.user && m.user.trim() === staff);
+      }
+
+      const inCnt = mutations.filter(m => m.type === 'IN').length;
+      const outCnt = mutations.filter(m => m.type === 'OUT').length;
+      const opCnt = mutations.filter(m => m.type === 'OPNAME' || m.type === 'TRANSFER').length;
+
+      if (countBadge) countBadge.textContent = `Menampilkan ${mutations.length} catatan mutasi`;
+
+      summaryEl.innerHTML = `
+        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Total Transaksi</div><div class="a4-kpi-tile-val">${mutations.length} Entri</div></div>
+        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Barang Masuk (IN)</div><div class="a4-kpi-tile-val" style="color:#166534;">${inCnt} Entri</div></div>
+        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Barang Keluar (OUT)</div><div class="a4-kpi-tile-val" style="color:#DC2626;">${outCnt} Entri</div></div>
+        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Opname / Transfer</div><div class="a4-kpi-tile-val" style="color:#1D4ED8;">${opCnt} Entri</div></div>
+      `;
+
+      contentEl.innerHTML = `
+        <table class="a4-official-table">
+          <thead>
+            <tr>
+              <th style="width:36px; text-align:center;">No</th>
+              <th style="width:125px;">Waktu Transaksi</th>
+              <th style="width:90px;">Kode Transaksi</th>
+              <th style="width:65px; text-align:center;">Jenis</th>
+              <th style="width:75px;">Lantai</th>
+              <th>Nama Barang</th>
+              <th style="width:75px; text-align:right;">Jumlah</th>
+              <th style="width:95px;">Petugas</th>
+              <th>Keterangan</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${mutations.length === 0 ? `
+              <tr><td colspan="9" style="text-align:center; padding:24px; color:#71717A;">Belum ada riwayat mutasi barang pada cakupan lantai ini.</td></tr>
+            ` : mutations.map((m, idx) => {
+              const typeSt = m.type === 'IN' ? 'background:#F0FDF4; color:#166534; border:1px solid #86EFAC;' : (m.type === 'OUT' ? 'background:#FEF2F2; color:#991B1B; border:1px solid #F87171;' : 'background:#EFF6FF; color:#1D4ED8; border:1px solid #BFDBFE;');
+              return `
+                <tr>
+                  <td style="text-align:center; font-family:var(--font-mono);">${idx + 1}</td>
+                  <td style="font-family:var(--font-mono);">${m.timestamp}</td>
+                  <td><code>${m.id}</code></td>
+                  <td style="text-align:center;"><span style="font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:4px; ${typeSt}">${m.type}</span></td>
+                  <td>${this.floorLabel(m.floorId)}</td>
+                  <td><strong>${m.itemName}</strong></td>
+                  <td style="text-align:right; font-family:var(--font-mono); font-weight:800;">${m.qty} ${m.unit || ''}</td>
+                  <td><strong>${m.user || 'Fahri'}</strong></td>
+                  <td>${m.note || '-'}</td>
                 </tr>
               `;
             }).join('')}
@@ -1610,10 +2076,10 @@ const DesktopApp = {
     }
 
     // ------------------------------------------------------------------------
-    // BRANCH 3: AUDIT STOCK OPNAME (OPNAME_AUDIT)
+    // BRANCH 6: AUDIT STOCK OPNAME (OPNAME_AUDIT)
     // ------------------------------------------------------------------------
     else if (this.activeReportBranch === 'OPNAME_AUDIT') {
-      badgeEl.textContent = 'JENIS 3 · AUDIT STOCK OPNAME';
+      badgeEl.textContent = 'JENIS 6 · AUDIT STOCK OPNAME';
       titleEl.textContent = 'BERITA ACARA AUDIT STOCK OPNAME & SELISIH FISIK';
       regNumEl.textContent = `OPN-BLS-${fl}-${IstiqomahUtils.formatDateOnly()}`;
       activeBadgeTitle.textContent = `Audit Stock Opname (${flLabel})`;
@@ -1629,10 +2095,12 @@ const DesktopApp = {
       const diffCnt = rows.length - matchCnt;
       const matchRate = rows.length > 0 ? Math.round((matchCnt / rows.length) * 100) : 100;
 
+      if (countBadge) countBadge.textContent = `Menampilkan ${rows.length} barang opname`;
+
       summaryEl.innerHTML = `
         <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Sesi Opname</div><div class="a4-kpi-tile-val">${soGroups.length} Sesi</div></div>
         <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Barang Diaudit</div><div class="a4-kpi-tile-val">${rows.length} SKU</div></div>
-        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Stok Sesuai (0)</div><div class="a4-kpi-tile-val">${matchCnt} SKU</div></div>
+        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Stok Sesuai (0)</div><div class="a4-kpi-tile-val" style="color:#166534;">${matchCnt} SKU</div></div>
         <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Tingkat Kecocokan</div><div class="a4-kpi-tile-val">${matchRate}%</div></div>
       `;
 
@@ -1640,34 +2108,35 @@ const DesktopApp = {
         <table class="a4-official-table">
           <thead>
             <tr>
-              <th>No</th>
-              <th>Kelompok Opname</th>
-              <th>Lantai</th>
-              <th>SKU / Barcode</th>
-              <th>Nama Barang</th>
-              <th>Stok Sistem</th>
-              <th>Fisik Dihitung</th>
-              <th>Selisih (+/-)</th>
-              <th>Status Audit</th>
+              <th style="width:36px; text-align:center;">No</th>
+              <th style="width:130px;">Kelompok Opname</th>
+              <th style="width:75px;">Lantai</th>
+              <th style="width:115px;">Barcode / SKU</th>
+              <th>Nama Produk</th>
+              <th style="width:75px; text-align:right;">Sistem</th>
+              <th style="width:75px; text-align:right;">Fisik</th>
+              <th style="width:75px; text-align:right;">Selisih (+/-)</th>
+              <th style="width:100px; text-align:center;">Status Audit</th>
             </tr>
           </thead>
           <tbody>
             ${rows.length === 0 ? `
-              <tr><td colspan="9" style="text-align:center; padding:24px;">Belum ada sesi hasil scan opname yang tercatat pada cakupan lantai ini.</td></tr>
+              <tr><td colspan="9" style="text-align:center; padding:24px; color:#71717A;">Belum ada sesi hasil scan opname yang tercatat pada cakupan lantai ini.</td></tr>
             ` : rows.map((r, idx) => {
               const diff = Number(r.countedQty) - Number(r.systemQty);
               const status = diff === 0 ? 'COCOK' : (diff > 0 ? 'SELISIH LEBIH' : 'SELISIH KURANG');
+              const badgeSt = diff === 0 ? 'background:#F0FDF4; color:#166534; border:1px solid #86EFAC;' : 'background:#FEF2F2; color:#991B1B; border:1px solid #F87171;';
               return `
                 <tr>
-                  <td>${idx + 1}</td>
+                  <td style="text-align:center; font-family:var(--font-mono);">${idx + 1}</td>
                   <td>${r.groupName}</td>
                   <td><strong>${this.floorLabel(r.floorId)}</strong></td>
-                  <td>${r.sku} / ${r.barcode}</td>
+                  <td><code>${r.barcode || r.sku}</code></td>
                   <td><strong>${r.name}</strong></td>
-                  <td>${r.systemQty}</td>
-                  <td><strong>${r.countedQty}</strong></td>
-                  <td><strong>${diff > 0 ? '+' + diff : diff}</strong></td>
-                  <td><strong>${status}</strong></td>
+                  <td style="text-align:right; font-family:var(--font-mono);">${r.systemQty}</td>
+                  <td style="text-align:right; font-family:var(--font-mono); font-weight:800;">${r.countedQty}</td>
+                  <td style="text-align:right; font-family:var(--font-mono); font-weight:800; ${diff !== 0 ? 'color:#DC2626;' : 'color:#166534;'}">${diff > 0 ? '+' + diff : diff}</td>
+                  <td style="text-align:center;"><span style="font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:4px; ${badgeSt}">${status}</span></td>
                 </tr>
               `;
             }).join('')}
@@ -1677,119 +2146,19 @@ const DesktopApp = {
     }
 
     // ------------------------------------------------------------------------
-    // BRANCH 4: JURNAL MUTASI TRANSAKSI (MUTATION_JOURNAL)
-    // ------------------------------------------------------------------------
-    else if (this.activeReportBranch === 'MUTATION_JOURNAL') {
-      badgeEl.textContent = 'JENIS 4 · JURNAL MUTASI STOK';
-      titleEl.textContent = 'JURNAL AUDIT MUTASI KELUAR-MASUK & PINDAH LANTAI';
-      regNumEl.textContent = `MUT-BLS-${fl}-${IstiqomahUtils.formatDateOnly()}`;
-      activeBadgeTitle.textContent = `Jurnal Mutasi Transaksi (${flLabel})`;
-
-      const inCnt = mutations.filter(m => m.type === 'IN').length;
-      const outCnt = mutations.filter(m => m.type === 'OUT').length;
-      const opCnt = mutations.filter(m => m.type === 'OPNAME' || m.type === 'TRANSFER').length;
-
-      summaryEl.innerHTML = `
-        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Total Transaksi</div><div class="a4-kpi-tile-val">${mutations.length} Entri</div></div>
-        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Barang Masuk (IN)</div><div class="a4-kpi-tile-val">${inCnt} Entri</div></div>
-        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Barang Keluar (OUT)</div><div class="a4-kpi-tile-val">${outCnt} Entri</div></div>
-        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Opname / Transfer</div><div class="a4-kpi-tile-val">${opCnt} Entri</div></div>
-      `;
-
-      contentEl.innerHTML = `
-        <table class="a4-official-table">
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Waktu Transaksi</th>
-              <th>Kode Transaksi</th>
-              <th>Jenis</th>
-              <th>Lantai</th>
-              <th>Nama Barang</th>
-              <th>Jumlah</th>
-              <th>Petugas</th>
-              <th>Keterangan</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${mutations.map((m, idx) => `
-              <tr>
-                <td>${idx + 1}</td>
-                <td>${m.timestamp}</td>
-                <td><code>${m.id}</code></td>
-                <td><strong>${m.type}</strong></td>
-                <td>${this.floorLabel(m.floorId)}</td>
-                <td><strong>${m.itemName}</strong></td>
-                <td><strong>${m.qty} ${m.unit || ''}</strong></td>
-                <td>${m.user || 'Fahri'}</td>
-                <td>${m.note || '-'}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      `;
-    }
-
-    // ------------------------------------------------------------------------
-    // BRANCH 5: LEMBAR KERJA FISIK MANUAL (BLANK_WORKSHEET)
-    // ------------------------------------------------------------------------
-    else if (this.activeReportBranch === 'BLANK_WORKSHEET') {
-      badgeEl.textContent = 'JENIS 5 · LEMBAR KERJA FISIK GUDANG';
-      titleEl.textContent = 'FORMULIR LEMBAR KERJA STOCK OPNAME MANUAL (CLIPBOARD)';
-      regNumEl.textContent = `WKS-BLS-${fl}-${IstiqomahUtils.formatDateOnly()}`;
-      activeBadgeTitle.textContent = `Lembar Kerja Fisik (${flLabel})`;
-
-      summaryEl.innerHTML = `
-        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Target Lantai</div><div class="a4-kpi-tile-val">${flLabel}</div></div>
-        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Jumlah Baris SKU</div><div class="a4-kpi-tile-val">${items.length} Baris</div></div>
-        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Tanggal Hitung</div><div class="a4-kpi-tile-val">.... / .... / 2026</div></div>
-        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Petugas Lapangan</div><div class="a4-kpi-tile-val">....................</div></div>
-      `;
-
-      contentEl.innerHTML = `
-        <table class="a4-official-table">
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Lantai</th>
-              <th>Lokasi Rak</th>
-              <th>SKU / Barcode</th>
-              <th>Nama Barang</th>
-              <th>Satuan</th>
-              <th>Stok Sistem</th>
-              <th>Hitung Fisik 1</th>
-              <th>Hitung Fisik 2</th>
-              <th>Paraf Petugas</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${items.map((it, idx) => `
-              <tr>
-                <td>${idx + 1}</td>
-                <td><strong>${this.floorLabel(it.floorId)}</strong></td>
-                <td>${it.location || '-'}</td>
-                <td>${it.sku} / ${it.barcode}</td>
-                <td><strong>${it.name}</strong></td>
-                <td>${it.unit}</td>
-                <td>${it.stock}</td>
-                <td style="width:85px;">&nbsp;</td>
-                <td style="width:85px;">&nbsp;</td>
-                <td style="width:100px;">&nbsp;</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      `;
-    }
-
-    // ------------------------------------------------------------------------
-    // BRANCH 6: KATALOG LABEL BARCODE RAK (BARCODE_CATALOG)
+    // BRANCH 7: KATALOG BARCODE RAK A4 (BARCODE_CATALOG)
     // ------------------------------------------------------------------------
     else if (this.activeReportBranch === 'BARCODE_CATALOG') {
-      badgeEl.textContent = 'JENIS 6 · KATALOG BARCODE RAK';
+      badgeEl.textContent = 'JENIS 7 · KATALOG BARCODE RAK';
       titleEl.textContent = 'LEMBAR CETAK STIKER LABEL BARCODE RAK GUDANG';
       regNumEl.textContent = `LBL-BLS-${fl}-${IstiqomahUtils.formatDateOnly()}`;
       activeBadgeTitle.textContent = `Katalog Label Barcode Rak (${flLabel})`;
+
+      if (cat !== 'ALL') {
+        items = items.filter(i => i.category && i.category.trim() === cat);
+      }
+
+      if (countBadge) countBadge.textContent = `Menampilkan ${items.length} label barcode`;
 
       summaryEl.innerHTML = `
         <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Total Label Barcode</div><div class="a4-kpi-tile-val">${items.length} Label</div></div>
@@ -1802,19 +2171,77 @@ const DesktopApp = {
         <div class="a4-barcode-grid">
           ${items.map(it => `
             <div class="a4-barcode-cell">
-              <div style="font-size:10px; font-weight:800; color:#475569; text-transform:uppercase;">
+              <div style="font-size:9.5px; font-weight:800; color:#52525B; text-transform:uppercase;">
                 ISTIQOMAH BULUSARI · ${this.floorLabel(it.floorId)} · ${it.location || 'Rak'}
               </div>
-              <div style="font-size:13px; font-weight:800; color:#0B1120; margin:6px 0 8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+              <div style="font-size:12.5px; font-weight:800; color:#18181B; margin:6px 0 8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                 ${it.name}
               </div>
-              <div>${IstiqomahUtils.generateBarcodeSvg(it.barcode, 40)}</div>
-              <div style="font-family:'JetBrains Mono', monospace; font-size:11.5px; font-weight:700; margin-top:5px; color:#0B1120;">
+              <div>${IstiqomahUtils.generateBarcodeSvg(it.barcode, 38)}</div>
+              <div style="font-family:var(--font-mono); font-size:11px; font-weight:800; margin-top:5px; color:#18181B;">
                 ${it.barcode} (${it.sku})
               </div>
             </div>
           `).join('')}
         </div>
+      `;
+    }
+
+    // ------------------------------------------------------------------------
+    // BRANCH 8: LEMBAR KERJA FISIK MANUAL (BLANK_WORKSHEET)
+    // ------------------------------------------------------------------------
+    else if (this.activeReportBranch === 'BLANK_WORKSHEET') {
+      badgeEl.textContent = 'JENIS 8 · LEMBAR KERJA FISIK (CLIPBOARD)';
+      titleEl.textContent = 'FORMULIR LEMBAR KERJA STOCK OPNAME MANUAL GUDANG';
+      regNumEl.textContent = `WKS-BLS-${fl}-${IstiqomahUtils.formatDateOnly()}`;
+      activeBadgeTitle.textContent = `Lembar Kerja Fisik (${flLabel})`;
+
+      if (cat !== 'ALL') {
+        items = items.filter(i => i.category && i.category.trim() === cat);
+      }
+
+      if (countBadge) countBadge.textContent = `Menampilkan ${items.length} baris lembar kerja`;
+
+      summaryEl.innerHTML = `
+        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Target Lantai</div><div class="a4-kpi-tile-val">${flLabel}</div></div>
+        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Jumlah Baris SKU</div><div class="a4-kpi-tile-val">${items.length} Baris</div></div>
+        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Tanggal Hitung</div><div class="a4-kpi-tile-val">.... / .... / 2026</div></div>
+        <div class="a4-kpi-tile"><div class="a4-kpi-tile-lbl">Petugas Lapangan</div><div class="a4-kpi-tile-val">....................</div></div>
+      `;
+
+      contentEl.innerHTML = `
+        <table class="a4-official-table">
+          <thead>
+            <tr>
+              <th style="width:36px; text-align:center;">No</th>
+              <th style="width:75px;">Lantai</th>
+              <th style="width:85px;">Lokasi Rak</th>
+              <th style="width:115px;">Barcode / SKU</th>
+              <th>Nama Produk</th>
+              <th style="width:65px; text-align:center;">Satuan</th>
+              <th style="width:75px; text-align:right;">Sistem</th>
+              <th style="width:90px; text-align:center;">Hitung Fisik 1</th>
+              <th style="width:90px; text-align:center;">Hitung Fisik 2</th>
+              <th style="width:95px; text-align:center;">Paraf</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${items.map((it, idx) => `
+              <tr>
+                <td style="text-align:center; font-family:var(--font-mono);">${idx + 1}</td>
+                <td><strong>${this.floorLabel(it.floorId)}</strong></td>
+                <td>${it.location || '-'}</td>
+                <td><code>${it.barcode || it.sku}</code></td>
+                <td><strong>${it.name}</strong></td>
+                <td style="text-align:center;">${it.unit}</td>
+                <td style="text-align:right; font-family:var(--font-mono);">${it.stock}</td>
+                <td style="width:85px;">&nbsp;</td>
+                <td style="width:85px;">&nbsp;</td>
+                <td style="width:90px;">&nbsp;</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
       `;
     }
   },
@@ -1839,35 +2266,38 @@ const DesktopApp = {
         <meta charset="UTF-8">
         <title>${title}</title>
         <style>
-          @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap');
           * { box-sizing: border-box; margin: 0; padding: 0; }
           body {
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             background: #fff;
-            color: #0B1120;
-            padding: 24px 30px;
-            font-size: 11pt;
+            color: #18181B;
+            padding: 20px 26px;
+            font-size: 10.5pt;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
           }
           @page {
             size: A4 portrait;
-            margin: 12mm 14mm 12mm 14mm;
+            margin: 10mm 12mm 10mm 12mm;
           }
-          .a4-doc-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2.5px solid #0B1120; padding-bottom: 14px; margin-bottom: 16px; }
-          .a4-doc-stamp { display: inline-block; padding: 2px 8px; background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; border-radius: 4px; font-size: 9pt; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; }
-          .a4-kpi-summary-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px; }
-          .a4-kpi-tile { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px 14px; }
-          .a4-kpi-tile-lbl { font-size: 8.5pt; font-weight: 700; text-transform: uppercase; color: #64748B; }
-          .a4-kpi-tile-val { font-size: 14pt; font-weight: 800; color: #0B1120; margin-top: 2px; }
-          .a4-official-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
-          .a4-official-table th { background: #0B1120; color: #fff; font-size: 8.5pt; font-weight: 800; text-transform: uppercase; padding: 8px 10px; text-align: left; border: 1px solid #0B1120; }
-          .a4-official-table td { padding: 7px 10px; border: 1px solid #CBD5E1; font-size: 9.5pt; color: #0B1120; }
-          .a4-official-table tr:nth-child(even) td { background: #F8FAFC; }
-          .a4-barcode-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
-          .a4-barcode-cell { border: 1.5px dashed #475569; border-radius: 6px; padding: 12px 10px; text-align: center; }
-          .a4-signatures-block { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 32px; padding-top: 18px; text-align: center; font-size: 9.5pt; }
-          .a4-signature-line { margin-top: 52px; border-top: 1.5px solid #0B1120; padding-top: 5px; font-weight: 800; }
+          .a4-doc-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2.5px solid #18181B; padding-bottom: 12px; margin-bottom: 14px; }
+          .a4-doc-stamp { display: inline-block; padding: 2px 8px; background: #F4F4F5; color: #18181B; border: 1.5px solid #18181B; border-radius: 4px; font-size: 8pt; font-weight: 900; text-transform: uppercase; margin-bottom: 4px; }
+          .a4-kpi-summary-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+          .a4-kpi-tile { background: #FAFAFA; border: 1.5px solid #18181B; border-radius: 6px; padding: 8px 12px; }
+          .a4-kpi-tile-lbl { font-size: 8pt; font-weight: 800; text-transform: uppercase; color: #71717A; }
+          .a4-kpi-tile-val { font-size: 13pt; font-weight: 900; color: #18181B; margin-top: 2px; font-family: 'JetBrains Mono', monospace; }
+          .a4-official-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; border: 2px solid #18181B; font-size: 9.5pt; }
+          .a4-official-table th { background: #F4F4F5; color: #18181B; font-size: 8pt; font-weight: 900; text-transform: uppercase; padding: 6px 8px; text-align: left; border: 1.5px solid #18181B; }
+          .a4-official-table td { padding: 6px 8px; border: 1px solid #D4D4D8; color: #18181B; vertical-align: middle; }
+          .a4-official-table tr:nth-child(even) td { background: #FAFAFA; }
+          .a4-category-header-bar { background: #F4F4F5; border: 2px solid #18181B; border-radius: 4px; padding: 6px 12px; font-weight: 900; font-size: 10pt; text-transform: uppercase; display: flex; justify-content: space-between; margin-top: 16px; margin-bottom: 4px; }
+          .a4-subtotal-tr td { background: #F4F4F5 !important; font-weight: 900 !important; border-top: 2px solid #18181B !important; border-bottom: 2px solid #18181B !important; }
+          .a4-barcode-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+          .a4-barcode-cell { border: 1.5px solid #18181B; border-radius: 6px; padding: 10px; text-align: center; page-break-inside: avoid; }
+          .a4-signatures-block { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 28px; padding-top: 16px; border-top: 1.5px dashed #A1A1AA; text-align: center; font-size: 9pt; }
+          .a4-signature-line { margin-top: 48px; border-top: 1.5px solid #18181B; padding-top: 4px; font-weight: 900; font-size: 10pt; }
+          code { font-family: 'JetBrains Mono', monospace; font-size: 8.5pt; font-weight: 700; }
         </style>
       </head>
       <body>
@@ -1886,32 +2316,85 @@ const DesktopApp = {
   exportReportExcelCSV() {
     IstiqomahSound.playClick();
     const fl = this.reportFloorFilter;
-    const items = (this.state.items || []).filter(i => fl === 'ALL' || i.floorId === fl);
+    const cat = this.reportCategoryFilter;
+    const pri = this.reportPriorityFilter;
+    const staff = this.reportStaffFilter;
+    const branch = this.activeReportBranch;
+
+    let items = (this.state.items || []).filter(i => fl === 'ALL' || i.floorId === fl);
+    if (cat !== 'ALL' && (branch === 'STOCK_RECAP' || branch === 'CATEGORY' || branch === 'RESTOCK_ORDER' || branch === 'BLANK_WORKSHEET' || branch === 'BARCODE_CATALOG')) {
+      items = items.filter(i => i.category && i.category.trim() === cat);
+    }
+
     let csv = '';
 
-    if (this.activeReportBranch === 'RESTOCK_ORDER') {
-      csv = 'Lantai,Kategori,Lokasi Rak,SKU,Barcode,Nama Barang,Sisa Stok,Batas Min,Satuan,Saran Order\n';
-      items.filter(i => i.stock <= i.minStock).forEach(i => {
-        const suggest = Math.max(10, (i.minStock * 3) - i.stock);
-        csv += `"${this.floorLabel(i.floorId)}","${i.category || 'Umum'}","${i.location}","${i.sku}","${i.barcode}","${i.name}",${i.stock},${i.minStock},"${i.unit}",${suggest}\n`;
+    if (branch === 'CATEGORY') {
+      csv = 'Komoditas/Kategori,Lantai,Lokasi Rak,Barcode,SKU,Nama Produk,Stok Fisik,Batas Min,Satuan,Status\n';
+      items.forEach(i => {
+        const st = i.stock <= 0 ? 'HABIS' : (i.stock <= i.minStock ? 'MENIPIS' : 'AMAN');
+        csv += `"${i.category || 'Umum'}","${this.floorLabel(i.floorId)}","${i.location || '-'}","${i.barcode}","${i.sku}","${i.name}",${i.stock},${i.minStock},"${i.unit}","${st}"\n`;
       });
-    } else if (this.activeReportBranch === 'MUTATION_JOURNAL') {
-      csv = 'Waktu,Kode Mutasi,Jenis,Lantai,Nama Barang,Jumlah,Satuan,Petugas,Keterangan\n';
-      (this.state.mutations || []).filter(m => fl === 'ALL' || m.floorId === fl).forEach(m => {
+    } else if (branch === 'RESTOCK_ORDER') {
+      let rItems = items;
+      if (pri === 'HABIS') {
+        rItems = items.filter(i => Number(i.stock) <= 0);
+      } else if (pri === 'MENIPIS') {
+        rItems = items.filter(i => Number(i.stock) > 0 && Number(i.stock) <= Number(i.minStock));
+      } else {
+        rItems = items.filter(i => Number(i.stock) <= Number(i.minStock));
+      }
+      csv = 'Lantai,Kategori,Lokasi Rak,SKU,Barcode,Nama Produk,Sisa Stok,Batas Min,Satuan,Saran Order,Rencana Order Aktual\n';
+      rItems.forEach(i => {
+        const suggest = Math.max(10, (i.minStock * 3) - i.stock);
+        csv += `"${this.floorLabel(i.floorId)}","${i.category || 'Umum'}","${i.location || '-'}","${i.sku}","${i.barcode}","${i.name}",${i.stock},${i.minStock},"${i.unit}",${suggest},""\n`;
+      });
+    } else if (branch === 'MUTATION_JOURNAL') {
+      let muts = (this.state.mutations || []).filter(m => fl === 'ALL' || m.floorId === fl);
+      if (staff !== 'ALL') {
+        muts = muts.filter(m => m.user && m.user.trim() === staff);
+      }
+      csv = 'Waktu Transaksi,Kode Mutasi,Jenis,Lantai,Nama Barang,Jumlah,Satuan,Petugas,Keterangan\n';
+      muts.forEach(m => {
         csv += `"${m.timestamp}","${m.id}","${m.type}","${this.floorLabel(m.floorId)}","${m.itemName}",${m.qty},"${m.unit || ''}","${m.user || 'Fahri'}","${m.note || ''}"\n`;
       });
+    } else if (branch === 'OPNAME_AUDIT') {
+      csv = 'Kelompok Opname,Lantai,Barcode,SKU,Nama Barang,Stok Sistem,Fisik Dihitung,Selisih,Status Audit\n';
+      const soGroups = (this.state.soGroups || []).filter(g => fl === 'ALL' || g.floorId === fl);
+      soGroups.forEach(g => {
+        (g.entries || []).forEach(r => {
+          const diff = Number(r.countedQty) - Number(r.systemQty);
+          const st = diff === 0 ? 'COCOK' : (diff > 0 ? 'SELISIH LEBIH' : 'SELISIH KURANG');
+          csv += `"${g.name}","${this.floorLabel(g.floorId)}","${r.barcode}","${r.sku}","${r.name}",${r.systemQty},${r.countedQty},${diff},"${st}"\n`;
+        });
+      });
+    } else if (branch === 'EXECUTIVE_SUMMARY') {
+      csv = 'Lantai,Departemen,Total SKU,Unit Fisik,Aman,Menipis,Habis,Kesiapan Persen,Status\n';
+      const allItems = this.state.items || [];
+      [
+        { id: 'L1', name: 'Lantai 1', dept: 'Sembako, Minyak, Sabun, Popok & Minuman' },
+        { id: 'L2', name: 'Lantai 2', dept: 'Fashion Muslim, Gamis, Koko, Sarung & Hijab' },
+        { id: 'L3', name: 'Lantai 3', dept: 'Alat Masak, Dapur, Box Storage & Elektronik' }
+      ].forEach(f => {
+        const fItems = allItems.filter(i => i.floorId === f.id);
+        const fQty = fItems.reduce((s, i) => s + Number(i.stock || 0), 0);
+        const fLow = fItems.filter(i => Number(i.stock) > 0 && Number(i.stock) <= Number(i.minStock)).length;
+        const fEmpty = fItems.filter(i => Number(i.stock) <= 0).length;
+        const fSafe = Math.max(0, fItems.length - (fLow + fEmpty));
+        const fRate = fItems.length > 0 ? Math.round((fSafe / fItems.length) * 100) : 100;
+        csv += `"${f.name}","${f.dept}",${fItems.length},${fQty},${fSafe},${fLow},${fEmpty},"${fRate}%","${fRate >= 80 ? 'PRIMA' : 'WASPADA'}"\n`;
+      });
     } else {
-      csv = 'Lantai,Kategori,Lokasi Rak,SKU,Barcode,Nama Barang,Stok Fisik,Batas Min,Satuan,Status\n';
+      csv = 'Lantai,Kategori,Lokasi Rak,SKU,Barcode,Nama Produk,Stok Fisik,Batas Min,Satuan,Status\n';
       items.forEach(i => {
-        const st = i.stock === 0 ? 'HABIS' : (i.stock <= i.minStock ? 'MENIPIS' : 'AMAN');
-        csv += `"${this.floorLabel(i.floorId)}","${i.category || 'Umum'}","${i.location}","${i.sku}","${i.barcode}","${i.name}",${i.stock},${i.minStock},"${i.unit}","${st}"\n`;
+        const st = i.stock <= 0 ? 'HABIS' : (i.stock <= i.minStock ? 'MENIPIS' : 'AMAN');
+        csv += `"${this.floorLabel(i.floorId)}","${i.category || 'Umum'}","${i.location || '-'}","${i.sku}","${i.barcode}","${i.name}",${i.stock},${i.minStock},"${i.unit}","${st}"\n`;
       });
     }
 
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-    this.downloadBlob(blob, `Laporan_${this.activeReportBranch}_${fl}_${IstiqomahUtils.formatDateOnly()}.csv`);
+    this.downloadBlob(blob, `Laporan_${branch}_${fl}_${IstiqomahUtils.formatDateOnly()}.csv`);
     IstiqomahSound.playSuccess();
-    this.showToast(`Laporan ${this.activeReportBranch} berhasil diekspor ke format Excel (.CSV)`);
+    this.showToast(`Laporan ${branch} berhasil diekspor ke format Excel (.CSV)`);
   },
 
   // ==========================================================================
