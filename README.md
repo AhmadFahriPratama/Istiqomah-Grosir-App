@@ -49,9 +49,11 @@ Sistem manajemen inventaris dan stok gudang modern untuk **Istiqomah Grosir Caba
      - Log Riwayat Mutasi Barang Masuk & Keluar
      - Cetak Lembar Stiker Barcode Rak Standar A4 (Grid 3 Kolom)
 
-7. **Desain Bersih & Standar Industri**:
-   - 100% Bebas Emoji: Seluruh antarmuka menggunakan ikon vektor garis SVG profesional.
-   - Palet warna kontras tinggi bernuansa Slate & Indigo yang ramah mata untuk pencahayaan gudang.
+7. **Tema Desain: Smooth Neobrutalism (Putih & Abu)**:
+   - **Palet Putih & Abu Arsitektural**: Dominasi warna putih bersih (`#FFFFFF`) dan abu-abu semen/stone (`#F4F5F7`, `#ECEFF2`) dengan kontras garis tepi hitam tajam (`2px solid #18181B`).
+   - **Solid Offset Box Shadows**: Efek bayangan tegas khas neobrutalis (`3px 3px 0px #18181B` hingga `8px 8px 0px #18181B`) dipadukan dengan radius sudut halus (`8px - 14px`) untuk estetika *smooth* & modern.
+   - **100% Bebas Emoji & Ikon Minimalis**: Seluruh antarmuka menggunakan ikon vektor garis SVG ultra-minimalis dengan ketebalan goresan konsisten (`1.8px`).
+   - **Mikro-Interaksi Taktil**: Umpan balik klik dan sentuh tombol halus (`translate` presisi) dengan transisi elastis.
 
 ---
 
